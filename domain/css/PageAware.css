@@ -1,0 +1,29 @@
+/* property unions */
+
+.auto80 {
+    width: 80%;
+    margin: auto;
+}
+
+.borderblue {
+    border: 2px solid blue;
+}
+.centertext {
+    text-align: center;
+}
+
+img[alt='floatleft-00-15-15'] { 
+	float: left;
+	margin-top: 0;
+	margin-right: 15px;
+	margin-bottom: 15px;
+}      
+
+img[alt='floatright-00-15-15'] {
+	float: right;
+	margin-top: 0;
+	margin-left: 15px;
+	margin-bottom: 15px;
+}      
+
+

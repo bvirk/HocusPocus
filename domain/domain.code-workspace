@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+    "settings": {
+        "cSpell.language": "da-DK",
+        "cSpell.words": [
+            "Aware",
+            "keeping"
+        ]
+    }
+}

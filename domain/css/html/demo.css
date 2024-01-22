@@ -1,0 +1,18 @@
+.top {
+    border-top: 10px solid orange;
+}
+.bottom {
+    border-top: 10px solid blue;
+}
+th {
+    border-bottom: 2px solid darkgreen;
+}
+tr > th:first-child {
+    border-right: 1px solid grey;
+}
+tr > td:first-child {
+    border-right: 1px solid grey;
+}
+tbody > tr:nth-child(odd) {
+    background-color: aquamarine;
+}

@@ -1,0 +1,8 @@
+/* centering af sitemap */
+div table {
+    margin-left: auto;
+    margin-right: auto;
+}
+.marginleft170px {
+    margin-left: 170px;
+}

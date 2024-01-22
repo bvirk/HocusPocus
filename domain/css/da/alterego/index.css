@@ -1,0 +1,80 @@
+/*
+.contactOpt {
+	margin-top: -64px;
+	margin-left: auto;
+	margin-right: 0;
+	padding: 0;
+	width: 140px;
+	border: 1px solid red;
+	font-size: 2em;
+} */
+
+.phone {
+	margin-right: 0;
+	width: 32px;
+	margin-left: 5px;
+	/*border: 1px solid blue;*/
+}
+
+a[href="tel:28569086"] {
+	text-decoration: none;
+}
+
+.mailPic {
+	width: 140px;
+	height: 42px;
+	/* border: 1px solid red; */
+	background-image: url(/img/blank.png);
+	background-repeat: no-repeat;
+    margin-left: auto; 
+    margin-right: 0;
+}
+.mail {
+	margin-right: 0;
+	margin-left: 5px;
+	width: 32px;
+	cursor: pointer;
+	/* border: 1px solid blue; */
+}
+.github {
+	/*border: 1px solid blue;*/
+	margin-left: 5px;
+	width: 32px;
+	margin-right: 0;
+}
+
+.flex {
+    display:flex;
+    width: 100%;
+}
+.flex > div {
+    width: 33%;
+}
+/*
+.colleft {
+    border: 1px solid lightgreen;
+}.colmid {
+    border: 1px solid magenta;
+} */
+.colright {
+/*    border: 1px solid red; */
+    text-align: right;
+    font-size: 1.5rem;
+}
+.colright p {
+    font-size: 3em;
+    margin: 0 40px 0 0;
+    padding: 0;
+    cursor: help;
+}
+/*
+.about  {
+    border: 1px solid aqua;
+} */
+.hocus {
+    border: 10px inset rgb(148, 188, 207);
+    width: 100%;
+    height: 70px;
+    background-color: rgb(148, 188, 207);
+    text-align: center;
+}

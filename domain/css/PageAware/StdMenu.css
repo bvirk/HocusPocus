@@ -1,0 +1,180 @@
+/* menu system */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px 0px 20px 20px;
+    border: 2px solid #da9c28;
+    width: 50%; /* Could be more or less, depending on screen size */
+    display: flex;
+}
+
+#wdFiles li a {
+    font-family: sans-serif;
+    /* color: blue; */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+  a.selIsDir {
+    color: blue;
+}
+
+a.selIsFile {
+    color: black;
+}
+
+#wdFiles li {
+    list-style: none;  
+}
+
+#hammenu {
+	text-decoration: none;
+	position: absolute;
+	font-size: 3em;
+	left: calc(95% - 33px);
+	top: 12px;
+	color: black;
+}
+
+span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
+    cursor: pointer;
+}
+
+.modal-content > div:first-child {
+    /* border: 1px solid blue; */
+    padding-right: 1em;
+    width: 80%;
+}
+/*
+.modal-content > div:nth-child(2) {
+    border: 1px solid green;
+}
+*/
+.modal-content div div {
+      padding-left: 10%;
+      font-size: 1em;
+      padding-top: 10px;
+}
+
+.modal-content div div span a {
+    font-size: 2em;
+    /* text-decoration: none; */
+    display: inline;
+    /* color: inherit; */
+}
+
+.modal-content > div > a {
+    color: inherit;
+    text-decoration: none;
+}
+
+ul.dirlist li {
+    text-decoration: none;
+}
+
+ul.dirlist li a {
+    text-decoration: none;
+    color: inherit;
+}
+
+li.isDirectory {
+    list-style-image: url("/img/pages/da/index/folder.jpg");
+}
+
+li.isFile {
+    list-style-image: url("/img/pages/da/index/file.jpg");
+}
+
+#txtInput {
+    display: none;
+}
+
+#close {
+    text-align: right;
+    margin-right: 0;
+    padding-right: 0;
+    cursor:pointer;
+}
+
+#close a {
+    color:black;
+    font-weight: 900;
+    font-size: 1.5em;
+    border: 1px solid grey;
+    padding: 5px;
+}
+
+#contentdiv {
+    width: 800px;
+    height: 800px;
+    border: 1px solid #ccc;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+
+/* code review*/
+h5 {
+    margin-bottom: 0px;
+}
+pre {
+    margin-top: 0;
+    border-left: 6px solid rgb(33, 148, 148);
+    border-top: 1px solid rgb(33, 148, 148);
+    padding-left: 10px;
+}
+
+/* code explaining */
+.srcExpl {
+    color : rgb(1, 65, 1);
+    margin: 0;
+    padding: 0 0 0 10px;
+    border-left: 12px double rgb(33, 148, 148);
+    border-bottom: 1px solid rgb(33, 148, 148);
+}
+
+/* navigation on  bottom */
+
+.contentNav {
+    display:flex
+}
+
+.contentNav p {
+   background-color: #219494;
+   border-left: 10px solid #219494;
+   border-right: 10px solid #219494;
+   width: 33%;
+}
+
+.contentNav p:nth-child(2) {
+    text-align: center;
+}
+
+.contentNav p:nth-child(3) {
+    text-align: right;
+}
+
+.contentNav p a {
+    text-decoration: none;
+    color: white;
+
+}
+
+.contentNav p a:first-child {
+    font-size: 2em;
+    font-weight: bold;
+}
+

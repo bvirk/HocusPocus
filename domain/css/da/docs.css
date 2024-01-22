@@ -1,0 +1,14 @@
+.gitright {
+    display:flex;
+}
+
+.gitright h2:first-child {
+    /* border: 1px solid red; */
+    width:80%;
+}
+.gitright h2:nth-child(2) {
+    /* border: 1px solid blue; */
+    width:20%;
+    text-align: right;
+
+}
