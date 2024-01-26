@@ -14,5 +14,15 @@ define("IMG_ROOT",$_SERVER['DOCUMENT_ROOT'].'/img');
 define("IS_PHP_ERR",'<isPHPErr>');
 define("LANGUAGES", array('da' => 'Danish','en' => 'English'));
 define("PAGES_ROOT",$_SERVER['DOCUMENT_ROOT'].'/pages');
-define("USERS",['LAN','final','bob']);
+function OSUsers() {
+    $all=[];
+    foreach (file('/etc/passwd') as $user)  {
+        $uArr = explode(':',$user);
+        if ( $uArr[2] >= 1000 && $uArr[0] !== 'nobody')
+            $all[] = $uArr[0];
+    }
+    return $all;
+}
+define("USERS",OSUsers());
+define("APACHE_USER",exec('whoami'));
 
