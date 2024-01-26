@@ -10,7 +10,7 @@ Grundet markedet derfor er det ikke spor svært. Det er faktisk lettere for den 
 
 Viden eksponeres behjælpeligt af f.eks digitalocean.com - det er guider derfra der har gjort det let for mig.  
 
-Her følger de skridt jeg tog. 
+### Initial setup
 
 Jeg fik root password og valgte ubuntu 20 som OS
 
@@ -32,6 +32,7 @@ Lamp installation
 
 Dns  på https://www.one.com/admin - a record bvirk.dk 185.212.47.136
 
+### ssh
 Efter at have fulgt [ssh-keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-20-04)  
 Og tilføjet til /etc/hosts
 - 185.212.47.136 vps
@@ -51,20 +52,17 @@ Det skal være et kort greb at se og redigere config filer:
 
 ```
 $ cd ~/.config/nnn/plugins
-$ cat less
+$ cat pager
 #!/usr/bin/env sh
-less \\$1
-
-$ cat vim
-#!/usr/bin/env sh
-vim \\$1
+most \\$1
 
 $ cat sudovim
 #!/usr/bin/env sh
 sudo vim \\$1
 
-$ tail -n 18 ~/.bashrc 
-export NNN_PLUG='l:less;v:vim;s:sudovim'
+$ tail -n 19 ~/.bashrc 
+export EDITOR=vim
+export NNN_PLUG='p:pager;s:sudovim'
 export NNN_BMS='b:/var/www';
 function n() {
     # Block nesting of nnn in subshells
@@ -81,5 +79,16 @@ function n() {
 }
 [ -n "\$NNNLVL" ] && PS1="N\$NNNLVL \$PS1"
 ```
+
+### [let's encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-apache-with-let-s-encrypt-on-ubuntu-20-04)
+
+... som det lykkedes til apache2 på ubuntu 22.04
+
+- installerede packages certbot og python3-certbot-apache
+- ServerAlias www.bvirk.dk i tillæg til ServerName bvirk.dk i ...sites-available/bvirk.dk.conf  
+- restart apache2
+- sikre at der er ALLOW from ANYWHERE mht tcp på port 80 og 443 (og 22 ellers var vi her ikke)  
+- udføre certbot --apache som root
+
 
 EOMD,actors\tocNavigate($func)];
