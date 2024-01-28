@@ -12,8 +12,8 @@ class MkPage {
         instantiatePath();
         ob_end_flush();
     }
+
     function tidyHTML($buffer) {
-        //return $buffer;
         $dom = new \DOMDocument();
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
