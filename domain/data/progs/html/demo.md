@@ -23,6 +23,6 @@ query string=$qs
 EOTMD,<<< EOTMD
 ### About rendering
 Because each HERE doc has it's own div, markdown can be styled seperately
-EOTMD,srclf('data/progs/html/demo.md',1),<<<EOTMD
+EOTMD,actors\srclf('data/progs/html/demo.md',1),<<<EOTMD
 ### The css
-EOTMD,srclf('css/html/demo.css',1)];
+EOTMD,actors\srclf('css/html/demo.css',1)];

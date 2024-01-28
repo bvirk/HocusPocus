@@ -1,3 +1,3 @@
 <?php
-return "### You love peace.\n<button onClick='coloredFortune(\"".actors\queryString()."\")'>random colored fortune</button>";
+return "### You love peace.\n<button onClick='coloredFortune(\"".($_GET['mkErr'] ?? '' )."\");'>random colored fortune</button>";
 

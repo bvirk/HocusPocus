@@ -17,4 +17,4 @@ All local variables in \_\_call(...) of \\HocusPocus->\_\_call() is accessible h
 EOTMD,'>!>',<<< EOTMD
 ### About rendering
 Because each HERE doc has it's own div, markdown can be styled seperately
-EOTMD,srclf('data/progs/play/demo.md',1)];
+EOTMD,actors\srclf('data/progs/play/demo.md',1)];
