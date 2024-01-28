@@ -86,12 +86,6 @@ function isLoggedIn() {
     return in_array($_SESSION['loggedin'],USERS);
 }
 
-function isAutorizeddDir($path) {
-    //error_log('$path='.$path);
-    return $path !== '/da/loggedin' || in_array($_SESSION['loggedin'],USERS);
-}
-
-
 function kvsepEncode($arr,$kv='=',$sep=';') {
     $itemSep='';
     $str='';
@@ -128,10 +122,21 @@ function src($fileN,$linesArray,$useLines,$showFilenameHeadEnum) {
     $showFileNamesEnum=$showFilenameHeadEnum;
     while (count($linesArray)) {
         $pairs = [array_shift($linesArray),array_shift($linesArray) ?? 999];
+        $fileArr = file($fileN);
         if (gettype($pairs[0]) == 'string') 
-            $pairs[0] = (array_key_first(preg_grep("/$pairs[0]/",file($_SERVER['DOCUMENT_ROOT']."/$fileN"))) ?? 0 )+1;
-        if (gettype($pairs[1]) == 'string')
-            $pairs[1]=$pairs[0]+intval($pairs[1]-1);
+            $pairs[0] = (array_key_first(preg_grep("/$pairs[0]/",$fileArr)) ?? 0 )+1;
+        if (gettype($pairs[1]) == 'string') {
+            $matchIndex=0;
+            if (preg_match('/^([^\[]+)\[(\d+)\]$/',$pairs[1],$keynumMatch) === 1) {
+                $pairs[1] = $keynumMatch[1];
+                $matchIndex = intval($keynumMatch[2]);
+            }
+            $matchArr = preg_grep("/$pairs[1]/",array_slice($fileArr,$pairs[0]));
+            $pairs[1] = $matchArr !== false && count($matchArr) > 0 && count($matchArr) >= $matchIndex 
+                ? array_keys($matchArr)[$matchIndex]+$pairs[0]
+                : 999;
+        } else
+            $pairs[1] += $pairs[0]-1;
         $out .=  (new \utilclasses\SrcLister(
              $fileN
             ,$pairs[0]
