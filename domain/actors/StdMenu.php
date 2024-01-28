@@ -8,7 +8,7 @@ function hamMenu() {
     $thisUrl='url=/'.implode('/',$pe);
     [$ahref,$atxt] = isLoggedIn() 
         ? ["/?path=progs/loginRecieve/logout&amp;$thisUrl",'logout '.$_SESSION['loggedin'] != USERS[0] ? $_SESSION['loggedin']:''] 
-        : ["/?path=progs/html/login&$thisUrl",'login'];
+        : ["/?path=progs/html/login&amp;$thisUrl",'login'];
     // IKON SHOWS WHAT CAN Be CHANGED TO - default is file -> cloud
     [$editIkon,$editTip,$onclick ] = $_SESSION['editmode'] == DEFAULTEDITMODE 
     ? ['🌥 ☐','click to edit in browser','toEditMode("http");']
@@ -47,24 +47,9 @@ function hamMenu() {
 
 class StdMenu extends PageAware {
     protected $jsFiles= ['/js/jquery.min.js'];
-    
-    
-    //public function __construct() {
-    //    //if (array_key_exists('prettyprint',$_GET))
-    //    //    headerCTText();
-    //    ob_start(array_key_exists('pretty',$_GET) ? [$this,'tidyHTML'] : null);
-    //    parent::__construct();
-    //}
-    //
-    //public function __destruct()
-    //{
-    //    echo "\n<!-- ". (__NAMESPACE__.'\snup')() ."  -->\n";
-    //    parent::__destruct();
-    //    ob_flush();
-    //}
+
     function stdContent() {
     	hamMenu();
-        //echo array_key_exists('prettyprint',$_GET) ? tidyHTML($this->body): $this->body;
         echo $this->body;
 	}
 }
