@@ -7,16 +7,15 @@ let curkeyhandler;
 /**
  * Main nnn nagigation
  */
-let  kmAfterN=false;
-let  kmAfterX=false;
-
 
 window.addEventListener("keydown", delegateEListener,true);
 
 export const KeyHandler = Object.freeze({
     NAV: navigate,
     ESC: hasEscape,
-    NOMENU: whenNoMenu
+    NOMENU: whenNoMenu,
+    NEWFILEORDIR: newFileOrDir,
+    DELETEFILEORDIR: deleteFileOrDir
 });
 
 export function setCurkeyhandler(func) { 
@@ -35,7 +34,58 @@ function hasEscape(event) {
         case "Escape":
             hideInput();
             statusLine();
-            curkeyhandler=KeyHandler.NOMENU
+            curkeyhandler=KeyHandler.NOMENU;
+            break;
+        default:
+            return;
+    }
+}
+
+function newFileOrDir(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+            hideInput();
+            statusLine();
+            curkeyhandler=KeyHandler.NAV;
+            break;
+        case "d": // new directory
+            if (isLoggedin) {
+                $("#command").attr("value","mkDir");
+                showInput();
+                curkeyhandler=KeyHandler.ESC;
+            }
+            break;
+        case "f": // new file
+            if (isLoggedin) {
+                //alert("making file in /data/"+curDirStr);
+                $("#command").attr("value","newFile");
+                showInput();
+                curkeyhandler=KeyHandler.ESC;
+            }
+            break;
+        default:
+            return;
+    }
+}
+
+function deleteFileOrDir(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+            hideInput();
+            statusLine();
+            curkeyhandler=KeyHandler.NAV;
+            break;
+        case "y": // delete file or dir
+            if (isLoggedin) {
+                let command=curDir[cid][1].length ? 'rmDir' : 'rm';
+                let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
+                request(APIName,command,args,nopJSCommand);
+                curkeyhandler=KeyHandler.NAV;
+            }
             break;
         default:
             return;
@@ -84,36 +134,17 @@ function navigate(event) {
                 curDirStr='pages';
                 request(APIName,'ls','&curdir=pages',showMenu);
                 break;
-            case "Escape": // regret new or delete
-                    statusLine();
-                    kmAfterN = false;
-                    kmAfterX = false;
-                break;
-            case "d": // new directory, after n
-                if (kmAfterN && isLoggedin) {
-                    kmAfterN=false;
-                    $("#command").attr("value","mkDir");
-                    showInput();
-                    curkeyhandler=KeyHandler.ESC;
-                }
+            case "Escape":
+                quitMenu();
                 break;
             case "e": // edit
                 let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1].length ? '/index.md':'');
                 request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
                 break;                                                                  
-            case "f": // new file, after n 
-                if (kmAfterN && isLoggedin) {
-                    //alert("making file in /data/"+curDirStr);
-                    $("#command").attr("value","newFile");
-                    showInput();
-                    curkeyhandler=KeyHandler.ESC;
-                    kmAfterN=false;
-                }
-                break;
             case "n": // new file or directory 
-                if (!kmAfterN && isLoggedin) {
+                if (isLoggedin) {
                     statusLine("'f'ile/'d'ir?");
-                    kmAfterN=true;
+                    curkeyhandler=KeyHandler.NEWFILEORDIR;
                 }    
                 break;
             case "r": // rename file or dir
@@ -132,21 +163,13 @@ function navigate(event) {
                     request(APIName,'emptyTrash','',nopJSCommand);
                 break;
             case "x": // remove file or directory
-                if (!kmAfterX && isLoggedin) {
+                if (isLoggedin) {
                     statusLine("remove selected [Esc cancels]");
-                    kmAfterX = true;
-                }
-                break;
-            case "y": // confirm removing file or dir
-                if ( kmAfterX) {
-                    kmAfterX=false;
-                    let command=curDir[cid][1].length ? 'rmDir' : 'rm';
-                    let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
-                    request(APIName,command,args,nopJSCommand);
+                    curkeyhandler=KeyHandler.DELETEFILEORDIR;
                 }
                 break;
             case "z": // undo trash - unified undo of all deletion to trash
-                if (!kmAfterX && isLoggedin) {
+                if (isLoggedin) {
                     request(APIName,'undoTrash','',nopJSCommand);
                 }
                 break;
