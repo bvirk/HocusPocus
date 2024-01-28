@@ -1,6 +1,6 @@
 import { request, httpRequest  }    from "../jslib/request.js?cc";
 window.coloredFortune = function (parm) {
-    request('fortunesAPI','fortune',parm,setFortune)
+    request('/?path=progs/fortunesAPI','fortune',parm,setFortune)
 };
 function setFortune() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
