@@ -11,17 +11,17 @@ In method \_\_call(\$func, \$funcArgsArray ), which is called in the absence of 
 ### Rendering
 
 EOMD,srclf('HocusPocus.php'
-    ,'@param array which last','3',
-    'Replaces pattern in last array element','3',
-    'abstract class','4',
-    '__call','1','include\(\$incPath','24'),<<< EOMD
+    ,'@param array which last',3,
+    'Replaces pattern in last array element',3,
+    'abstract class',4,
+    '__call',1,'include\(\$incPath',24),<<< EOMD
 $srcExpl
 
 What the 'data file' \$incPath returns is an array of strings - \$content. It __can__ be a single string which is then arrayed for uniform looping.  
 Two stacks are juggled, the content stack, \$cStack and the tempate stack, \$tStack
 </div>
 
-EOMD,srclf('HocusPocus.php','->stdContent','1','abstract function','1'),<<< EOMD
+EOMD,srclf('HocusPocus.php','->stdContent',1,'abstract function',1),<<< EOMD
 $srcExpl
 
 HocusPocus cannot be self-instantiated.  
@@ -31,7 +31,7 @@ Because stdContent() is abstract, it is the implementation in a subclass that us
 ### Variables for insertion into content
 The simplest way to make things styleable is to have variables to be inserted into heredocs.
 
-EOMD,srclf('HocusPocus.php','__call','1','datafileExists','5','function enheritPathElements','12'),<<< EOMD
+EOMD,srclf('HocusPocus.php','__call',1,'datafileExists',5,'function enheritPathElements',12),<<< EOMD
 $srcExpl
 
 Function inheritPathElements return class hierarchy inheritance as array of path elements. It is classes with namespace actors that are included.  
@@ -42,7 +42,7 @@ The data file \$incPath source code environment is a mix of partly being in the 
 
 Typos and erroneous calls of updater methods could quickly end up at __call(...). Two mechanisms seek to trigger an error whose wording draws attention to the source of the error.
 
-EOMD,srclf('HocusPocus.php','__call','9'),<<<EOMD
+EOMD,srclf('HocusPocus.php','__call',9),<<<EOMD
 $srcExpl
 
 1. A function inside a method - you can do this the first time the process runs through - the next triggers a redeclaration error.
@@ -52,7 +52,7 @@ $srcExpl
 ### Not existing url
 We have seen that index.php handles how far a urls class exists, but it is not guaranteed that the last path element, as designated data, exists.
 
-EOMD,srclf('HocusPocus.php','"data\/\$classPath\/\$func"','3','neither','9','function noDataAvail','6'),<<< EOMD
+EOMD,srclf('HocusPocus.php','"data\/\$classPath\/\$func"',3,'neither',9,'function noDataAvail',6),<<< EOMD
 $srcExpl
 
 dataFileExists(\$incPath) returns true if adding either .md or .php to reference parameter \$incPath becomes the name of an existing file.  

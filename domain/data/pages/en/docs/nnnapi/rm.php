@@ -10,8 +10,8 @@ Remove file. If it is index all this is 'removed'
 
 rm actual transfers to trash/, from where it can all be re-established with [undoTrash](undoTrash)
 EOMD,actors\srclf('progs/NNNAPI.php'
-        ,'function rm\(','9'
-        ,'Removes a single datafile and what belongs','18'
-        ,'function trashDir','25'),<<<EOMD
+        ,'function rm\(',9
+        ,'Removes a single datafile and what belongs',18
+        ,'function trashDir',25),<<<EOMD
 
 EOMD,actors\tocNavigate($func)];

@@ -30,16 +30,16 @@ EOMD;
 return ["<!<div class='auto80'>#html#</div>"
 ,actors\tocHeadline($func),
     <<<EOMD
-EOMD,srclf('index.php','require','1')
-    ,srclf('globalfuncs.php','require','1')
-    ,srclf('defines.php',1,2,'PAGES_ROOT','1')
-    ,srclf('HocusPocus.php','abstract class','1'),<<<EOMD
+EOMD,srclf('index.php','require',1)
+    ,srclf('globalfuncs.php','require',1)
+    ,srclf('defines.php',1,2,'PAGES_ROOT',1)
+    ,srclf('HocusPocus.php','abstract class',1),<<<EOMD
 
 ### actors
 Class hierarchy resides in actors. A class instantiated by a request whose url starts with domain/pages/ inherits from an actors class. The name is an abbreviation of ancestors.  
 
-EOMD,srclf('actors/PageAware.php','namespace','4')
-    ,srclf('actors/StdMenu.php','namespace','1','class StdMenu','1'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','namespace',4)
+    ,srclf('actors/StdMenu.php','namespace',1,'class StdMenu',1),<<<EOMD
 
 ### config
 The file selected for editing in the dialog menu or PHP error caught by javascript AJAX
@@ -57,7 +57,7 @@ In data there is a file for each html document. Url, class file and data file ar
 |datafile   |∣  |$incPath   |
 |class File |∣  |$classFile |
 |image dir  |∣  |$imgPath   | 
-EOMD, srclf($incPath,'implode','2','\|:--','5'),<<<EOMD
+EOMD, srclf($incPath,'implode',2,'\|:--',5),<<<EOMD
 
 Tree clips show how data and pages interact.
 
@@ -113,7 +113,7 @@ In this way, the directory tree beneath js/ contains files with the extension js
 In jsmodules is the directory jsmodules/jslib. Files in jslib are parameterized for general use - e.g. contains no context from individual pages or classes.  
 The name of a page's most inherited actor class is also the name of the directory in jsmodules/ that contains main.js for this actor class
 
-EOMD,srclf('js/PageAware/StdMenu.php','use function','1','Nasty','1','module','1'),<<<EOMD
+EOMD,srclf('js/PageAware/StdMenu.php','use function',1,'Nasty',1,'module',1),<<<EOMD
 
 ### pages
 All pages are a page under a pages class - the one instantiated in index.php. All pages originate from an actors class and are not included as a base class in other page classes.
@@ -135,16 +135,16 @@ It can be re-established from trash - it has been given key: 'z' in the dialogue
 [/progs/emptyTrash](/progs/emptyTrash) er en magick url der tømmer trash.
 
 ### utilclasses
-EOMD,srclf('utilclasses/Parsedown.php',1,12),srclf('utilclasses/Sitemap.php','class Sitemap','1','function dirlisthtml','5'),<<<EOMD
+EOMD,srclf('utilclasses/Parsedown.php',1,12),srclf('utilclasses/Sitemap.php','class Sitemap',1,'function dirlisthtml',5),<<<EOMD
 $srcExpl
 Sitemap with html &lt;ul&gt; and &lt;li&gt; tags using recursive descent in /data/pages. Directories are links to index.  
 </div>
-EOMD,srclf('utilclasses/SrcLister.php',2,7,'function lines','1'),<<<EOMD
+EOMD,srclf('utilclasses/SrcLister.php',2,7,'function lines',1),<<<EOMD
 $srcExpl
 Which makes it possible to show source code like this
 </div>
 
-EOMD,srclf('actors/Pagefuncs.php','showFilenameHeadEnum','6',"new \\\\utilclasses",'1','basename source','26'),
+EOMD,srclf('actors/Pagefuncs.php','showFilenameHeadEnum',6,"new \\\\utilclasses",1,'basename source',26),
 actors\tocNavigate($func)];
 
 

@@ -24,7 +24,7 @@ There is the challenge that if the entire path that is requested is a directory,
 The problem is solved with redirection.  
 
 To make it easy to explore the effect of redirection, index.php has these lines
-EOMD,srclf('index.php','Uncomment for inspection','2'),<<<EOMD
+EOMD,srclf('index.php','Uncomment for inspection',2),<<<EOMD
 
 Redirection targets the path 'pages' because all web pages in HocusPokus start with 'pages'.
 
@@ -50,7 +50,7 @@ It has been chosen not to redirect any directory in the document root. Afterall,
 
 ### Relative links.
 Relative links depends on path not ending with a slash
-EOMD,srclf('index.php','We dont allow url','3'),<<<EOMD
+EOMD,srclf('index.php','We dont allow url',3),<<<EOMD
 $srcExpl
 Redirection is necessary as it determines how the browser defines relative links.
 </div>

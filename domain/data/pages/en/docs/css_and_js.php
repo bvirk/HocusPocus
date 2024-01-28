@@ -28,7 +28,7 @@ External libraries are things you don't develop yourself - things like jquery an
 
 property \$cssFiles and \$jsFiles can be local files or CDN links. Files links starts with /css/ or /js/ for stylesheets and javascript respectively.
 
-EOMD,srclf('actors/PageAware.php','jsFiles = \[\]','2','function getExterns','1','cssFiles as','4'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','jsFiles = \[\]',2,'function getExterns',1,'cssFiles as',4),<<<EOMD
 $srcExpl
 It looks nicest that \$cssFiles and \$jsFiles are empty here, because content is intended for actor classes that are not further inherited.
 </div>
@@ -42,7 +42,7 @@ Since all html documents inherit from actors\\PageAware the following, if they e
 - js/PageAware.js or js/PageAware.php
 
 If there is no file with the extension .js in the hierarchy, a matching file named with the extension .php is looked for
-EOMD,srclf('HocusPocus.php','function enheritPathElements','12'),<<<EOMD
+EOMD,srclf('HocusPocus.php','function enheritPathElements',12),<<<EOMD
 $srcExpl
 
 When class_parents(\$this) is reversed HocusPocus comes first.  
@@ -103,20 +103,20 @@ js/\$pe[1]/\$pe[2]/\$pe[3]/...\$pe[n-2]/\$pe[n-1].js eller php
 
 EOMD,srclf(
     'actors/PageAware.php'
-    ,'function getExterns','5'
-    ,"'src','js'",'1'
-    ,'function incFiles','12')
+    ,'function getExterns',5
+    ,"'src','js'",1
+    ,'function incFiles',12)
         ,<<<EOMD
 $srcExpl
 In the innermost forEach, extRef(...) is called with the current directory string extension which applies to what is above called group 1 and after the forEach group 2. Parameters for extRef are what is needed to create html tags and attributes.
 EOMD,'>!>',<<<EOMD
 
-EOMD,srclf('actors/PageAware.php','function extRef','7'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','function extRef',7),<<<EOMD
 $srcExpl
 In extRef, it is checked whether a non-existing .js file is instead a .php file, which is then included. lastmRef appends ?lastm= (unixtime) to the src or href attribute value.
 </div>
 
-EOMD,srclf('actors/Pagefuncs.php','function lastmRef','3'),<<<EOMD
+EOMD,srclf('actors/Pagefuncs.php','function lastmRef',3),<<<EOMD
 
 We have now seen that HocusPocus takes care of retrieving data and actors\\PageAware uses that data to create an html document with all its tags to retrieve css and js files.  
 

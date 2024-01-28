@@ -10,6 +10,6 @@ Renaming a directory results in
 4. img path renames.
 5. css and js path elements renames.
 
-EOMD,actors\srclf('progs/NNNAPI.php','function mvDir','18'),<<<EOMD
+EOMD,actors\srclf('progs/NNNAPI.php','function mvDir',18),<<<EOMD
 
 EOMD,actors\tocNavigate($func)];

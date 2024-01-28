@@ -7,7 +7,7 @@ IS_PHP_ERR is used to show the statusline in the dialog menu.
 </div>
 
 The strategy for trashing is to move, prefixing any file realtive pathname from the document root, with trash/. Thus, everything is trashed with their original path - and can be re-established by copying to a destination without prefixed trash.
-EOMD,actors\srclf('progs/NNNAPI.php','function copySubDirsOf','19'),<<<EOMD
+EOMD,actors\srclf('progs/NNNAPI.php','function copySubDirsOf',19),<<<EOMD
 $srcExpl
 \$rootLen points so far into \$file that the front 'trash/' is not included in the destination for copying files or renaming links.
 </div>

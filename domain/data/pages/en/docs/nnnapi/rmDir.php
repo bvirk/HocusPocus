@@ -9,6 +9,6 @@ Fjern directory. Applies to:
 - pages class to which the data directory was content
 
 rmDir actual transfers to trash/, from where it can all be re-established with [undoTrash](undoTrash)
-EOMD,actors\srclf('progs/NNNAPI.php','function rmDir','6','function trashDir','25'),<<<EOMD
+EOMD,actors\srclf('progs/NNNAPI.php','function rmDir',6,'function trashDir',25),<<<EOMD
 
 EOMD,actors\tocNavigate($func)];

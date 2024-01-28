@@ -20,7 +20,7 @@ the format is a line with 2 space-separated fields:
 1. message encoded with '_' for spaces
 2. filename or filename:line number
 
-EOMD,srclf('progs/NNNAPI.php','function edit','7'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function edit',7),<<<EOMD
 $srcExpl
 
 If it is a directory that has focus in the dialog menu, the index is found there.  

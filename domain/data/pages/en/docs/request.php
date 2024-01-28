@@ -6,7 +6,7 @@ return ["<!<div class='auto80'>#html#</div>"
     <<<EOMD
 
 Global variable \$pe is \$_GET["path"] in another way.
-EOMD,srcf('index.php','pe = explode','1','used for 2 path element','2'),<<<EOMD
+EOMD,srcf('index.php','pe = explode',1,'used for 2 path element',2),<<<EOMD
 The arrayet \$pe is an abbrevation for  __path elements__. There is only a lower limit to the number of elements - it is three, with the exception that if the above allocation gives two then 'index' is added as the third element.
 
 The contents of the \$pe array, illustrated as the path element strings they represent:
@@ -41,7 +41,7 @@ Path to data file without extension. Data files has the extension .md or .php (f
 &nbsp;  
 #### \$pe[1] when \$pe[0] == 'pages' 
 \$pe[1] can assume one of the values that is key in the following constant - and the first is used as default.
-EOMD,srcf('defines.php','LANGUAGES','1'),<<<EOMD
+EOMD,srcf('defines.php','LANGUAGES',1),<<<EOMD
 &nbsp;  
 &nbsp;  
 ### No 404 narrative 
@@ -55,15 +55,15 @@ A request's addressing is one of following three cases.
 3. call with address that don't has any associated class
 
 ##### relating to 2
-EOMD,srclf('index.php','domain only','2'),<<< EOMD
+EOMD,srclf('index.php','domain only',2),<<< EOMD
 
 ##### relating to 3
 Inclusion of the file of a class happens at usual php manners - very short:
-EOMD,srclf('index.php',11,13),<<< EOMD
+EOMD,srclf('index.php',11,3),<<< EOMD
 
 Instantiation happens in a try catch block
 
-EOMD,srclf('index.php','second to last element','16'),<<< EOMD
+EOMD,srclf('index.php','second to last element',16),<<< EOMD
 
 A request is performed by instantiation of a class.  
 Because it is in a try catch block, calling a non-existent class will throw an exception in the require_once php function on line 12 in index.php - i.e. inside spl_autoload_register.

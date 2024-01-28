@@ -3,10 +3,14 @@ use function actors\srclf;
 return ["<!<div class='auto80'>#html#</div>"
 ,actors\tocHeadline($func),
     <<<EOMD
+Javascript can be retrieved from the web server via AJAX - just as a request from the browser fetches text, AJAX fetches text - it is then chosen to return JSON as opposed to html - because javascript can parse JSON.  
+
+A more flexible way of forming &lt;script&gt;'s has been created than what applies to css's &lt;link&gt; 
+
 For a given url, a set of filenames ending in .js is looked for. Where there is no .js file, a .php file is looked for. With that, these options are provided:
 - several javascript files linked to the individual addressing path
 - direct javascript for injecting context
-- type='module' attribute in script tag
+- type='module' attribute in &lt;script&gt;'s
 
 EOMD,srclf('data/progs/html/apifortunes.md',1),<<<EOMD
 
@@ -34,7 +38,7 @@ In httpRequest.open(...), parameters 'fortunesAPI', 'fortune' and '' for class, 
 The function that must receive the response is assigned httpRequest.onreadystatechange - it is function setFortune() in jsmodules/FortunesAPI/main.js whose name was the last parameter in the call to request(...)
 </div>
 
-[fortunes Using API](http://p.ps/progs/html/apifortunes), [fortunes using API with php error](http://p.ps/?path=progs/html/apifortunes&mkErr) 
+[fortunes Using API](/progs/html/apifortunes), [fortunes using API with php error](/?path=progs/html/apifortunes&mkErr=%26mkErr) 
 
 
 EOMD,actors\tocNavigate($func)];

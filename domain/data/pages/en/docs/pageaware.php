@@ -12,11 +12,11 @@ In PageAware, the entire html document is created, but property \$body is not se
 
 PageAware is also abstract because it do not implements stdContent(). It is chosen to enforce descriptive class name(s) for layout types.
 
-EOMD,srclf('actors/PageAware.php','namespace pages','5'),<<< EOMD
+EOMD,srclf('actors/PageAware.php','namespace pages',5),<<< EOMD
 
 I PageAware laves hele html document.
 
-EOMD,srclf('actors/PageAware.php','jsFiles = \[\]','4','__construct','15','function stdContent','3'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','jsFiles = \[\]',4,'__construct',15,'function getExterns',1),<<<EOMD
 $srcExpl
 
 The Html document is created in function \_\_construct()  and closed in  \_\_destruct(). it just lacks a function stdContent that outputs the content of the body element - which an inheriting class must define.  

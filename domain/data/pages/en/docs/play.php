@@ -7,7 +7,7 @@ return ["<!<div class='auto80'>#html#</div>"
 ### Method vs data file
 The following works in an installed HocusPocus system. The point is not that the link examples work, but why.
 
-EOMD,srcf('progs/Play.php',2),<<<EOMD
+EOMD,srcf('progs/Play.php',1),<<<EOMD
 
 _Example with method_ [/progs/play/myMethod](/progs/play/myMethod)
 

@@ -7,7 +7,7 @@ The dialog menu has onClick events so that you can navigate with a pointing devi
 
 ### The modules
 The dialog menu belongs to class StdMenu. That means follwing is fetched:  
-EOMD,srclf('js/PageAware/StdMenu.php','Nasty','1','jsmodules\/StdMenu\/main\.js','1'),<<<EOMD
+EOMD,srclf('js/PageAware/StdMenu.php','Nasty',1,'jsmodules\/StdMenu\/main\.js',1),<<<EOMD
 $srcExpl
 main.js is located in a directory that has the same name as the class it belongs to.
 </div>
@@ -36,23 +36,23 @@ The dividing line between whether a javascript file is in the same directory as 
 
 #### The request
 A request is captured by the API, which is implemented in PHP, and the response is received by a javascript function.
-EOMD,srclf('jsmodules/jslib/request.js','let  httpRequest','11'),<<<EOMD
+EOMD,srclf('jsmodules/jslib/request.js','let  httpRequest',11),<<<EOMD
 $srcExpl
 The request is conveyed by the XMLHttpRequest object - property onreadystatechange is assigned to the function that must receive a response to the request.  
 </div>
 
 To get a single point of source, a constant is used everywhere as the first argument to request(...)
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','const APIName','1'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/hamMenu.js','const APIName',1),<<<EOMD
 $srcExpl
 It follows that the argument string, which is '&' seperated 'key=value' pairs, must be preceded with '&'
 </div>
 
 ### Opening of the dialog menu
 The hamburger icon's onClick attribute has a function
-EOMD,srclf('jsmodules/StdMenu/main.js','hamDrawMenu = hamDrawMenu','1'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/main.js','hamDrawMenu = hamDrawMenu',1),<<<EOMD
 The dialog menu can also be opened by F9
-EOMD,srclf('jsmodules/StdMenu/keyboard.js','function whenNoMenu','7')
-    ,srclf('jsmodules/StdMenu/hamMenu.js','let menuIsVisible','2','function hamDrawMenu','9','function hideInput','3'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/keyboard.js','function whenNoMenu',7)
+    ,srclf('jsmodules/StdMenu/hamMenu.js','let menuIsVisible',2,'function hamDrawMenu',9,'function hideInput',3),<<<EOMD
 $srcExpl
 
 setCurkeyhandler switches to keyboard handler navigate(event).  
@@ -74,7 +74,7 @@ showMenu() is continuously called to redraw, but only here with the flag isFirst
 </div>
 
 Response of [ls](nnnapi/ls), which returns an array of arrays of properties for each file, is received by showMenu
-EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu','27','function catchResp','13'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu',27,'function catchResp',13),<<<EOMD
 $srcExpl
 
 Any response function must be preceded by 'if (httpRequest.readyState ....) return;' - otherwise it won't work.  
@@ -93,7 +93,7 @@ curDirStr is also the id of a &lt;div&gt; which is then also displayed.
 
 showMenu calls at last initDomElements().
 
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','function initDomElements','14'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/hamMenu.js','function initDomElements',14),<<<EOMD
 $srcExpl
 
 lid contains the array of DOM elements used to select a file.

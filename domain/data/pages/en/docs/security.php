@@ -3,7 +3,7 @@ return ["<!<div class='auto80'>#html#</div>" ,actors\tocHeadline($func),<<<EOMD
 With previously assigned apache configuration, directory listing is blocked by redirection - but files that are not .php files can be read. As such, it doesn't matter much since HocusPocus does not use config files, but the matter must be investigated anyway.
 
 HocusPocus can be set so that non-existing pages cause redirection to the default page
-EOMD,actors\srclf('HocusPocus.php','noDataAvail','3','function noDataAvail','5'),<<<EOMD
+EOMD,actors\srclf('HocusPocus.php','noDataAvail',3,'function noDataAvail',5),<<<EOMD
 $srcExpl
 When commenting is set in developer mode, found pages are not redirected to the default page.
 </div>

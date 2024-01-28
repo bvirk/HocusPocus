@@ -25,7 +25,7 @@ For pages it fell into three cases: pages/da, pages/en and pages/whatevernonesen
 
 It is more interesting for progs classes. It is used to create magick urls which are addressed with only two path elements
 
-EOMD,srclf('index.php','used for 2 path element','2'),srclf('progs/EmptyTrash.php','namespace','4'),<<<EOMD
+EOMD,srclf('index.php','used for 2 path element',2),srclf('progs/EmptyTrash.php','namespace',4),<<<EOMD
 $srcExpl
 Url = progs/emptyClass as third path element index is added in index.php
 </div>   
@@ -39,20 +39,20 @@ It is another page of the same class and thus also the same datafiles directory,
 
 domain/progs/lnIndex is a magic url to do that.
 
-EOMD,srclf('progs/LnIndex.php','targetWOE','6'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','targetWOE',6),<<<EOMD
 $srcExpl
 
 Must be called with parameter target, but without extension such as /?path=progs/lnIndex&target=da/sysler/drama/gearbox to associate index with gearbox. There is a free choice between specifying the target entirely from the document root or from data/ or data/pages/  
 Note that the query string way is required to call with parameters.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','link = false','20'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','link = false',20),<<<EOMD
 $srcExpl
 
 Extension is determined for target and link. Should the index already be a symbolic link, it does not matter.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','function lnRel','6'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','function lnRel',6),<<<EOMD
 $srcExpl
 
 PHP's symlink, when the current working directory (cwd) is other than the targets directory, does not facilitate making symbolic links relative to the target.  
@@ -62,13 +62,13 @@ Hence the function lnRel which provides two things
 - if the link already exists, the symlink is not executed.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','imgDir','3'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','imgDir',3),<<<EOMD
 $srcExpl
 
 index shall show targets pictures too.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','startDir','5'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','startDir',5),<<<EOMD
 $srcExpl
 
 The css and javascript that apply specifically to target must also apply to index.
