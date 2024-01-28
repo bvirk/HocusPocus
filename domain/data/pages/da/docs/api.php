@@ -1,5 +1,8 @@
 <?php
+$domain=DOMAIN;
 use function actors\srclf;
+use function actors\srcf;
+
 return ["<!<div class='auto80'>#html#</div>"
 ,actors\tocHeadline($func),
     <<<EOMD
@@ -17,7 +20,7 @@ prog/html/fortunes data fil layouter html'en
 EOMD,srclf('data/progs/html/fortunes.md',1),<<<EOMD
 Javascript udløser miraklet. Som tidligere vist laver PHP potentielt, når url er progs/html/fortunes, et html tag der inkluderer en fil med path:
 
-EOMD,srclf('js/html/fortunes.js',1,'4','patch'),<<<EOMD
+EOMD,srclf('js/html/fortunes.js',1,4,'patch'),<<<EOMD
 
 Man kan sige at den javascript genereret style og html indhold har data i sig.
 
@@ -30,10 +33,10 @@ Det er php delen af API anvendelsen der vises - altså servicen som svarer.
 Nyd lyrikken [fortunes API](/progs/fortunesAPI/fortune) eller i terminal
 
 ```
-$ curl http://domain/progs/fortunesAPI/fortune && echo
+$ curl -k $domain/progs/fortunesAPI/fortune && echo
 ```
 
-EOMD,srclf('progs/FortunesAPI.php','namespace','11','patch a bug','7'),<<<EOMD
+EOMD,srclf('progs/FortunesAPI.php','namespace',11,'patch a bug',7),<<<EOMD
 $srcExpl
 Det er echo som er 'retur værdi' i API kald - og der anvendes json_encode af et array.
 </div>
@@ -43,7 +46,7 @@ Det er echo som er 'retur værdi' i API kald - og der anvendes json_encode af et
 Værdsæt [fortunes API med php fejl](/?path=progs/fortunesAPI/fortune&mkErr) eller i terminal
 
 ```
-$ curl "domain/?path=progs/fortunesAPI/fortune&mkErr" && echo
+$ curl -k "$domain/?path=progs/fortunesAPI/fortune&mkErr" && echo
 
 ["<isPHPErr>","PHP ERROR in ...\/globalfuncs.php:26"]
 ```
@@ -57,16 +60,16 @@ Indholdet af config/filetoedit.txt kan bruges til automatisk at åbne fejlbefæn
 
 #### PHP fejlrapporterings måde som kan tilgås læsbart fra javascript. 
 
-EOMD,srclf('progs/FortunesAPI.php','__construct','2'),<<<EOMD
+EOMD,srclf('progs/FortunesAPI.php','__construct',2),<<<EOMD
 
 
-EOMD,srclf('globalfuncs.php','headerCTText','9'),<<<EOMD
+EOMD,srclf('globalfuncs.php','headerCTText',9),<<<EOMD
 $srcExpl
 plain text i browser og global variabel \$usesJSON bliver sat til true.
 </div>
 
 
-EOMD,srclf('index.php','usesJSON'),<<<EOMD
+EOMD,srclf('index.php',"pe=\[\];",8,'try'),<<<EOMD
 $srcExpl
 Vi er i index.php hvor requests bliver udført som kald af method på instantieret class. Exceptions ender i catch og fejlens meddelelse, filnavn og lininummer skrives til fil.
 Requestet afslutter med echo af et json encoded array hvis første streng er et fastsat mønster for fejl.
@@ -76,4 +79,13 @@ Javascript som modtager fra API kald, håndtererer fejl svaret med kendskab til 
 
 Ikke alle PHP fejl returnerer til catch blokken - fatale fejl smider blot fejlmeddelelse som tekst response og afslutter yderligere script afvikling. javascript json parse fejl kan bruges i kildekoden som signal for, at det er sket.
 
-EOMD,actors\tocNavigate($func)];
+#### Almindelige sider som API
+Bemærk function instantiatePath() herover. Fordi det er funktionen som toplevel afvikler requestet, er det oplagt at forundres når der tænkes på  blot at vise en side.
+
+Det bruges til at gå apache i bedene - her en anvendelse:  
+
+Nogle gange, specielt når man udvikler i php, kan det være oplysende at orientere sig i html kilden. Html head og hammenuen er rimmelig pænt - men body elementet er rodet.
+
+Prøv at sammenligne kildekoden her med [denne præsentation](/?path=progs/mkPage&redir=$classPath/$func) - optimistisk set kan en mindre forskel øjnes.
+
+EOMD,srcf('progs/MkPage.php',1,'DOMDocument'),actors\tocNavigate($func)];

@@ -23,7 +23,7 @@ Der er den udfordring, at hvis hele den path der requestes, er et directory, så
 Problemet løses med redirection.
 
 For at gøre det let at udforske effekten af redirection har index.php disse linier
-EOMD,srclf('index.php','Uncomment for inspection','2'),<<<EOMD
+EOMD,srclf('index.php','Uncomment for inspection',2),<<<EOMD
 
 Redirection retter sig mod path 'pages', fordi alle websider i HocusPokus starter med 'pages'.  
 
@@ -49,7 +49,7 @@ Der er valgt ikke at redirecte ethvert directory træ forgrening i document root
 
 ### Relative links
 Relative links, som data indholdet gør brug af, er afhængigt af path ikke afslutter med slash
-EOMD,srclf('index.php','We dont allow url','3'),<<<EOMD
+EOMD,srclf('index.php','We dont allow url',3),<<<EOMD
 $srcExpl
 
 Det er nødvendigt med redirection, da det bestemmer hvordan browseren definerer relative links.

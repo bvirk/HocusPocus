@@ -7,7 +7,7 @@ Dialog menuen har onClick events så der kan navigeres med et pointing device, m
 
 ### Modulerne
 Dialog menuen tilhører  class StdMenu. Det betyder at følgende hentes:
-EOMD,srclf('js/PageAware/StdMenu.php','Nasty','1','jsmodules\/StdMenu\/main\.js','1'),<<<EOMD
+EOMD,srclf('js/PageAware/StdMenu.php','Nasty',1,'jsmodules\/StdMenu\/main\.js',1),<<<EOMD
 $srcExpl
 main.js ligger i et directory som har sammen navn som den class den tilhører.  
 </div>
@@ -36,13 +36,13 @@ Skillelinien mellem om en javascript fil ligger i samme directory som main.js el
 
 ### Requestet
 Et request fanges af API, som er implementeret i PHP, og response modtages af en javascript function.  
-EOMD,srclf('jsmodules/jslib/request.js','let  httpRequest','11'),<<<EOMD
+EOMD,srclf('jsmodules/jslib/request.js','let  httpRequest',11),<<<EOMD
 $srcExpl
 Request er formidlet af XMLHttpRequest objektet - property onreadystatechange tildeles den function som skal modtage response på request.  
 </div>
 
 For at få et single point of source bruges en constant overalt som første argument til request(...) 
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','const APIName','1'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/hamMenu.js','const APIName',1),<<<EOMD
 $srcExpl
 Af det følger at argument streng, som er '&' adskilt liste af 'key=value' par, skal indldes med '&'
 </div>
@@ -50,10 +50,10 @@ Af det følger at argument streng, som er '&' adskilt liste af 'key=value' par, 
 
 ### Åbning af dialog menuen
 Hamburger ikonets onClick attribut har en function 
-EOMD,srclf('jsmodules/StdMenu/main.js','hamDrawMenu = hamDrawMenu','1'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/main.js','hamDrawMenu = hamDrawMenu',1),<<<EOMD
 Den kan også åbnes med F9
-EOMD,srclf('jsmodules/StdMenu/keyboard.js','function whenNoMenu','7')
-    ,srclf('jsmodules/StdMenu/hamMenu.js','let isFirstDraw','1','function hamDrawMenu','9','function hideInput','3'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/keyboard.js','function whenNoMenu',7)
+    ,srclf('jsmodules/StdMenu/hamMenu.js','let isFirstDraw',1,'function hamDrawMenu',9,'function hideInput',3),<<<EOMD
 $srcExpl
 
 Med setCurkeyhandler skiftes til keyboard handler navigate(event).  
@@ -74,7 +74,7 @@ showMenu() kaldes løbende for at gentegne, men kun her med flaget isFirstDraw=t
 
 Response af [ls](nnnapi/ls), som returnerer et array af arrays af egenskaber for hver fil, modtages af showMenu
 
-EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu','27','function catchResp','13'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu',27,'function catchResp',13),<<<EOMD
 $srcExpl
 
 Enhver response function skal indledes 'if (httpRequest.readyState ....) return;' - ellers spiller det ikke.  
@@ -91,7 +91,7 @@ curDirStr er også id for et &lt;div&gt; som så også vises.
 </div>
 
 showMenu afsluttes med kald til initDomElements.
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','function initDomElements','14'),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/hamMenu.js','function initDomElements',14),<<<EOMD
 $srcExpl
 
 lid indeholder det array af DOM elementer der bruges til at udvælge en fil.

@@ -3,7 +3,7 @@ return ["<!<div class='auto80'>#html#</div>" ,actors\tocHeadline($func),<<<EOMD
 Med tidligere anviste apache configuration er directory listning blokeret af redirection - men filer der ikke er .php filer kan læses. Det gør som sådan ikke så meget da HocusPocus ikke anvender config filer, men sagen skal alligevel undersøges.  
 
 HocusPocus kan sættes så ikke eksisterende sider bevirker redirection til default side 
-EOMD,actors\srclf('HocusPocus.php','noDataAvail','3','function noDataAvail','5'),<<<EOMD
+EOMD,actors\srclf('HocusPocus.php','noDataAvail',3,'function noDataAvail',5),<<<EOMD
 $srcExpl
 Når udkommentering er sat ved developer mode redirectes ikke fundne sider til default side.
 </div>

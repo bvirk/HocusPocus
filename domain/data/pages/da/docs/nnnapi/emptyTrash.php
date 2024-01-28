@@ -9,12 +9,12 @@ return ["<!<div class='auto80'>#html#</div>"
     <<<EOMD
 
 Method emptyTrash tømmer directory trash/ som bruges ved sletninger.
-EOMD,srclf('progs/NNNAPI.php','function emptyTrash','4'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function emptyTrash',4),<<<EOMD
 $srcExpl
 IS_PHP_ERR bruges til bare at vise 'emtied trash' i dialog menuens statuslinie
 </div>
 
-EOMD,srclf('progs/NNNAPI.php','function removeBesidesRoot','10'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function removeBesidesRoot',10),<<<EOMD
 $srcExpl
 Alene directory ved første kald slettes ikke pga. option \$removeThisDir default value.
 </div>

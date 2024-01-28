@@ -7,7 +7,7 @@ return ["<!<div class='auto80'>#html#</div>"
 ### Method kontra data fil
 Følgende fungerer i et installeret HocusPocus system. Pointet er ikke at  link eksemplerne virker, men hvorfor de virker.
 
-EOMD,srcf('progs/Play.php',2),<<<EOMD
+EOMD,srcf('progs/Play.php',1),<<<EOMD
 
 _Eksempel med method_ [/progs/play/myMethod](/progs/play/myMethod)
 
@@ -24,7 +24,7 @@ _Eksempel med method og query string_ [/?path=progs/play/index&name=kurt](/?path
 
 
 ### Et mere komplekst eksempel
-Her er nogle finurligheder for at demonstrere
+Her er en del flere finurligheder.
 
 EOMD,srclf('data/progs/play/demo.md',1),<<<EOMD
 
@@ -84,7 +84,7 @@ $srcExpl
 Sådan fik dette grønne skriv en solid grøn dobbelt linieret left border 
 </div>
 
-EOMD,srcf('css/PageAware/StdMenu.css','code explaining','10'),<<<EOMD
+EOMD,srcf('css/PageAware/StdMenu.css','code explaining',10),<<<EOMD
 
 Hvis indholdet i &lt;div&gt; ønskes markdown konverteret, kan man lave en tom linie efter \$srcExpl eller følgende som renderes.
 

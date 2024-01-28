@@ -9,7 +9,7 @@ IS_PHP_ERR bruges til at vise statuslinie i dialog menuen.
 
 Strategien for trashning er at flytte, foranstillende enhver fil realtive pathname fra document root, med trash/. Dermed er  alt trashed med deres oprindelige path - og kan reetablers ved kopiering til destination uden foranstilte trash.
 
-EOMD,srclf('progs/NNNAPI.php','function copySubDirsOf','19'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function copySubDirsOf',19),<<<EOMD
 $srcExpl
 \$rootLen peger så langt ind i \$file at forreste trash ikke kommer med i destination for copy af fil eller rename af links.
 </div>

@@ -24,7 +24,7 @@ formatet er en linie med 2 mellemrumsadskilte felter:
 1. message encoded med '_' for mellemrum
 2. filnavn eller filnavn:linienummer
 
-EOMD,srclf('progs/NNNAPI.php','function edit','7'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function edit','^$'),<<<EOMD
 $srcExpl
 
 Hvis det er et directory der har fokus i dialog menuen findes index deri.  

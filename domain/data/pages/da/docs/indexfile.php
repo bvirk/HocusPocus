@@ -26,7 +26,7 @@ For pages faldet det i tre tilfælde: pages/da, pages/en og pages/whadsomhelstvo
 
 Mere interessant er det for progs classes. Det bruges til at lave magick url'er som adresseres med kun to path elementer
 
-EOMD,srclf('index.php','used for 2 path element','2'),srclf('progs/EmptyTrash.php','namespace','4'),<<<EOMD
+EOMD,srclf('index.php','used for 2 path element',2),srclf('progs/EmptyTrash.php','namespace',4),<<<EOMD
 $srcExpl
 Url = progs/emptyClass idet tredje path element index bliver tilsat i index.php
 </div>   
@@ -39,20 +39,20 @@ Det er en anden side af samme class og dermed også samme datafiles directory, d
 
 domain/progs/lnIndex er en magic url til at gøre det.
 
-EOMD,srclf('progs/LnIndex.php','targetWOE','6'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','targetWOE',6),<<<EOMD
 $srcExpl
 
 Skal kaldes med parameter target, men uden extension som f.eks /?path=progs/lnIndex&target=da/sysler/drama/gearkasse for at associere index med gearkasse. Der er frit valg mellem at specificere target helt fra document root eller fra data/ eller data/pages/  
 Bemærk at query strings måden er nødvendig for at kalde med parametre
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','link = false','20'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','link = false',20),<<<EOMD
 $srcExpl
 
 Extension fastlægges for target og link. Skulle index i forvejen være et symbolsk link gør det ikke noget.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','function lnRel','6'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','function lnRel',6),<<<EOMD
 $srcExpl
 
 PHP's symlink, når current working directory (cwd) er andet end targets directory, faciliterer ikke at lave symbolske links relativ til taget. Derfor functionen lnRel som sørger for to ting
@@ -60,13 +60,13 @@ PHP's symlink, når current working directory (cwd) er andet end targets directo
 - hvis link eksisterer i forvejen så udføres symlink ikke.
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','imgDir','3'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','imgDir',3),<<<EOMD
 $srcExpl
 
 index skal også vise targets billeder
 </div> 
 
-EOMD,srclf('progs/LnIndex.php','startDir','5'),<<<EOMD
+EOMD,srclf('progs/LnIndex.php','startDir',5),<<<EOMD
 $srcExpl
 
 Den css og javascript som gælder specielt for target skal også gælde for index.

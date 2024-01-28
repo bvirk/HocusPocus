@@ -3,22 +3,23 @@ return ["<!<div class='auto80'>#html#</div>"
 ,actors\tocHeadline($func),
     <<<EOMD
 
-### emner for  vidreudvikling
+### emner for  videreudvikling
 - dialog menuen
     - cheat cheet
-    - tabs for css, js og img
+    - externs ved højrepil
         - mulighed for at oprette
-- ny autorization måde
-    - fjern loggedin
-    - fjern isAutheded
-    - vis lan i stedet for login on lan
-    - test make password
-- andet bruger begreb
+- bruger begrebet
     - ejerskab til directories
-    - bruger er OS bruger
-    - kunne ændre ejerskab
+        - bruger:bruger ved oprettelse
+        - key: c toogles mellem bruger:bruger og bruger:www-data
+    - ejerskab dependt
+        - sitemap 
+        - navigering - index
+        - incpath  
 - styling
-    - flotte stdMenu
+    - flottere stdMenu
     - eksempel på skabelse af layout
+- dataark
+    - ændring vha ajax
 
 EOMD,actors\tocNavigate($func)];

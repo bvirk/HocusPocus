@@ -30,16 +30,16 @@ EOMD;
 return ["<!<div class='auto80'>#html#</div>"
 ,actors\tocHeadline($func),
     <<<EOMD
-EOMD,srclf('index.php','require','1')
-    ,srclf('globalfuncs.php','require','1')
-    ,srclf('defines.php',1,2,'PAGES_ROOT','1')
-    ,srclf('HocusPocus.php','abstract class','1'),<<<EOMD
+EOMD,srclf('index.php','require',1)
+    ,srclf('globalfuncs.php','require',1)
+    ,srclf('defines.php',1,2,'PAGES_ROOT',1)
+    ,srclf('HocusPocus.php','abstract class',1),<<<EOMD
 
 ### actors
 Class hierarki ligger i actors. En class som instantieres af et request hvis er url starter med domain/pages/, arver fra en actors class. Navnet er en forkortelse af ancestors.  
 
-EOMD,srclf('actors/PageAware.php','namespace','4')
-    ,srclf('actors/StdMenu.php','namespace','1','class StdMenu','1'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','namespace',4)
+    ,srclf('actors/StdMenu.php','namespace',1,'class StdMenu',1),<<<EOMD
 
 ### config
 Filen valgt for editering i dialog menuen eller PHP error fanget af javascript AJAX  
@@ -56,7 +56,7 @@ I data ligger en fil for hver html document. Url, class file og datafil hænger 
 |datafile   |∣  |$incPath   |
 |class File |∣  |$classFile |
 |image dir  |∣  |$imgPath   | 
-EOMD, srclf($incPath,'implode','2','\|:--','5'),<<<EOMD
+EOMD, srclf($incPath,'implode',2,'\|:--',5),<<<EOMD
 
 Tree klip viser hvordan data og pages spiller sammen.
 
@@ -107,7 +107,7 @@ På den måde indeholder directory js filer med extension js eller php
 ### jsmodules
 I jsmodules ligger directory jsmodules/jslib. Filer i jslib er parameterizeret til generel anvendelse - mao. indehoder ingen kontekst fra enkelte sider eller classes.
 Navnet på en sides mest nedarvede actor class er også navnet på det directory i jsmodules/ som indeholder main.js for denne actor class
-EOMD,srclf('js/PageAware/StdMenu.php','use function','1','Nasty','1','module','1'),<<<EOMD
+EOMD,srclf('js/PageAware/StdMenu.php','use function',1,'Nasty',1,'module',1),<<<EOMD
 
 ### pages
 Alle sider er en side under en pages class - den som instantieres i index.php. Alle pages arver fra en actors class og indgår ikke som base class i andre pages classes.  
@@ -130,15 +130,15 @@ Der kan reetableres fra trash - det har fået key: 'z' i dialog menuen. Det er a
 
 
 ### utilclasses
-EOMD,srclf('utilclasses/Parsedown.php',1,12),srclf('utilclasses/Sitemap.php','class Sitemap','1','function dirlisthtml','5'),<<<EOMD
+EOMD,srclf('utilclasses/Parsedown.php',1,12),srclf('utilclasses/Sitemap.php','class Sitemap',1,'function dirlisthtml',5),<<<EOMD
 $srcExpl
 Sitemap med html &lt;ul&gt; og &lt;li&gt; tags ved hjælp af recursiv nedstigning i /data/pages. Directories er links til index.  
 </div>
-EOMD,srclf('utilclasses/SrcLister.php',2,7,'function lines','1'),<<<EOMD
+EOMD,srclf('utilclasses/SrcLister.php',2,7,'function lines',1),<<<EOMD
 $srcExpl
 Det som muliggør at vise kildekode som dette
 </div>
 
-EOMD,srclf('actors/Pagefuncs.php','showFilenameHeadEnum','6',"new \\\\utilclasses",'1','basename source','26'),actors\tocNavigate($func)];
+EOMD,srclf('actors/Pagefuncs.php','showFilenameHeadEnum',6,"new \\\\utilclasses",1,'basename source',26),actors\tocNavigate($func)];
 
 

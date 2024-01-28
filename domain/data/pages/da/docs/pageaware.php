@@ -12,11 +12,11 @@ I PageAware dannes hele html dokumentet, men property \$body outputtes ikke. Pag
 
 PageAware er også abstrakt idet den ikke implementerer stdContent(). Det er valgt for at fremtvinge beskrivende class navn(e) for layout typer.
 
-EOMD,srclf('actors/PageAware.php','namespace pages','5'),<<< EOMD
+EOMD,srclf('actors/PageAware.php','namespace pages',5),<<< EOMD
 
 I PageAware laves hele html document.
 
-EOMD,srclf('actors/PageAware.php','jsFiles = \[\]','4','__construct','15','function stdContent','3'),<<<EOMD
+EOMD,srclf('actors/PageAware.php','jsFiles = \[\]',4,'__construct',15,'function getExtern',1),<<<EOMD
 $srcExpl
 
 Html head og lukning af htmlen dannes i functions \_\_construct og \_\_destruct - det mangler blot en function stdContent der outputter indholdet af body elementet - hvilket en arvende class må definere.  

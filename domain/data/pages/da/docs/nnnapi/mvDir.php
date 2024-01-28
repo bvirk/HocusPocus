@@ -10,6 +10,6 @@ Omdøbning af et directory medfører
 4. img path omdøbes
 5. css og js path elementer omdøbes.
 
-EOMD,actors\srclf('progs/NNNAPI.php','function mvDir','18'),<<<EOMD
+EOMD,actors\srclf('progs/NNNAPI.php','function mvDir',18),<<<EOMD
 
 EOMD,actors\tocNavigate($func)];
