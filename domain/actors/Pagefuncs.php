@@ -69,7 +69,10 @@ function fileSpec($path) {
     $info .= (($perms & 0x0001) ?
             (($perms & 0x0200) ? 't' : 'x' ) :
             (($perms & 0x0200) ? 'T' : '-'));
-    return gmdate("Y-m-d H:i:s",filemtime($path)).' '.posix_getpwuid(fileowner($path))['name']." $info ".formatBytes(filesize($path));
+    return gmdate("Y-m-d H:i:s",filemtime($path)).' '
+        .posix_getpwuid(fileowner($path))['name'].':'
+        .posix_getgrgid(filegroup($path))['name']
+        ." $info ".formatBytes(filesize($path));
 }
 
 
