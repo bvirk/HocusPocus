@@ -234,8 +234,6 @@ class NNNAPI {
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
     }
 
-
-
     function emptyTrash() {
         removeBesidesRoot('trash');
         echo json_encode([IS_PHP_ERR,'trash emptied']);
@@ -276,7 +274,6 @@ class NNNAPI {
         chmod("data/$file/index.md",0666)
         &&
         newClass($file);
-        
         if (!$retval)
             $mes = "$file file creation error";
         echo json_encode([$retval && $txtinputIsOk ? 0 : IS_PHP_ERR,$mes]);
@@ -339,8 +336,6 @@ class NNNAPI {
         else
             echo json_encode([trashDir($path) ? 0 : IS_PHP_ERR,"rmDir failed - perhaps subdirs"]);
     }
-    
-    
 
     function rmDir() {
         $dirAsSelname = $_GET['selname'];
@@ -372,5 +367,4 @@ class NNNAPI {
         $mes = copySubDirsOf("trash") ? "trash restored - 't' for empty it" : 'some fail in trash restoring'; 
         echo json_encode([IS_PHP_ERR,$mes]);
     }
-
 }
