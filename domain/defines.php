@@ -8,6 +8,7 @@ define("DEFDATADIR",'data');
 define("DEFAULTEDITMODE","file");
 define("DEFPAGESESVAR",'defaultpage');
 define("DOCROOTSTRLEN", strlen($_SERVER['DOCUMENT_ROOT']));
+define("DOMAIN",$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST']);
 define("FILETOEDIT",$_SERVER['DOCUMENT_ROOT'].'/config/filetoedit.txt');
 define("JS_ROOT",$_SERVER['DOCUMENT_ROOT'].'/js');
 define("IMG_ROOT",$_SERVER['DOCUMENT_ROOT'].'/img');
