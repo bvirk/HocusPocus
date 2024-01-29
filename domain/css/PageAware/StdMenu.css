@@ -69,6 +69,10 @@ span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
       padding-top: 10px;
 }
 
+#statusLine {
+    font-size: 0.8em;
+}
+
 .modal-content div div span a {
     font-size: 2em;
     /* text-decoration: none; */
