@@ -15,15 +15,21 @@ define("IMG_ROOT",$_SERVER['DOCUMENT_ROOT'].'/img');
 define("IS_PHP_ERR",'<isPHPErr>');
 define("LANGUAGES", array('da' => 'Danish','en' => 'English'));
 define("PAGES_ROOT",$_SERVER['DOCUMENT_ROOT'].'/pages');
-function OSUsers() {
-    $all=[];
+function OSGroups() {
+    $users=[];
     foreach (file('/etc/passwd') as $user)  {
         $uArr = explode(':',$user);
         if ( $uArr[2] >= 1000 && $uArr[0] !== 'nobody')
-            $all[] = $uArr[0];
+            $users[] = $uArr[0];
     }
-    return $all;
+    $groups=[];
+    foreach (file('/etc/group') as $group) {
+        $gArr = explode(':',$group);
+        if ( $gArr[2] >=1000 && !in_array($gArr[0],$users) && $gArr[0] !== 'nogroup')
+            $groups[]=$gArr[0];
+    }
+    return $groups;
 }
-define("USERS",OSUsers());
+define("USERS",OSGroups());
 define("APACHE_USER",exec('whoami'));
 
