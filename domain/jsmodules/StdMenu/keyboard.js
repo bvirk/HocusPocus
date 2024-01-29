@@ -137,6 +137,14 @@ function navigate(event) {
             case "Escape":
                 quitMenu();
                 break;
+            case "c": // toogle public
+                if (curDir[cid][1].length)
+                    statusLine('only file!')
+                else {
+                    let file = 'data/'+curDirStr+'/'+curDir[cid][0];
+                    request(APIName,'tooglePublic','&file='+file,nopJSCommand);
+                }
+                break;
             case "e": // edit
                 let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1].length ? '/index.md':'');
                 request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
