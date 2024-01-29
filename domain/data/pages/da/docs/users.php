@@ -3,20 +3,31 @@ use function actors\srcf;
 use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
-Brugernavne er OS brugere. 
+Brugernavne er OS groups som ikke er OS users.
 
-EOMD,srcf('defines.php','function OSUsers'),<<<EOMD
+EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
 
-OS Brugere oprettes uden home dir, dannet password eller login shell
+Grupper oprettes og tilføjes den user, apache web server processen har.
 
 ```
-# sudo adduser nybruger  --quiet --gecos "" --shell=/usr/sbin/nologin --no-create-home  --disabled-login
+# addgroup newuser
+# usermod -a -G newuser www-data
+
+# systemctl restart apache2
 ```
-Det er fil/gruppe ejerskaber som ligheden med OS brugernavne bruges til.  
+Brugeres ejerskab til en datafil er simuleret ved at filens gruppe navn er bruger navn - og public kontra privat med read flaget for gruppe tilgang.  
+
+Ved oprettelse af datafil sættes gruppen til logged in user.
+
+EOMD,srclf('progs/NNNAPI.php','function newFile',2,'return chgrp\("data\/\$file"','^$'),<<<EOMD
+
+Dialog menuen key 'c' toogler mellem privat og public - kan iagtages i statusline.
+
+EOMD,srclf('progs/NNNAPI.php','function toogle','^$'),<<<EOMD
 
 Brugere kan oprette password og efterfølgende logge ind - i en PHP registrering som __ikke__ har noget med OS level passwords at gøre.  
 
-Passwords kan kun ændres ved, med fil adgang, at slette password for en bruger. En session cookie registrerer logged ind bruger. Der anvendes ikke permanente cookies.
+Passwords kan kun ændres ved, med fil adgang, at slette password for en bruger.  
 
 Variabel \$_SESSION afspejler om der er en loggedin user
 EOMD,srcf('actors/Pagefuncs.php','function isLoggedIn',3),<<<EOMD

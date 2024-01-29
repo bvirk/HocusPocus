@@ -3,15 +3,27 @@ use function actors\srcf;
 use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
-Usernames are OS users.
+HocusPucus user names are OS groups that are not OS users.
 
-EOMD,srcf('defines.php','function OSUsers'),<<<EOMD
+EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
 
-OS Users are created without home dir, formed password or login shell
+Groups are created and added to the user the apache web server process has.
 
 ```
-# sudo adduser newuser  --quiet --gecos "" --shell=/usr/sbin/nologin --no-create-home  --disabled-login
+# addgroup newuser
+# usermod -a -G newuser www-data
+
+# systemctl restart apache2
 ```
+Users' ownership of a data file is simulated by the file's group name being user the name - and public versus private with the read flag for group access.  
+
+When creating a data file, the group is set to logged in user.  
+
+EOMD,srclf('progs/NNNAPI.php','function newFile',2,'return chgrp\("data\/\$file"','^$'),<<<EOMD
+
+The dialog menu key 'c' toggles between private and public - can be seen in the status line.
+
+EOMD,srclf('progs/NNNAPI.php','function toogle','^$'),<<<EOMD
 
 Users can create a password and subsequently login in a PHP registration which has __nothing__ to do with OS level passwords.  
 
