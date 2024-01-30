@@ -63,7 +63,7 @@ function instantiatePath() {
                 errLog($e);
                 [$file,$line]=[$e->getfile(),$e->getLine()];
                 file_put_contents(FILETOEDIT,str_replace(' ','_',$e->getMessage())." $file:$line");
-                echo json_encode([IS_PHP_ERR,"PHP ERROR in .../".substr($e->getfile(),DOCROOTSTRLEN+1).":$line"]);
+                echo json_encode([IS_PHP_ERR,"PHP ERROR in .../".substr($file,DOCROOTSTRLEN+1).":$line"]);
             } else {
                 headerCTText();    
                 echo "$e\n";
