@@ -137,6 +137,10 @@ function navigate(event) {
             case "Escape":
                 quitMenu();
                 break;
+            case "a":
+                //statusLine('ok');
+                request(APIName,'exTest','&test='+cid,nopJSCommand);
+                break;
             case "c": // toogle public
                 if (curDir[cid][1].length)
                     statusLine('only file!')
