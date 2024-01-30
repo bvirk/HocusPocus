@@ -25,7 +25,8 @@ class FortunesApi {
             ,'Take one down, short it to ground'
             ,'You patch a bug, and dump it again'
             ];
-        if (array_key_exists('mkErr',$_GET)) include('idontexists'); // deliberately programming error
+        if (array_key_exists('mkErr',$_GET)) 
+            include('idontexists');
         $colors =['aqua','coral','violet','pink','green','blue','red','orange','Crimson','brown'];
         echo json_encode([$colors[rand(0,9)],$fortunes[rand(0,13)]]);
     }
