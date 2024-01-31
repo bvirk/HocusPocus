@@ -4,6 +4,15 @@ namespace progs;
 
 use function actors\datafileExists;
 
+function catcher($f) {
+    try {
+        $fn = __NAMESPACE__."\\".$f;
+        return $fn();
+    } catch (\Exception $e) {
+        return [IS_PHP_ERR,$e->getMessage().':'.$e->getLine().' failed'];
+    }
+}
+
 function changeNameSpace($oldBasename,$newBasename,$path) {
     $all='';
     foreach (file($path) as $line)
@@ -33,7 +42,6 @@ function copySubDirsOf($file,$rootLen=0) {
         $dest = substr($file,$rootLen);
         $destDir = dirname($dest); 
         if (!file_exists($destDir)) {
-            umask(0);
             mkdir($destDir,0777,true);
         }
         $retval = is_link($file) ? rename($file,$dest) :copy($file,$dest);
@@ -45,12 +53,43 @@ function copySubDirsOf($file,$rootLen=0) {
     return $retval;
 }
 
+/**
+ * Make datadir
+ * @return array [0,'ok']
+ */
+function mkDDir():array {
+    $file = $_GET['curdir'].'/'.$_GET['txtinput'];
+ 
+    if (array_key_exists('extension',pathinfo($file)) )
+        return [IS_PHP_ERR,'extension not allowed'];
+    if ($_GET['curdir'] === 'pages' )
+        return [IS_PHP_ERR,'dir must be below pages'];
+    mkdir("data/$file");
+    copy('config/datafile',"data/$file/index.md");
+    chmod("data/$file/index.md",0666);
+    newClass($file);
+    return [0,'ok'];
+}
+
+function newFile() {
+    $file = $_GET['curdir'].'/'.$_GET['txtinput'];
+    $ext = pathinfo($file)['extension'] ?? '';
+    if ($_GET['curdir'] === 'pages')
+        return [IS_PHP_ERR,'file must reside below pages'];
+    if ( $ext !=='md' && $ext !== 'php')
+        return [IS_PHP_ERR,"file must have extension 'md' or 'php'"];
+    copy('config/datafile',"data/$file");
+    chmod("data/$file",0606);
+    chgrp("data/$file",$_SESSION['loggedin']);
+    return [0, 'new file '.basename($file)];
+}
+
+
 function newClass($file) {
     $dirName = dirname($file);
     $baseName= basename($file);
     $classPath = "$dirName/".ucfirst($baseName).'.php';
     $retval=true;
-    umask(0);
     if (!file_exists($dirName)) {
         $retval = mkdir($dirName,0777);
     }
@@ -112,7 +151,6 @@ function toTrash($file) {
         $file = rtrim($file,'/');
     $to = 'trash/'.(is_dir($file) ? $file : dirname($file));
     if (!file_exists($to)) {
-        umask(0);
         mkdir($to,0777,true);
     }
     if (is_dir($file)) {
@@ -194,6 +232,15 @@ function trashSpecialExterns($path,$file) {
    return true;
 }
 
+function tooglePublic() {
+    $file = $_GET['file'];
+    $gname = posix_getgrgid(filegroup($file))['name'];
+    if ($gname !== $_SESSION['loggedin'])
+        return [IS_PHP_ERR,'You are not owner of '.basename($file)];
+    return chmod($file,fileperms($file)^0x20)
+        ? [0,'group read toogle']
+        : [IS_PHP_ERR,'unable to change group read flag'];
+}
 
 function ucAfterLast($text,$search='/') {
     $sPos = strrpos($text,$search);
@@ -213,7 +260,12 @@ function ucAfterLast($text,$search='/') {
 //function unlink($f) { return false; }
 //function unlink($f) { return true; }
 
-
+function thrower() {
+    $num = intval($_GET['test']);
+    if ($num==1)
+        throw new \Exception("ettal");
+    return [IS_PHP_ERR,"called  with $num"];
+}
 
 
 class NNNAPI {
@@ -227,11 +279,14 @@ class NNNAPI {
     
     function edit() {
         $fileToEdit  = $_GET['filetoedit'];
-        if (is_dir($fileToEdit))
-                datafileExists($fileToEdit); // index[.md|.php]
         $message = $_GET['message'] ?? '_';
         file_put_contents(FILETOEDIT,"$message ".DOC_ROOT.'/'.$fileToEdit);
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
+    }
+
+    function exTest() {
+        //echo json_encode(catcher('thrower'));
+        echo json_encode(thrower());
     }
 
     function emptyTrash() {
@@ -257,26 +312,7 @@ class NNNAPI {
     }
     
     function mkDir() {
-        $file = $_GET['curdir'].'/'.$_GET['txtinput'];
-        $pathInfo = pathinfo($file);
-        $hasExt = array_key_exists('extension',$pathInfo);
-        [$txtinputIsOk,$mes] = ($_GET['curdir'] !== 'pages' && $hasExt === false)
-            ? [true,"newdir $file"] 
-            : [false,'dir must below pages and without dot'];
-        umask(0);
-        $retval = $txtinputIsOk &&
-        mkdir("data/$file") 
-        &&
-        chmod("data/$file",0777)
-        &&
-        copy('config/datafile',"data/$file/index.md")
-        &&
-        chmod("data/$file/index.md",0666)
-        &&
-        newClass($file);
-        if (!$retval)
-            $mes = "$file file creation error";
-        echo json_encode([$retval && $txtinputIsOk ? 0 : IS_PHP_ERR,$mes]);
+        echo json_encode(mkDDir());
     }
 
     function mv() {
@@ -300,9 +336,6 @@ class NNNAPI {
         $path = $_GET['curdir'];
         rename(DATA_ROOT."/$path/$from",DATA_ROOT."/$path/$to");
         renameClass($from,$to,$path);
-        
-        // if the old classname also is a dirname then rename that dir and change all namespaces recursive 
-        $failMes = false;
         if (file_exists(/* as dir in pages/ */ DOC_ROOT."/$path/$from")) { // it would flag for inconsistence otherwise
             rename(DOC_ROOT."/$path/$from",/* new name of that dir */ DOC_ROOT."/$path/$to");
             changeNamespaceInDirs($from,$to,DOC_ROOT."/$path/$to");
@@ -314,17 +347,7 @@ class NNNAPI {
     }
 
     function newFile() {
-        $file = $_GET['curdir'].'/'.$_GET['txtinput'];
-        $ext = pathinfo($file)['extension'] ?? '';
-        [$ret,$mes] = $_GET['curdir'] !== 'pages' && ($ext=='md' || $ext=='php') 
-            ? [0,"newFile $file"] : [IS_PHP_ERR,'file must be .md or .php below pages'];
-        if (false == ($ret == 0
-                &&
-                copy('config/datafile',"data/$file")
-                &&
-                chmod("data/$file",0666)))
-            [$ret,$mes] = [IS_PHP_ERR,"could not create file: $file"];
-        echo json_encode([$ret,$mes]);
+        echo json_encode(newFile());
     }
     
     function rm() {
@@ -361,6 +384,10 @@ class NNNAPI {
         $value = $_GET[$key];
         $_SESSION[$key]=$value;
         echo $value;
+    }
+
+    function tooglePublic() {
+        echo json_encode(tooglePublic());
     }
 
     function undoTrash() {
