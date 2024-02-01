@@ -80,9 +80,11 @@ function deleteFileOrDir(event) {
             curkeyhandler=KeyHandler.NAV;
             break;
         case "y": // delete file or dir
-            if (isLoggedin) {
+            if (isLoggedin) {redrawDir
                 let command=curDir[cid][1].length ? 'rmDir' : 'rm';
                 let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
+                if (curDir[cid][0].split('.').slice(0,-1) == 'index')
+                    curDirStr = curDirStr.substring(0,curDirStr.lastIndexOf('/'));
                 request(APIName,command,args,nopJSCommand);
                 curkeyhandler=KeyHandler.NAV;
             }
