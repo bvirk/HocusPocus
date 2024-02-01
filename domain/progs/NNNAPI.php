@@ -61,27 +61,27 @@ function mkDDir():array {
     $file = $_GET['curdir'].'/'.$_GET['txtinput'];
  
     if (array_key_exists('extension',pathinfo($file)) )
-        return [IS_PHP_ERR,'extension not allowed'];
+        return [CONFIRM_COMMAND,'extension not allowed'];
     if ($_GET['curdir'] === 'pages' )
-        return [IS_PHP_ERR,'dir must be below pages'];
+        return [CONFIRM_COMMAND,'dir must be below pages'];
     mkdir("data/$file");
     copy('config/datafile',"data/$file/index.md");
     chmod("data/$file/index.md",0666);
     newClass($file);
-    return [0,'ok'];
+    return REDRAW_DIR;
 }
 
 function newFile() {
     $file = $_GET['curdir'].'/'.$_GET['txtinput'];
     $ext = pathinfo($file)['extension'] ?? '';
     if ($_GET['curdir'] === 'pages')
-        return [IS_PHP_ERR,'file must reside below pages'];
+        return [CONFIRM_COMMAND,'file must reside below pages'];
     if ( $ext !=='md' && $ext !== 'php')
-        return [IS_PHP_ERR,"file must have extension 'md' or 'php'"];
+        return [CONFIRM_COMMAND,"file must have extension 'md' or 'php'"];
     copy('config/datafile',"data/$file");
     chmod("data/$file",0606);
     chgrp("data/$file",$_SESSION['loggedin']);
-    return [0, 'new file '.basename($file)];
+    return REDRAW_DIR;
 }
 
 
@@ -181,13 +181,13 @@ function trashDir($path) {
             $retval=false;
     return $retval &&
         // rm - dir that holds dat files already in trash
-        rmdir("data/$path")
-        &&
+        rmdir("data/$path");
         // trash class
-        toTrash(dirname($path).'/'.ucfirst(basename($path)).'.php')
-        &&
+        toTrash(dirname($path).'/'.ucfirst(basename($path)).'.php');
+        
         // rm dir of classes if previos was last
-        (count(glob(dirname($path.'/*')))==0 ? true : rmdir(dirname($path)));
+        if (count(glob(dirname($path.'/*')))==0) 
+            rmdir(dirname($path));
 }
 
 
@@ -238,8 +238,8 @@ function tooglePublic() {
     if ($gname !== $_SESSION['loggedin'])
         return [IS_PHP_ERR,'You are not owner of '.basename($file)];
     return chmod($file,fileperms($file)^0x20)
-        ? [0,'group read toogle']
-        : [IS_PHP_ERR,'unable to change group read flag'];
+        ? REDRAW_DIR
+        : [CONFIRM_COMMAND,'unable to change group read flag'];
 }
 
 function ucAfterLast($text,$search='/') {
@@ -291,7 +291,7 @@ class NNNAPI {
 
     function emptyTrash() {
         removeBesidesRoot('trash');
-        echo json_encode([IS_PHP_ERR,'trash emptied']);
+        echo json_encode([CONFIRM_COMMAND,'trash emptied']);
     }
 
     function ls() {
@@ -312,7 +312,7 @@ class NNNAPI {
     }
     
     function mkDir() {
-        echo json_encode(mkDDir());
+        echo mkDDir();
     }
 
     function mv() {
@@ -327,7 +327,9 @@ class NNNAPI {
         [$srcFile,$destFile] = [
             "$dir/".$_GET['selname']
             ,"$dir/".$_GET['txtinput']];
-        echo json_encode([renameOnExists($srcFile,$destFile,false) ? 0 : IS_PHP_ERR,"$srcFile did not exist"]);
+        echo json_encode([renameOnExists($srcFile,$destFile,false) 
+            ? REDRAW_DIR 
+            : CONFIRM_COMMAND,"$srcFile did not exist"]);
     }
 
     function mvDir()  {   
@@ -343,11 +345,11 @@ class NNNAPI {
         $imgPathPath = IMG_ROOT.'/'.$_GET['curdir'];
         renameOnExists("$imgPathPath/$from","$imgPathPath/$to");
         renameExterns($_GET['curdir'],$from,$to);
-        echo json_encode( [ 0, '']);
+        echo REDRAW_DIR;
     }
 
     function newFile() {
-        echo json_encode(newFile());
+        echo newFile();
     }
     
     function rm() {
@@ -355,16 +357,21 @@ class NNNAPI {
         $path = $_GET['curdir'];
     
         if ($selname !== 'index.md' && $selname !== 'index.php')
-            echo json_encode([trashReferedByDataFile("data/$path",$selname) ? 0 : IS_PHP_ERR,"trashing $path/$selname failed"]);    
+            echo json_encode([trashReferedByDataFile("data/$path",$selname) 
+                ? REDRAW_DIR : CONFIRM_COMMAND,"trashing $path/$selname failed"]);    
         else
-            echo json_encode([trashDir($path) ? 0 : IS_PHP_ERR,"rmDir failed - perhaps subdirs"]);
+            echo json_encode([trashDir($path) 
+                ? REDRAW_DIR 
+                : CONFIRM_COMMAND,"rmDir failed - perhaps subdirs"]);
     }
 
     function rmDir() {
         $dirAsSelname = $_GET['selname'];
         $path = $_GET['curdir'];
         
-        echo json_encode([trashDir("$path/$dirAsSelname") ? 0 : IS_PHP_ERR,"rmDir failed - perhaps subdirs"]);
+        echo json_encode([trashDir("$path/$dirAsSelname") 
+            ? REDRAW_DIR 
+            : CONFIRM_COMMAND,"rmDir failed - perhaps subdirs"]);
     } 
 
     function saveFile() {
@@ -392,6 +399,6 @@ class NNNAPI {
 
     function undoTrash() {
         $mes = copySubDirsOf("trash") ? "trash restored - 't' for empty it" : 'some fail in trash restoring'; 
-        echo json_encode([IS_PHP_ERR,$mes]);
+        echo json_encode([CONFIRM_COMMAND,$mes]);
     }
 }
