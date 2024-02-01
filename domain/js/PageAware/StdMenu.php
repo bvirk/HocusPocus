@@ -6,7 +6,7 @@ actors\echoAssignments([
     "defaultPage='".defaultPage()."'"        // used for navigation to home
     ,"isLoggedin=".(in_array($_SESSION['loggedin'],USERS)? 'true' : 'false')// State of loggedin for the request
     ,"isPHPErr='".IS_PHP_ERR."'"                                            // identifier for signaling thown exception 
-    ,"redrawDir=".REDRAW_DIR."'"
+    ,"redrawDir='".REDRAW_DIR."'"
 ]);
 
 actors\echoAssignments([
