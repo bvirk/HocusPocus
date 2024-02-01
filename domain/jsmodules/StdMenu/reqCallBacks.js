@@ -8,7 +8,7 @@ function catchResp() {
     try {
         let resp = JSON.parse(httpRequest.responseText);
         
-        if (resp[0] == isPHPErr) 
+        if (resp[0] == isPHPErr) // Used without error too, as confirmation of commands   
             statusLine(resp[1]);
         return resp;
     } catch(e) {
@@ -23,7 +23,7 @@ export function nopJSCommand() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let resp = catchResp();
-    if (resp[0] == 0)
+    if (resp[0] == redrawDir)
         request(APIName,'ls','&curdir='+curDirStr,showMenu);
 }
 
