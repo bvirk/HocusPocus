@@ -1,6 +1,8 @@
 <?php
+define("APACHE_USER",exec('whoami'));
 define("AUTHFILE","config/encrypted.php");
 define("CSS_ROOT",$_SERVER['DOCUMENT_ROOT'].'/css');
+define("CONFIRM_COMMAND",'<isPHPErr>');
 define("DATA_ROOT",$_SERVER['DOCUMENT_ROOT'].'/data');
 define("DOC_ROOT",$_SERVER['DOCUMENT_ROOT']);
 define("DEFCONTENT",'pages');
@@ -15,6 +17,7 @@ define("IMG_ROOT",$_SERVER['DOCUMENT_ROOT'].'/img');
 define("IS_PHP_ERR",'<isPHPErr>');
 define("LANGUAGES", array('da' => 'Danish','en' => 'English'));
 define("PAGES_ROOT",$_SERVER['DOCUMENT_ROOT'].'/pages');
+define("REDRAW_DIR",'r');
 function OSGroups() {
     $users=[];
     foreach (file('/etc/passwd') as $user)  {
@@ -31,5 +34,4 @@ function OSGroups() {
     return $groups;
 }
 define("USERS",OSGroups());
-define("APACHE_USER",exec('whoami'));
 
