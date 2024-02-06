@@ -6,8 +6,11 @@ namespace actors;
 function hamMenu() {
     global $pe;
     $thisUrl='url=/'.implode('/',$pe);
+    [$trashIcon,$trashTitle] = count(scandir('trash')) > 2 
+         ? [ '♻',"trash has items"] 
+         : ['♲',"trash is empty"];
     [$ahref,$atxt] = isLoggedIn() 
-        ? ["/?path=progs/loginRecieve/logout&amp;$thisUrl",'logout '.$_SESSION['loggedin'] != USERS[0] ? $_SESSION['loggedin']:''] 
+        ? ["/?path=progs/loginRecieve/logout&amp;$thisUrl",$_SESSION[LOGGEDIN]] 
         : ["/?path=progs/html/login&amp;$thisUrl",'login'];
     // IKON SHOWS WHAT CAN Be CHANGED TO - default is file -> cloud
     [$editIkon,$editTip,$onclick ] = $_SESSION['editmode'] == DEFAULTEDITMODE 
@@ -15,6 +18,7 @@ function hamMenu() {
     : ['🌥 ☑','click to edit locally only','toEditMode("file");'];
     ?> <button id="hammenu" onclick="allFuncs.hamDrawMenu();">&#8801;</button>
     <a title='extern dependencies' href='/?path=progs/html/extern&amp;refer=<?=implode('/',$pe)?>'>☕</a>
+    <a title='<?= $trashTitle ?>' href='/progs/emptyTrash' ><?= $trashIcon ?></a>
     <div id="myModal" class="modal">
         <div class="modal-content">
             <div>
