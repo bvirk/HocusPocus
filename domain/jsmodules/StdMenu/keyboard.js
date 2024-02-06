@@ -80,14 +80,21 @@ function deleteFileOrDir(event) {
             curkeyhandler=KeyHandler.NAV;
             break;
         case "y": // delete file or dir
-            if (isLoggedin) {redrawDir
-                let command=curDir[cid][1].length ? 'rmDir' : 'rm';
-                let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
-                if (curDir[cid][0].split('.').slice(0,-1) == 'index')
-                    curDirStr = curDirStr.substring(0,curDirStr.lastIndexOf('/'));
-                request(APIName,command,args,nopJSCommand);
+            let command=curDir[cid][1].length ? 'rmDir' : 'rm';
+            let isIndex = command == 'rmDir' 
+                ? false
+                : (curDir[cid][0].split('.')[0] == 'index'
+                    ? true
+                    : false);
+            let numSlash = curDirStr.split('/').length-1;
+            if (numSlash==0 || (numSlash==1 && isIndex)) {
+                statusLine("delete language or any default page thereoff not allowed");
                 curkeyhandler=KeyHandler.NAV;
+                break;
             }
+            let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
+            request(APIName,command,args,nopJSCommand);
+            curkeyhandler=KeyHandler.NAV;
             break;
         default:
             return;
@@ -140,8 +147,8 @@ function navigate(event) {
                 quitMenu();
                 break;
             case "a":
-                //statusLine('ok');
-                request(APIName,'exTest','&test='+cid,nopJSCommand);
+                let file = 'data/'+curDirStr+'/'+curDir[cid][0];
+                request(APIName,'test','&curdir='+curDirStr+"&file="+curDir[cid][0],nopJSCommand);
                 break;
             case "c": // toogle public
                 if (curDir[cid][1].length)
