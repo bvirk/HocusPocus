@@ -3,6 +3,16 @@ use function actors\srcf;
 use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
+
+OS'er har proces identification med ejerskab. Enhver der requester en hvilket som helst webside er på en måde logged in - også på en statisk side uden cookies eller local storage.  
+Man lægger normalt det autoriserede personrettet i begrebet logged in, men faktisk kan et vilkårligt request på nogle af de normale OS'er ikke ske uden at være som bruger med ejerskab.
+
+På apache2 på en debian variant er her anno 2024 fundet at denne bruger hedder www-data.
+
+Uanset hvor komplekst detaljegrad system man bygger ovenpå, så er det stadig  www-data som er ejer.  
+
+Hvorfor ikke så lade www-data 'skifte hat' - når hans har autoriseret sig så bliver ejer www-data:hans og når det er grete, www-data:grete.  
+
 Brugernavne er OS groups som ikke er OS users.
 
 EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
@@ -19,7 +29,7 @@ Brugeres ejerskab til en datafil er simuleret ved at filens gruppe navn er bruge
 
 Ved oprettelse af datafil sættes gruppen til logged in user.
 
-EOMD,srclf('progs/NNNAPI.php','function newFile',2,'return chgrp\("data\/\$file"','^$'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function newDFile',2,'chgrp\("data\/\$file"','^$'),<<<EOMD
 
 Dialog menuen key 'c' toogler mellem privat og public - kan iagtages i statusline.
 
@@ -67,7 +77,7 @@ Bruger, krypteret password og salt der indgår i kryptering gemmes i php AUTHFIL
 
 EOMD,srclf('progs/LoginRecieve.php','function oneauth',11),<<<EOMD
 $srcExpl
-\$_SESSION['loggedin'] sættes til bruger listet i USERS som logger ind med password som passer med det i AUTFILE, ellers sættes \$_SESSION['loggedin'] til den tomme streng.
+\$_SESSION[LOGGEDIN] sættes til bruger listet i USERS som logger ind med password som passer med det i AUTFILE, ellers sættes \$_SESSION[LOGGEDIN] til den tomme streng.
 </div>
 
 #### AUTHFILE
@@ -85,15 +95,12 @@ return [
 ### Automatisk login
 Alt ovenstående er blot for, f.eks, at udføre
 ```
-\$_SESSION['loggedin']=USERS[0];
+\$_SESSION[LOGGEDIN]=USERS[n]; // 0 ≦ n < antal brugere
 ```
-Authentication er begrænsning af adgangsvejen til at tildele til \$_SESSION['loggedin'].   
+Authentication er begrænsning af adgangsvejen til at tildele til \$_SESSION[LOGGEDIN].   
 
-Authentication er relevant ved online adgang. For at kunne oprette, slette, ændre og editere skal man være loggedin.  
+Authentication er relevant ved online adgang. For at kunne slette, ændre og editere skal man være loggedin og datafiler oprettes med loggedin bruger som flaget ejer.   
 
-Hvis HocusPocus bruges med adgang til webdir er det lidt et show - selvom det er gjort let.  
+Hvis HocusPocus bruges med adgang til webdir kan det laves sådan at der automatisk 'loggges ind' på en konto.
 
-Derfor logges automatisk ind hvis der ikke er andre der er loggedin __og__ der foreligger en indikering af at have filsystem adgang til webdir - på browsende computer eller LAN.
-EOMD,srcf('globalfuncs.php','automatically logged',3),<<<EOMD
-Link teksten i dialog menuen viser ikke 'logout' foran USERS[0] - man stadig klikke på den og blive logget ud af USERS[0].
-EOMD,srclf('actors/StdMenu.php','isLoggedIn',3),srcf('defines.php','USERS',1),actors\tocNavigate($func)];
+EOMD,srclf('globalfuncs.php',"array_key_exists\(LOGGEDIN",7),actors\tocNavigate($func)];

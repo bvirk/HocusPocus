@@ -3,6 +3,15 @@ use function actors\srcf;
 use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
+OSes have process identification with ownership. Anyone who requests any web page is in a way logged in - also on a static page without cookies or local storage.  
+You normally put the authorized person-directed in the term logged in, but in fact an arbitrary request on some of the normal OSes cannot happen without being a user with ownership.  
+
+On apache2 on a debian variant, here in year 2024 it was found that this user is called www-data.  
+
+No matter how complex and detailed the logged in system is, www-data is still the owner.  
+
+Why not just let www-data 'change hats' - when hansel has been authorized, the owner becomes www-data:hansel and when it's gretel, www-data:gretel.
+
 HocusPucus user names are OS groups that are not OS users.
 
 EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
@@ -67,7 +76,7 @@ User, encrypted password and salt are stored in php AUTHFILE as an array, __if__
 
 EOMD,srclf('progs/LoginRecieve.php','function oneauth',11),<<<EOMD
 $srcExpl
-\$_SESSION['loggedin'] is set to the user listed in USERS who logs in with a password that matches the one in AUTFILE, otherwise \$_SESSION['loggedin'] is set to the empty string.
+\$_SESSION[LOGGEDIN] is set to the user listed in USERS who logs in with a password that matches the one in AUTFILE, otherwise \$_SESSION[LOGGEDIN] is set to the empty string.
 </div>
 
 #### AUTHFILE
@@ -85,16 +94,12 @@ return [
 ### Automatic login
 Everything above is just to, e.g., to perform
 ```
-\$_SESSION['loggedin']=USERS[0];
+\$_SESSION[LOGGEDIN]=USERS[n]; // 0 ≦ n < antal brugere
 ```
-Authentication is restricting the access path to assign to \$_SESSION['loggedin'].  
+Authentication is restricting the access path to assign to \$_SESSION[LOGGEDIN].  
 
-Authentication is relevant for online access. To be able to create, delete, change and edit, you must be logged in.  
+Authentication is relevant for online access. In order to delete, change and edit, you must be logged in and data files are created with the logged in user as simulated owner.
 
-If HocusPocus is used with access to the webdir it's a bit of a show - although it's done easily.  
+If HocusPocus is used with access to webdir, it can be made so that an account is automatically 'logged in'.
 
-Therefore, you are automatically logged in if no one else is logged in __and__ there is an indication of having file system access to webdir - on a browsing computer or LAN.
-
-EOMD,srcf('globalfuncs.php','automatically logged',3),<<<EOMD
-The link text in the dialog menu does not show 'logout' in front of USERS[0] - you can still click on it and be logged out of USERS[0].
-EOMD,srclf('actors/StdMenu.php','isLoggedIn',3),srcf('defines.php','USERS',1),actors\tocNavigate($func)];
+EOMD,srclf('globalfuncs.php',"array_key_exists\(LOGGEDIN",7),actors\tocNavigate($func)];
