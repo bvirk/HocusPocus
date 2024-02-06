@@ -4,9 +4,10 @@ echo "  <!-- Nasty globals -->\n  <script>\n   var allFuncs={};\n";
 
 actors\echoAssignments([
     "defaultPage='".defaultPage()."'"        // used for navigation to home
-    ,"isLoggedin=".(in_array($_SESSION['loggedin'],USERS)? 'true' : 'false')// State of loggedin for the request
+    ,"isLoggedin=".(in_array($_SESSION[LOGGEDIN],USERS)? 'true' : 'false')// State of loggedin for the request
     ,"isPHPErr='".IS_PHP_ERR."'"                                            // identifier for signaling thown exception 
     ,"redrawDir='".REDRAW_DIR."'"
+    ,"redrawUpperDir='".REDRAW_UPPERDIR."'"
 ]);
 
 actors\echoAssignments([
