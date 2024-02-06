@@ -23,14 +23,14 @@ class LoginRecieve {
         if (array_key_exists($uname,$allUsers)) {
             [$encrypted,$salt] = $allUsers[$uname];
             if (hash_equals(crypt($_POST['password'],$salt),$encrypted))
-                $_SESSION['loggedin']=$uname;
+                $_SESSION[LOGGEDIN]=$uname;
             else 
-                $_SESSION['loggedin']='';
+                $_SESSION[LOGGEDIN]='';
         }
         windowOldLocation();
     }
     function logout() {
-        $_SESSION['loggedin']='';
+        $_SESSION[LOGGEDIN]='';
         windowOldLocation();
     }
 }
