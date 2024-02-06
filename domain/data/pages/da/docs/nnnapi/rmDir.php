@@ -9,4 +9,4 @@ Fjerner directory. Vedrører
 - pages class for hvilket directory var indhold.
 
 Der er tale om overførsel til trash/ hvorfra det hele kan reetablers med [undoTrash](undoTrash)
-EOMD,actors\srclf('progs/NNNAPI.php','function rmDir',6,'function trashDir',25),actors\tocNavigate($func)];
+EOMD,actors\srclf('progs/NNNAPI.php','function rmDir','^$','function trashDir','^$'),actors\tocNavigate($func)];

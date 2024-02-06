@@ -4,8 +4,8 @@ Fjern fil. Hvis det er index fjernes alle filer, det directory de lå i og den p
 Tilhørende speciel css og js, images og img directory 'slettes' også.  
 Der er tale om overførsel til trash/ hvorfra det hele kan reetablers med [undoTrash](undoTrash)
 EOMD,actors\srclf('progs/NNNAPI.php'
-        ,'function rm\(',9
-        ,'Removes a single datafile and what belongs',18
-        ,'function trashDir',25),<<<EOMD
+        ,'function rm\(','^$'
+        ,'Removes a single datafile and what belongs','^$'
+        ,'function trashDir','^$'),<<<EOMD
 
 EOMD,actors\tocNavigate($func)];
