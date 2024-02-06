@@ -86,7 +86,7 @@ function formatBytes($size, $precision = 2) {
 }
 
 function isLoggedIn() {
-    return in_array($_SESSION['loggedin'],USERS);
+    return in_array($_SESSION[LOGGEDIN],USERS);
 }
 
 function kvsepEncode($arr,$kv='=',$sep=';') {
