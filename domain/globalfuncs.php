@@ -3,12 +3,12 @@ require "defines.php";
 session_start();
 if (!array_key_exists(DEFPAGESESVAR,$_SESSION))
     $_SESSION[DEFPAGESESVAR] = array_key_first(LANGUAGES);
-// USERS[0] automatically logged in if on LAN and no other user logged in. 
-if (!array_key_exists('loggedin',$_SESSION)) {
-    //if (substr($_SERVER['SERVER_ADDR'],0,7) == '192.168')
-    //    $_SESSION['loggedin']=USERS[0];
-    //else
-        $_SESSION['loggedin']='';
+if (!array_key_exists(LOGGEDIN,$_SESSION)) {
+//  remove outcommenting of following 3 lines for automatically login as USERS[0] when on LAN.  
+//  if (substr($_SERVER['SERVER_ADDR'],0,7) == '192.168')
+//      $_SESSION[LOGGEDIN]=USERS[0];
+//  else
+        $_SESSION[LOGGEDIN]='';
 }
 if (!array_key_exists('editmode',$_SESSION))
     $_SESSION['editmode']=DEFAULTEDITMODE;
