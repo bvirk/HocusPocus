@@ -8,13 +8,16 @@ function catchResp() {
     try {
         let resp = JSON.parse(httpRequest.responseText);
         
-        if (resp[0] == isPHPErr) // Used without error too, as confirmation of commands   
+        if (resp[0] == isPHPErr) { // Used without error too, as confirmation of commands
             statusLine(resp[1]);
+            console.log('resp[0] == isPHPErr: '+resp[0]+','+resp[1])
+        }
         return resp;
     } catch(e) {
-        if (e.message.startsWith('JSON.parse'))
+        if (e.message.startsWith('JSON.parse')) {
             statusLine(httpRequest.responseText);
-        else
+            console.log(httpRequest.responseText)
+         } else
             statusLine('perhaps som javascript error');
     }
 }
@@ -23,8 +26,11 @@ export function nopJSCommand() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let resp = catchResp();
-    if (resp[0] == redrawDir)
+    if (resp[0] == redrawDir || resp[0] == redrawUpperDir) {
+        if (resp[0] == redrawUpperDir)
+            curDirStr=curDirStr.substring(0,curDirStr.lastIndexOf('/'))
         request(APIName,'ls','&curdir='+curDirStr,showMenu);
+    }    
 }
 
 export function savedFileResponse() {
