@@ -1,4 +1,7 @@
 <?php
+use function actors\srclf;
+use function actors\srcf;
+
 return ["<!<div class='auto80'>#html#</div>",<<<EOMD
 ## NNNAPI
 
@@ -11,9 +14,59 @@ It is the data/pages directory tree that the dialog menu can pan around in, but 
 
 To return is used in the following about echo in the PHP API source code - because it is, seen from the javascript function that handles the response, a return from the  API call.
 
+#### Response functions
+
 API methods return what fits the javascript function that receives the response. It is an argument to the call of the request function, which function should receive the response. It is given, for a specific API method, which javascript function receives a response from that particular API method.
 
-A string or a json encoded array of strings is a common response, where the first element in the array has a signal value of whether the command was successful or not. It is the value IS_PHP_ERR that acts as a flag. In javascript array index and character index is written in the same way - that is used to conclude broadly on index 0 of the response.
+There is  5 response functions - they all starts with the same 3 lines and 3 of them has the same 4. line as in showMenu() here
+ 
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu',4 ),<<<EOMD
+
+API feedback can be divided into two groups.
+- the file list is redrawed
+- status line notification
+
+APIs returns a string, a JSON encoded array of two strings or, in the case of the file list, a JSON encoded array of arrays.
+
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function catchResp','^$' ),<<<EOMD
+$srcExpl
+
+Parse error occurs when PHP throws one of the fatal errors that cannot be caught in an exception handler. It is then printed in raw format on the status line.
+</div>
+
+IsPhpErr and redrawDir is defined on pages that enherents fra class StdMenu
+
+```
+ <script>
+   const isPHPErr='errOrConf';
+   const redrawDir='redrawDir';
+```
+
+EOMD,srcf('defines.php','IS_PHP_ERR',1,'CONFIRM_COMMAND',1),<<<EOMD
+
+These 2 constant names with same value is used in PHP to 2 things.
+
+#### Exception
+EOMD,srcf('index.php','catch',10),<<<EOMD
+
+HocusPocus has the php.ini settings that enable functions such as copy, mv, chmod, chgrp etc. which is documented at https://www.php.net/ to be able to return false on error, to never return false, but throw an exception.
+
+#### Feedback on performed operation
+
+```
+echo json_encode([CONFIRM_COMMAND,'message about it']);
+```
+For some operations, the status line message is too much noise as the change is immediately reflected in the file list or the status line's file info. Such operations has this as forwarding response function
+
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function nopJSCommand','^$'),<<<EOMD
+
+And the API can just return this.
+
+```
+echo json_encode([REDRAW_DIR,'']);
+```
+
+#### \$_GET argumenter
 
 General keys in the \$_GET argument in API methods:
 - 'selname'
@@ -23,8 +76,8 @@ General keys in the \$_GET argument in API methods:
 - 'curdir'
     - current directory for dirlist in the dialog menu - it starts with pages/ and thus addresses from data/ in webdir and is also path in webdir for pages class.
     
+#### about variable names 
 
-About variable names
 - Postfix WOE i variable name for 'without extension'.
 
 url encoding
