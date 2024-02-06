@@ -67,7 +67,7 @@ export function quitMenu() {
     document.getElementById("myModal").style.display = "none";
     $("#wdFiles").empty();
     setCurkeyhandler(KeyHandler.NOMENU);
-    document.cookie = "dialog=off; path=/";
+    document.cookie = "dialog=off; path=/; SameSite=None; Secure";
 }
 
 export function showInput() {
@@ -87,11 +87,10 @@ export async function statusLine(mes='',delay=0) {
         : 'snip curDir[cid] snap';
     if (mes.length) {
         $("#statusLine").html(mes);
-        if (delay) {
+        if (delay != 0) {
             await new Promise(res => setTimeout(res, delay));
-            $("#statusLine").text(defText);
-        } else
-            ; // remove nodes that shows dir
+            $("#statusLine").html(defText);
+        }
     } else
         $("#statusLine").html(defText);
 }
