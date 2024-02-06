@@ -35,22 +35,60 @@ function changeNamespaceInDirs(string $old,string $new,string $path,$relPos=0) {
 }
 
 function copySubDirsOf($file,$rootLen=0) {
-    $retval=true;
     if (!$rootLen)
         $rootLen=strlen($file)+1;
     if (!is_dir($file)) {
         $dest = substr($file,$rootLen);
         $destDir = dirname($dest); 
         if (!file_exists($destDir)) {
-            mkdir($destDir,0777,true);
+            lgdIn_mkdir($destDir);
         }
-        $retval = is_link($file) ? rename($file,$dest) :copy($file,$dest);
+        if (is_link($file))
+            lgdIn_rename($file,$dest);
+        else
+            lgdIn_copy($file,$dest);
     } else
-        foreach (nodotScandir($file) as $fileInDir) {
-            if (!copySubDirsOf("$file/$fileInDir",$rootLen))
-                $retval=false;
+        foreach (nodotScandir($file) as $fileInDir) 
+            copySubDirsOf("$file/$fileInDir",$rootLen);
+}
+
+function hasSubDir($dir) {
+    $globPatt=rtrim($dir,'/').'/*';
+    $filesArr = glob($globPatt,GLOB_ONLYDIR);
+    return count($filesArr) > 0; 
+}
+
+function indexIsLinkOf($file) {
+    $index = dirname($file).'/index';
+    datafileExists($index);
+    if (!is_link($index))
+        return false;
+    return readlink($index) == basename($file);
+}
+
+function lgdIn_copy($from,$dest) {
+    copy($from,$dest);
+    chgrp($dest,$_SESSION[LOGGEDIN]);
+}
+
+function lgdIn_mkdir($dir) {
+    $slash='';
+    $acDir='';
+    $oldMask=umask(0);
+    foreach (explode('/',$dir) as $p) {
+        $acDir .= "$slash$p";
+        $slash='/';
+        if (!file_exists($acDir)) {
+            mkdir($acDir,0777);
+            chgrp($acDir,$_SESSION[LOGGEDIN]);
         }
-    return $retval;
+    }
+    umask($oldMask);
+}
+
+function lgdIn_rename($from,$dest) {
+    rename($from,$dest);
+    chgrp($dest,$_SESSION[LOGGEDIN]);
 }
 
 /**
@@ -68,10 +106,10 @@ function mkDDir():array {
     copy('config/datafile',"data/$file/index.md");
     chmod("data/$file/index.md",0666);
     newClass($file);
-    return REDRAW_DIR;
+    return [REDRAW_DIR,''];
 }
 
-function newFile() {
+function newDFile() {
     $file = $_GET['curdir'].'/'.$_GET['txtinput'];
     $ext = pathinfo($file)['extension'] ?? '';
     if ($_GET['curdir'] === 'pages')
@@ -80,10 +118,9 @@ function newFile() {
         return [CONFIRM_COMMAND,"file must have extension 'md' or 'php'"];
     copy('config/datafile',"data/$file");
     chmod("data/$file",0606);
-    chgrp("data/$file",$_SESSION['loggedin']);
-    return REDRAW_DIR;
+    chgrp("data/$file",$_SESSION[LOGGEDIN]);
+    return [REDRAW_DIR,''];
 }
-
 
 function newClass($file) {
     $dirName = dirname($file);
@@ -146,48 +183,32 @@ function renameOnExists(string $from,string $to,bool $ignoreExisting=true) {
 
 function toTrash($file) {
     if (!file_exists($file))
-        return true;
+        return;
     if (is_dir($file))
         $file = rtrim($file,'/');
-    $to = 'trash/'.(is_dir($file) ? $file : dirname($file));
+    $to = 'trash/'.$_SESSION[LOGGEDIN].'/'.(is_dir($file) ? $file : dirname($file));
     if (!file_exists($to)) {
         mkdir($to,0777,true);
     }
     if (is_dir($file)) {
         foreach ( nodotScandir($file) as $fileInDir)
             rename("$file/$fileInDir","$to/$fileInDir");
-        return rmdir($file);
-    } 
-    else { // dummy else because if returns
+        rmdir($file);
+    } else { 
         $parmto = "$to/".basename($file);
-        return rename($file,$parmto);
+        rename($file,$parmto);
     }
 }
 
-function trashDir($path) {
-    $pages = glob("data/$path/*");
-    $hasSubDirs=false;
-    $retval=true;
-    foreach ($pages as $p)
-        if (is_dir($p)) {
-            $hasSubDirs=true;
-            break;
-        }
-    if ($hasSubDirs)
-        return false;
-    // trash Data files
-    foreach ($pages as $p)
-        if (!trashReferedByDataFile(dirname($p),basename($p)))
-            $retval=false;
-    return $retval &&
-        // rm - dir that holds dat files already in trash
-        rmdir("data/$path");
-        // trash class
-        toTrash(dirname($path).'/'.ucfirst(basename($path)).'.php');
-        
-        // rm dir of classes if previos was last
-        if (count(glob(dirname($path.'/*')))==0) 
-            rmdir(dirname($path));
+function trashDir($classPath) {
+    foreach (glob("data/$classPath/*") as $p)
+        trashReferedByDataFile(dirname($p),basename($p));
+    rmdir("data/$classPath");
+    // trash class
+    toTrash(dirname($classPath).'/'.ucfirst(basename($classPath)).'.php');
+    // rm dir of classes if previos was last
+    if (count(glob(dirname($classPath.'/*')))==0) 
+    rmdir(dirname($classPath));
 }
 
 
@@ -199,46 +220,36 @@ function trashDir($path) {
 function trashReferedByDataFile(/* data/curdirstr */ $datapath,$selname) {
     $curdirstr = substr($datapath,strlen(DEFDATADIR)+1);
     $imgDir = "img/$curdirstr/".pathinfo($selname)['filename'];
-    
-    return
-        // trash the data file
-        toTrash("$datapath/$selname")
-        &&
-        // trash speciel externs refs
-        trashSpecialExterns($curdirstr,$selname)
-        &&
-        // trash images
-        toTrash($imgDir);
+        
+    toTrash("$datapath/$selname"); // trash the data file
+    trashSpecialExterns($curdirstr,$selname); // trash speciel externs refs
+    toTrash($imgDir); // trash images
 }
 
 /**
  * special externs is refered by a datafile only - not a dir
  */
 function trashSpecialExterns($path,$file) {
-    //return true;
     $fileWOE = pathinfo($file)['filename'];
     foreach ([ //
         'css' => ['css']
        ,'js' => ['js','php']
        ] as $relDocRoot => $extArr) {
-          
        foreach ($extArr as $ext) {
             $fileToTrash = "$relDocRoot/".substr($path,strlen(DEFCONTENT)+1)."/$fileWOE.$ext";
             if (file_exists($fileToTrash))
-                if (!toTrash($fileToTrash))
-                    return false;
+                toTrash($fileToTrash);
        }
    }
-   return true;
 }
 
 function tooglePublic() {
     $file = $_GET['file'];
     $gname = posix_getgrgid(filegroup($file))['name'];
-    if ($gname !== $_SESSION['loggedin'])
+    if ($gname !== $_SESSION[LOGGEDIN])
         return [IS_PHP_ERR,'You are not owner of '.basename($file)];
     return chmod($file,fileperms($file)^0x20)
-        ? REDRAW_DIR
+        ? [REDRAW_DIR,'']
         : [CONFIRM_COMMAND,'unable to change group read flag'];
 }
 
@@ -284,13 +295,9 @@ class NNNAPI {
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
     }
 
-    function exTest() {
-        //echo json_encode(catcher('thrower'));
-        echo json_encode(thrower());
-    }
-
+    
     function emptyTrash() {
-        removeBesidesRoot('trash');
+        removeBesidesRoot('trash/'.$_SESSION[LOGGEDIN]);
         echo json_encode([CONFIRM_COMMAND,'trash emptied']);
     }
 
@@ -312,7 +319,7 @@ class NNNAPI {
     }
     
     function mkDir() {
-        echo mkDDir();
+        echo json_encode(mkDDir());
     }
 
     function mv() {
@@ -328,7 +335,7 @@ class NNNAPI {
             "$dir/".$_GET['selname']
             ,"$dir/".$_GET['txtinput']];
         echo json_encode([renameOnExists($srcFile,$destFile,false) 
-            ? REDRAW_DIR 
+            ? [REDRAW_DIR,''] 
             : CONFIRM_COMMAND,"$srcFile did not exist"]);
     }
 
@@ -345,33 +352,47 @@ class NNNAPI {
         $imgPathPath = IMG_ROOT.'/'.$_GET['curdir'];
         renameOnExists("$imgPathPath/$from","$imgPathPath/$to");
         renameExterns($_GET['curdir'],$from,$to);
-        echo REDRAW_DIR;
+        echo [REDRAW_DIR,''];
     }
 
     function newFile() {
-        echo newFile();
+        echo json_encode(newDFile());
     }
-    
+
     function rm() {
         $selname = $_GET['selname'];
-        $path = $_GET['curdir'];
-    
-        if ($selname !== 'index.md' && $selname !== 'index.php')
-            echo json_encode([trashReferedByDataFile("data/$path",$selname) 
-                ? REDRAW_DIR : CONFIRM_COMMAND,"trashing $path/$selname failed"]);    
-        else
-            echo json_encode([trashDir($path) 
-                ? REDRAW_DIR 
-                : CONFIRM_COMMAND,"rmDir failed - perhaps subdirs"]);
+        $classPath = $_GET['curdir'];
+        $group = posix_getgrgid(filegroup("data/$classPath/$selname"))['name'];
+         
+        if ( $group !== APACHE_USER && $group !== $_SESSION[LOGGEDIN]) {
+            echo  json_encode([CONFIRM_COMMAND,$_SESSION[LOGGEDIN]." is not user of $selname"]);
+            return;
+        }
+        if ($selname !== 'index.md' && $selname !== 'index.php' && !indexIsLinkOf("data/$classPath/$selname")) {
+            trashReferedByDataFile("data/$classPath",$selname);
+            echo json_encode([REDRAW_DIR,'']);
+            //echo json_encode([CONFIRM_COMMAND,'remove file '.$_GET['selname']]);
+        } else {
+            if (hasSubDir("data/$classPath"))
+                echo json_encode([CONFIRM_COMMAND,"$classPath has subdirs - delete them first"]);
+            else {
+                trashDir($classPath);
+                //echo json_encode([CONFIRM_COMMAND,'trashdir '.$classPath]);
+                echo json_encode([REDRAW_UPPERDIR,'']);
+            }
+        }
     }
 
     function rmDir() {
         $dirAsSelname = $_GET['selname'];
-        $path = $_GET['curdir'];
+        $classPath = $_GET['curdir'];
         
-        echo json_encode([trashDir("$path/$dirAsSelname") 
-            ? REDRAW_DIR 
-            : CONFIRM_COMMAND,"rmDir failed - perhaps subdirs"]);
+        if (hasSubDir("data/$classPath/$dirAsSelname"))
+            echo json_encode([CONFIRM_COMMAND,"$classPath/$dirAsSelname has subdirs - delete them first"]);
+        else {
+            trashDir("$classPath/$dirAsSelname");
+            echo json_encode([REDRAW_UPPERDIR,'']);
+        }
     } 
 
     function saveFile() {
@@ -393,12 +414,22 @@ class NNNAPI {
         echo $value;
     }
 
+    function test() {
+        $index= 'data/'.$_GET['curdir'].'/'.$_GET['file'];
+        
+        
+        echo json_encode([CONFIRM_COMMAND,indexIsLinkOf('data/'.$_GET['curdir'].'/'.$_GET['file'])
+            ? 'index points at selected' 
+            : "index do not point at selected"]);
+    }
+
     function tooglePublic() {
         echo json_encode(tooglePublic());
     }
 
     function undoTrash() {
-        $mes = copySubDirsOf("trash") ? "trash restored - 't' for empty it" : 'some fail in trash restoring'; 
+        $mes = copySubDirsOf('trash/'.$_SESSION[LOGGEDIN]) ? "trash restored - 't' for empty it" : 'some fail in trash restoring'; 
         echo json_encode([CONFIRM_COMMAND,$mes]);
     }
+
 }
