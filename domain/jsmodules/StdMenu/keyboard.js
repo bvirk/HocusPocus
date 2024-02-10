@@ -34,7 +34,7 @@ function hasEscape(event) {
         case "Escape":
             hideInput();
             statusLine();
-            curkeyhandler=KeyHandler.NOMENU;
+            curkeyhandler=KeyHandler.NAV;
             break;
         default:
             return;
@@ -51,19 +51,19 @@ function newFileOrDir(event) {
             curkeyhandler=KeyHandler.NAV;
             break;
         case "d": // new directory
-            if (isLoggedin) {
+            //if (isLoggedin) {
                 $("#command").attr("value","mkDir");
-                showInput();
+                showInput('new directory:');
                 curkeyhandler=KeyHandler.ESC;
-            }
+            //}
             break;
         case "f": // new file
-            if (isLoggedin) {
+            //if (isLoggedin) {
                 //alert("making file in /data/"+curDirStr);
                 $("#command").attr("value","newFile");
-                showInput();
+                showInput('new file:');
                 curkeyhandler=KeyHandler.ESC;
-            }
+            //}
             break;
         default:
             return;
@@ -80,7 +80,7 @@ function deleteFileOrDir(event) {
             curkeyhandler=KeyHandler.NAV;
             break;
         case "y": // delete file or dir
-            let command=curDir[cid][1].length ? 'rmDir' : 'rm';
+            let command=curDir[cid][1][0] == '/' ? 'rmDir' : 'rm';
             let isIndex = command == 'rmDir' 
                 ? false
                 : (curDir[cid][0].split('.')[0] == 'index'
@@ -121,7 +121,7 @@ function navigate(event) {
                     statusLine();
                 break;
             case "ArrowRight":
-                    if (curDir[cid][1].length) {
+                    if (curDir[cid][1][0] == '/') {
                         $("#wdFiles").empty();
                         curDirStr += '/'+curDir[cid][0];
                         request(APIName,'ls','&curdir='+curDirStr,showMenu);
@@ -132,7 +132,7 @@ function navigate(event) {
                 break;
             case "Enter":
                     let url='/'+curDirStr+'/'+curDir[cid][0];
-                    if ( curDir[cid][1].length)
+                    if ( curDir[cid][1][0] == '/')
                         url +='/index';
                     else
                         url = url.split('.').shift();
@@ -146,34 +146,52 @@ function navigate(event) {
             case "Escape":
                 quitMenu();
                 break;
-            case "a":
-                let file = 'data/'+curDirStr+'/'+curDir[cid][0];
-                request(APIName,'test','&curdir='+curDirStr+"&file="+curDir[cid][0],nopJSCommand);
-                break;
             case "c": // toogle public
-                if (curDir[cid][1].length)
-                    statusLine('only file!')
-                else {
-                    let file = 'data/'+curDirStr+'/'+curDir[cid][0];
-                    request(APIName,'tooglePublic','&file='+file,nopJSCommand);
+                if (isLoggedIn()) {
+                    if (curDir[cid][1][0] == '/')
+                        statusLine('only file!')
+                    else {
+                        let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
+                        request(APIName,'tooglePublic',args,nopJSCommand);
+                    }
                 }
                 break;
             case "e": // edit
-                let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1].length ? '/index.md':'');
+                let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1][0] == '/' ? '/index.md':'');
                 request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
-                break;                                                                  
+                break;        
+            case "m": // modify file permission
+                if (isLoggedIn()) {
+                    $("#command").attr("value",'chmod');
+                    $("#selname").attr("value",curDir[cid][0]);
+                    $("#txtinput").attr("value","");
+                    showInput('file mode:');
+                    curkeyhandler=KeyHandler.ESC;
+                }
+                break;
+            
+
             case "n": // new file or directory 
-                if (isLoggedin) {
+                if (isLoggedIn()) {
                     statusLine("'f'ile/'d'ir?");
                     curkeyhandler=KeyHandler.NEWFILEORDIR;
                 }    
                 break;
-            case "r": // rename file or dir
-                if (isLoggedin) {
-                    $("#command").attr("value",curDir[cid][1].length ? 'mvDir':'mv');
+            case "o": // set owner of file or dir
+                if (isLoggedIn()) {
+                    $("#command").attr("value",'chown');
                     $("#selname").attr("value",curDir[cid][0]);
-                    $("#txtinput").attr("value",curDir[cid][0]);
-                    showInput();
+                    $("#txtinput").attr("value","");
+                    showInput('set owner:');
+                    curkeyhandler=KeyHandler.ESC;
+                }
+                break;
+            case "r": // rename file or dir
+                if (isLoggedIn()) {
+                    $("#command").attr("value",curDir[cid][1][0] == '/' ? 'mvDir':'mv');
+                    $("#selname").attr("value",curDir[cid][0]);
+                    $("#txtinput").attr("value","");
+                    showInput('rename to:');
                     curkeyhandler=KeyHandler.ESC;
                 }    
                 break;
@@ -181,16 +199,17 @@ function navigate(event) {
                     quitMenu();
                 break;
             case "t":
+                if (isLoggedIn())
                     request(APIName,'emptyTrash','',nopJSCommand);
                 break;
             case "x": // remove file or directory
-                if (isLoggedin) {
+                if (isLoggedIn()) {
                     statusLine("remove selected [Esc cancels]");
                     curkeyhandler=KeyHandler.DELETEFILEORDIR;
                 }
                 break;
             case "z": // undo trash - unified undo of all deletion to trash
-                if (isLoggedin) {
+                if (isLoggedIn()) {
                     request(APIName,'undoTrash','',nopJSCommand);
                 }
                 break;
@@ -199,7 +218,7 @@ function navigate(event) {
         }
         event.preventDefault();
         
-    } catch(e) {
+    } catch(e) {"$dir/$file"
         if (!(e instanceof Error)) 
             e = new Error(e);
         statusLine(e.message);
@@ -221,5 +240,12 @@ function whenNoMenu(event) {
     }
 }
 
+function isLoggedIn() {
+    if (isLoggedin) {
+        return true;
+    }
+    statusLine('not logged in',2000);
+    return false;
+}
 
 
