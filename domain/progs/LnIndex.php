@@ -1,20 +1,6 @@
 <?php
 namespace progs;
 
-/**
- *  create symbolic links relative to link location
- *  cwd is document root prior to and after this call
- *  @param target is relative document root
- *  @param link is relative document root 
- *  @return result of symlink
- */
-function lnRel(string $target,string $link) {
-    chdir(dirname($target));
-    $baselink = basename($link);
-    $status = file_exists($baselink) ? true : symlink(basename($target),$baselink);
-    chdir(DOC_ROOT);
-    return $status;
-}
 
 class LnIndex  {
     function index() {
@@ -47,17 +33,17 @@ class LnIndex  {
         }
         if (!is_link($link)) {
             unlink($link);
-            lnRel($target,$link);
+            \actors\lnRel($target,$link);
         }
         $imgDir = 'img/'.substr($targetWOE,5);
         if (file_exists($imgDir))
-            lnRel($imgDir,dirname($imgDir).'/index');
+            \actors\lnRel($imgDir,dirname($imgDir).'/index');
         
         foreach (['css/' => ['.css'],'js/' => ['.js','.php']] as $startDir => $extArr)
             foreach ($extArr as $ext) {
                 $target = $startDir.substr($targetWOE,11).$ext;
                 if (file_exists($target))
-                    lnRel($target,dirname($target).'/index'.$ext);
+                \actors\lnRel($target,dirname($target).'/index'.$ext);
             }
         echo "$link points to $targetWOE\n";
     }
