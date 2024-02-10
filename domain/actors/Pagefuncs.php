@@ -111,6 +111,21 @@ function lastmRef($url,$attName) {
 	return "$attName='$url?lastm=".filemtime($_SERVER['DOCUMENT_ROOT'].$url)."'";
 }
 
+/**
+ *  create symbolic links relative to link location
+ *  cwd is document root prior to and after this call
+ *  @param target is relative document root
+ *  @param link is relative document root 
+ *  @return result of symlink
+ */
+function lnRel(string $target,string $link) {
+    chdir(dirname($target));
+    $baselink = basename($link);
+    $status = file_exists($baselink) ? true : symlink(basename($target),$baselink);
+    chdir(DOC_ROOT);
+    return $status;
+}
+
 function mdLinkMatch($line,&$matchesRef) {
     return preg_match('/^-\s+\[([^\]]+)\]\(([\w\/]+)\)/',$line,$matchesRef);
 }
