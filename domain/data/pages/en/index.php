@@ -10,20 +10,24 @@ return [
     
 Navigation wih keyboard  
 
-|               |               |
-|:--            |:--            |
-|F9             |menu           |
-|e              |edit file          |
-|n              |new fil or dir     |
-|r              |rename file or dir |
-|q              |quit menu          |
-|t              |empty trash        |
-|x              |remove file or dir |
-|y              |confirm delete     |
-|z              |restore all from trash   |
-|arrow keys     |navigate around|
-|Enter          |select page    |
-|Home           |default page   |
+|               |                       |
+|:--            |:--                    |
+|F9             |menu                   |
+|c              |toogle read flag       |
+|e              |edit file              |
+|m              |file permissions       |
+|n              |new fil or dir         |
+|o              |file ownership         |
+|r              |rename file or dir     |
+|q              |quit menu              |
+|t              |empty trash            |
+|x              |remove file or dir     |
+|y              |confirm delete         |
+|z              |restore all from trash |
+|arrow keys     |navigate around        |
+|Esc            |exit or cancel         |
+|Enter          |select page            |
+|Home           |default page           |
 
 ![keyboard]($imgPath/keyboard.jpg)
 EOMD,">!>",<<<EOMD

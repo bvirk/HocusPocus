@@ -13,8 +13,11 @@ Navigering med tastaturet
 |               |                                       |
 |:--            |:--                                    |
 |F9             |menu                                   |
+|c              |skift mellem synlig og skjult          |
 |e              |rediger fil                            |
+|m              |ændre tilladelser                      |
 |n              |ny fil eller dir                       |
+|o              |skift ejerskab                         |
 |r              |omdøb fil eller dir                    |
 |q              |afslut menu                            |
 |t              |tøm mappen trash                       |
@@ -22,6 +25,7 @@ Navigering med tastaturet
 |y              |confirm flyt til mappen trash          |
 |z              |reetabler alt fra mappen trash         |
 |pile taster    |naviger rundt                          |
+|Esc            |afslut eller fortryd                   |
 |Enter          |vælg side                              |
 |Home           |standard side                          |
 
