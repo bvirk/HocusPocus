@@ -34,12 +34,13 @@ $srcExpl
 Parse error occurs when PHP throws one of the fatal errors that cannot be caught in an exception handler. It is then printed in raw format on the status line.
 </div>
 
-IsPhpErr and redrawDir is defined on pages that enherents fra class StdMenu
+IsPhpErr, redrawDir and redrawUpperDir is defined on pages that enherents fra class StdMenu
 
 ```
  <script>
    const isPHPErr='errOrConf';
    const redrawDir='redrawDir';
+   const redrawUpperDir='redrawUpperDir';
 ```
 
 EOMD,srcf('defines.php','IS_PHP_ERR',1,'CONFIRM_COMMAND',1),<<<EOMD
@@ -76,13 +77,44 @@ General keys in the \$_GET argument in API methods:
 - 'curdir'
     - current directory for dirlist in the dialog menu - it starts with pages/ and thus addresses from data/ in webdir and is also path in webdir for pages class.
     
-#### about variable names 
+#### About variable names 
 
-- Postfix WOE i variable name for 'without extension'.
+\$\_GET keys is used as prefix to variable names the way [PHP extract](https://www.php.net/manual/en/function.extract.php) makes it with EXTR_PREFIX_ALL,'_GET-key_'  
 
-url encoding
-- '|' is an encoding of '.' i url.
+Names [PHP pathinfo](https://www.php.net/manual/en/function.pathinfo.php) uses
+- 'basename' is 'filename' dot 'extension'
+- in 'dirname', which has no trailing slash, is 'basename' 
 
+Following has relevans
+- \$selname_basename
+- \$selname_extension
+- \$selname_filename
+- \$txtinput_basename
+- \$txtinput_extension
+- \$txtinput_filename
+- \$curdir_dirname
+- \$curdir_basename
+
+Some way to  create those variables 
+```
+extract(\$_GET['txtinput'],EXTR_PREFIX_ALL,'txtinput');
+\$txtinput_ext = \$txtinput_extension ?? ''
+```
+$srcExpl
+
+txtinput_extension is missing if \$\_GET['txtinput'] do not have a dot - \$txtinput_ext is created because that spans better over ambiguous algoritms in source code.  
+It is used for input verification - it is determined that directories must not contain periods and data file names must have the extension '.md' or '.php'
+</div>
+
+#### Composite variable names
+
+```
+\$selPath = \$_GET['curdir'].'/'.\$_GET['selname'];
+\$selDataPath = 'data/'.\$_GET['curdir'].'/'.\$_GET['selname'];
+\$imgSelPath = 'img/'.\$_GET['curdir']."/\$selname_filename";
+\$txtinputPath = \$_GET['curdir'].'/'.\$_GET['txtinput'];
+\$txtinputDataPath = 'data/'.\$_GET['curdir'].'/'.\$_GET['txtinput'];
+```
 
 
 
