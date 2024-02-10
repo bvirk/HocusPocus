@@ -37,12 +37,13 @@ $srcExpl
 Parse error indtræffer når PHP kaster en af de fatal errors som ikke kan fanges i en exception handler. Det udskrives så i råt format på statuslinien.
 </div>
 
-IsPhpErr og redrawDir er defineret på sider som arver af class StdMenu
+IsPhpErr, redrawDir og redrawUpperDir er defineret på sider som arver af class StdMenu
 
 ```
- <script>
-   const isPHPErr='errOrConf';
-   const redrawDir='redrawDir';
+<script>
+    const isPHPErr='errOrConf';
+    const redrawDir='redrawDir';
+    const redrawUpperDir='redrawUpperDir';
 ```
 
 EOMD,srcf('defines.php','IS_PHP_ERR',1,'CONFIRM_COMMAND',1),<<<EOMD
@@ -64,10 +65,14 @@ For nogle operationer er statuslinie meddelelse for meget støj idet ændringen 
 
 EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function nopJSCommand','^$'),<<<EOMD
 
-Og API kan blot returnere dette som fanges af function nopJSCommand().
+Givet disse 2 constants i PHP
+EOMD,srcf('defines.php','REDRAW_DIR',1,"REDRAW_UPPERDIR",1),<<<EOMD
+
+kan et API kan returnere en af disse som fanges af  function nopJSCommand().
 
 ```
 echo json_encode([REDRAW_DIR,'']);
+echo json_encode([REDRAW_UPPERDIR,'']);
 ```
 
 #### \$_GET argumenter
@@ -82,12 +87,42 @@ Generelle keys i \$_GET argumentet til API methods
 
 #### Om variabel navne
 
-- Postfix WOE i variabel navn for 'without extension'.
+\$\_GET keys bruges som prefix til variable navne sådan som [PHP extract](https://www.php.net/manual/en/function.extract.php) laver det med EXTR_PREFIX_ALL,'_GET-key_'  
 
-url encoding
-- '|' er en encoding af '.' i url.
+Navngivning som [PHP pathinfo](https://www.php.net/manual/en/function.pathinfo.php) bruger, anvendes
+- 'basename' er 'filename' dot 'extension'
+- i 'dirname', som er uden afsluttende slash, ligger 'basename' 
 
+Følgende har relevans
+- \$selname_basename
+- \$selname_extension
+- \$selname_filename
+- \$txtinput_basename
+- \$txtinput_extension
+- \$txtinput_filename
+- \$curdir_dirname
+- \$curdir_basename
 
+Måden de laves på er f.eks 
+```
+extract(\$_GET['txtinput'],EXTR_PREFIX_ALL,'txtinput');
+\$txtinput_ext = \$txtinput_extension ?? ''
+```
+$srcExpl
+
+txtinput_extension er fraværende hvis \$\_GET['txtinput'] intet punktum har - \$txtinput_ext oprettes da det kildekode mæssigt er kortere at bruge.  
+Det anvendes til input verifikation - det er fastlagt at directories ikke må indeholde punktum og data filnavne er med extension '.md' eller '.php'
+</div>
+
+#### Sammensatte variabel navne
+
+```
+\$selPath = \$_GET['curdir'].'/'.\$_GET['selname'];
+\$selDataPath = 'data/'.\$_GET['curdir'].'/'.\$_GET['selname'];
+\$imgSelPath = 'img/'.\$_GET['curdir']."/\$selname_filename";
+\$txtinputPath = \$_GET['curdir'].'/'.\$_GET['txtinput'];
+\$txtinputDataPath = 'data/'.\$_GET['curdir'].'/'.\$_GET['txtinput'];
+```
 
 ### TOC
 - [edit](edit)
