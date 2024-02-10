@@ -70,13 +70,15 @@ export function quitMenu() {
     document.cookie = "dialog=off; path=/; SameSite=None; Secure";
 }
 
-export function showInput() {
+export function showInput(prompt) {
     $("#statusLine").css('display','none');
+    $("#txtinputlabel").css('display','block').text(prompt);
     $("#txtinput").css('display','block').focus();
 }
 
 export function hideInput() {
     $("#statusLine").css('display','block');
+    $("#txtinputlabel").css('display','none');
     $("#txtinput").css('display','none');
 }
 
