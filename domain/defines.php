@@ -27,7 +27,7 @@ function OSGroups() {
         if ( $uArr[2] >= 1000 && $uArr[0] !== 'nobody')
             $users[] = $uArr[0];
     }
-    $groups=[];
+    $groups=[APACHE_USER];
     foreach (file('/etc/group') as $group) {
         $gArr = explode(':',$group);
         if ( $gArr[2] >=1000 && !in_array($gArr[0],$users) && $gArr[0] !== 'nogroup')
