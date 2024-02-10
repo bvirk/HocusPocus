@@ -85,6 +85,17 @@ function formatBytes($size, $precision = 2) {
     return round(pow(1024, $base - floor($base)), $precision) . $suffixes[floor($base)];
 }
 
+function hasReadAccess($path) {
+    $owner = posix_getgrgid(filegroup($path))['name'];
+    $readFlag =  fileperms($path) & 040;
+    $readFlagDir = is_dir($path) ? $readFlag  : fileperms(dirname($path)) & 040;
+    return hasReadAccessFor($owner,$readFlag,$readFlagDir);
+}
+
+function hasReadAccessFor($owner,$readFlag,$readFlagDir) {
+    return $_SESSION[LOGGEDIN] == APACHE_USER || $owner == $_SESSION[LOGGEDIN] || ($readFlag & $readFlagDir);
+}
+
 function isLoggedIn() {
     return in_array($_SESSION[LOGGEDIN],USERS);
 }

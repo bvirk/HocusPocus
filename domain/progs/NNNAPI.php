@@ -58,25 +58,6 @@ function copySubDirsOf($file,$rootLen=0) {
             copySubDirsOf("$file/$fileInDir",$rootLen);
 }
 
-function hasReadAccess($path) {
-    $owner = posix_getgrgid(filegroup($path))['name'];
-    $readFlag =  fileperms($path) & 040;
-    $readFlagDir = is_dir($path) ? $readFlag  : fileperms(dirname($path)) & 040;
-    return hasReadAccessFor($owner,$readFlag,$readFlagDir);
-}
-
-function hasReadAccessFor($owner,$readFlag,$readFlagDir) {
-    return $_SESSION[LOGGEDIN] == APACHE_USER || $owner == $_SESSION[LOGGEDIN] || ($readFlag & $readFlagDir);
-}
-
-function getOwner($path) {
-    $owner = posix_getgrgid(filegroup($path))['name'];
-    $readFlag =  fileperms($path) & 040;
-    $readFlagDir = is_dir($path) ? $readFlag  : fileperms(dirname($path)) & 040;
-    return [$owner,$readFlag,$readFlagDir];
-}
-
-
 function hasWriteAccess($path) {
     $group = posix_getgrgid(filegroup($path))['name'];
     if ( $group == APACHE_USER || $group == $_SESSION[LOGGEDIN])
@@ -387,7 +368,7 @@ class NNNAPI {
         foreach (nodotScandir($dir) as $file) {
             $owner = posix_getgrgid(filegroup("$dir/$file"))['name'];
             $readFlag =  fileperms("$dir/$file") & 040;
-            if (! hasReadAccessFor($owner,$readFlag,$readFlag))
+            if (! \actors\hasReadAccessFor($owner,$readFlag,$readFlag))
                 continue;
             $fileIsDir = is_dir("$dir/$file");
             $liClass = $fileIsDir ? '/Dir' : ' File';

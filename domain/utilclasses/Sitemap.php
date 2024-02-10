@@ -5,19 +5,12 @@ class Sitemap
 {
     private $dirlistHtml = '';
 
-    function hasReadAccess($path) {
-        $owner = posix_getgrgid(filegroup($path))['name'];
-        $readFlag =  fileperms($path) & 040;
-        $readFlagDir = is_dir($path) ? $readFlag  : fileperms(dirname($path)) & 040;
-        return $_SESSION[LOGGEDIN] == APACHE_USER || $owner == $_SESSION[LOGGEDIN] || ($readFlag & $readFlagDir);
-    }
-
-    function buildDirListHtml($dir,$startpos=0) {
+        function buildDirListHtml($dir,$startpos=0) {
         $leadPath='pages/';
         if (!$startpos) 
             $startpos=strlen($dir)+1;
         foreach (glob("$dir/*") as $path) {
-            if (!$this->hasReadAccess($path))
+            if (! \actors\hasReadAccess($path))
                 continue;
             if (is_dir($path)) {
                 $finalPath = $leadPath.substr($path,$startpos).'/index';
@@ -36,7 +29,6 @@ class Sitemap
             }
         }
     }
-
     
     function dirlisthtml() {
         $this->dirlistHtml = "<ul class='dirlist'>\n";
