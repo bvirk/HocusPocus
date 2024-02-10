@@ -5,9 +5,11 @@ class Sitemap
 {
     private $dirlistHtml = '';
 
-    function isAutorizeddDir($path) {
-        //error_log('$path='.$path);
-        return $path !== '/da/loggedin' || in_array($_SESSION['loggedin'],USERS);
+    function hasReadAccess($path) {
+        $owner = posix_getgrgid(filegroup($path))['name'];
+        $readFlag =  fileperms($path) & 040;
+        $readFlagDir = is_dir($path) ? $readFlag  : fileperms(dirname($path)) & 040;
+        return $_SESSION[LOGGEDIN] == APACHE_USER || $owner == $_SESSION[LOGGEDIN] || ($readFlag & $readFlagDir);
     }
 
     function buildDirListHtml($dir,$startpos=0) {
@@ -15,14 +17,15 @@ class Sitemap
         if (!$startpos) 
             $startpos=strlen($dir)+1;
         foreach (glob("$dir/*") as $path) {
+            if (!$this->hasReadAccess($path))
+                continue;
             if (is_dir($path)) {
-                if ($this->isAutorizeddDir(substr($path,$startpos-1))) {
-                    $finalPath = $leadPath.substr($path,$startpos).'/index';
-                    $look = substr($path,strrpos($path,'/')+1);
-                    $this->dirlistHtml .= "<li class='isDirectory'><a href='/$finalPath'>$look</a></li><ul>\n";
-                    $this->buildDirListHtml($path,$startpos);
-                    $this->dirlistHtml .= "</ul>\n";
-                }
+                $finalPath = $leadPath.substr($path,$startpos).'/index';
+                $look = substr($path,strrpos($path,'/')+1);
+                $this->dirlistHtml .= "<li class='isDirectory'><a href='/$finalPath'>$look</a></li><ul>\n";
+                $this->buildDirListHtml($path,$startpos);
+                $this->dirlistHtml .= "</ul>\n";
+                
             } else {
                 $dotpos = strrpos($path,'.');
                 $finalPath = $leadPath.substr($path,$startpos,$dotpos-$startpos);
