@@ -76,19 +76,24 @@ export function showMenu() {
     $('#wdFiles').empty();
 
     for (const index in curDir) {
-        let look=curDir[index][0]+(curDir[index][1]);
-        let href='/'+curDirStr+'/'+look+(curDir[index][1].length ? 'index':'');
-        if (!curDir[index][1].length) 
+        let dirChar = curDir[index][1][0] == '/' ? '/': '';
+        let look=curDir[index][0]+dirChar;
+        //let look=curDir[index][0]+(curDir[index][1]);
+        let href='/'+curDirStr+'/'+look+(dirChar.length ? 'index':'');
+        //let href='/'+curDirStr+'/'+look+(curDir[index][1].length ? 'index':'');
+        //if (!curDir[index][1].length) 
+        if (!dirChar.length) 
             href = href.substring(0,href.lastIndexOf('.'));
-        let clknav =  curDir[index][1].length 
+        //let clknav =  curDir[index][1].length 
+        let clknav =  dirChar.length 
             ? "<span class='clicknav' onclick='allFuncs.cdtonum("+index+");'>📁</span>&nbsp;&nbsp;"
             : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         $("#wdFiles").append("<li>"
             +clknav+"<a href='" 
             + href 
             +"' id='pid"+(index)
-            +"' class='"
-            + (curDir[index][1].length ? "selIsDir":"selIsFile")
+            +"' class='sel"
+            + curDir[index][1].substring(1)
             +"'>"+look
             +"</a></li>");
     }
