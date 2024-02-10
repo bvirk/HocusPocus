@@ -30,7 +30,8 @@ function hamMenu() {
                 <ul id='wdFiles'></ul>
                 <div id='statusLine'></div> 
                 <form onsubmit="allFuncs.submitAll(event)">
-                    <input id="txtinput" type="text" name="txtinput">
+                    <label id="txtinputlabel" for="txtinput">unassigned</label>
+                    <input id="txtinput" type="text" name="txtinput" value="">
                     <input id="command" type="hidden" name="command">
                     <input id="selname" type="hidden" name="selname" value="">
                 </form>
