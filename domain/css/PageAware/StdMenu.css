@@ -28,11 +28,23 @@
     font-weight: bold;
 }
 
-  a.selIsDir {
+a.selDirOwnerRead {
+    color: darkgreen;
+}
+a.selDirOwnerNotRead {
+    color: darkred;
+}
+a.selDir {
     color: blue;
 }
 
-a.selIsFile {
+a.selFileOwnerRead {
+    color: green;
+}
+a.selFileOwnerNotRead {
+    color: red;
+}
+a.selFile {
     color: black;
 }
 
