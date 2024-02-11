@@ -67,14 +67,6 @@ function hasWriteAccess($path) {
             
 }
 
-function loggedInIsApache() {
-    if (APACHE_USER !== $_SESSION[LOGGEDIN]) {
-        echo json_encode([CONFIRM_COMMAND,"only for ".APACHE_USER]);
-        return false;
-    }
-    return true;
-}
-
 function isAUser($user) {
     if (!in_array($user,USERS)) {
         echo json_encode([CONFIRM_COMMAND,"user $user don't exists"]);
@@ -89,6 +81,15 @@ function isClassDir($classPath) {
         return true;
     }
     return false;
+}
+
+function isOwnerOf($path) {
+    $group = posix_getgrgid(filegroup($path))['name'];
+    if ( $group == $_SESSION[LOGGEDIN])
+        return true;
+    echo json_encode([CONFIRM_COMMAND, $_SESSION[LOGGEDIN].' is not owner of '.$path ]);
+    return false;
+            
 }
 
 function isLegaldataFileName() {
@@ -108,14 +109,6 @@ function indexIsLinkOf($file) {
     if (!is_link($index))
         return false;
     return readlink($index) == basename($file);
-}
-
-function selectedIsIndex() {
-    if (pathinfo($_GET['selname'],PATHINFO_FILENAME) == 'index') {
-        echo json_encode([CONFIRM_COMMAND,'index does not apply']);     
-        return true;
-    }
-    return false;
 }
 
 function lgdIn_copy($from,$dest) {
@@ -144,6 +137,13 @@ function lgdIn_rename($from,$dest) {
     chgrp($dest,$_SESSION[LOGGEDIN]);
 }
 
+function loggedInIsApache() {
+    if (APACHE_USER !== $_SESSION[LOGGEDIN]) {
+        echo json_encode([CONFIRM_COMMAND,"only for ".APACHE_USER]);
+        return false;
+    }
+    return true;
+}
 
 /**
  * Rename including make filename index, when being a link that points to the original file or directory, 
@@ -220,6 +220,14 @@ function renameOnExists(string $pathFrom,string $fileWOETo) {
         mvInclLink($pathFrom,$fileWOETo);
     }
 
+}
+
+function selectedIsIndex() {
+    if (pathinfo($_GET['selname'],PATHINFO_FILENAME) == 'index') {
+        echo json_encode([CONFIRM_COMMAND,'index does not apply']);     
+        return true;
+    }
+    return false;
 }
 
 function txtinputContainsDot() {
@@ -391,7 +399,7 @@ class NNNAPI {
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['txtinput'];
  
-        if (txtinputContainsDot() || atTopDir())
+        if (txtinputContainsDot() || atTopDir() || !isOwnerOf($_GET['curdir']))
             return;
         lgdIn_mkdir($txtinputDataPath);
         lgdIn_copy('config/datafile',"$txtinputDataPath/index.md");
@@ -440,12 +448,12 @@ class NNNAPI {
     }
 
     function newFile() {
-            $txtinputDataPath = $_GET['curdir'].'/'.$_GET['txtinput'];
-            
-            if (atTopDir() || !isLegaldataFileName())
-                return;
-            lgdIn_copy('config/datafile',$txtinputDataPath);
-            echo [REDRAW_DIR,''];
+        $txtinputDataPath = $_GET['curdir'].'/'.$_GET['txtinput'];
+ 
+        if (atTopDir() || !isLegaldataFileName() || !isOwnerOf($_GET['curdir']))
+            return;
+        lgdIn_copy('config/datafile',$txtinputDataPath);
+        echo [REDRAW_DIR,''];
     }
 
     function rm() {
