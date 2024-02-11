@@ -12,9 +12,24 @@ Dialog menuen er javascript baseret og serviceres af NNNAPI i php.
 
 Det er data/pages directory tree som dialog menuen kan panorere rundt i, men fil operationer er komplekse og involverer og også css/, js/, pages/ og img/pages. Fil operationer som opret, omdøb og slet kan omfatte flere filer og/eller deres indhold - ting som ville være træls og let at gøre forkert manuelt, sikres dermed at blive gjort konsistent. 
 
-At returnere bruges i det følgende om det, som i PHP API kildekode læses som echo - for det er, set fra den javascript function som håndterer response, en returværdi fra API kald.
+At returnere bruges i det følgende om det, som i PHP API kildekode læses som echo - for det er, set fra den javascript function som håndterer response, en returværdi fra API kald.  
 
-#### Response functions
+#### PHP strukturering
+NNNAPI.php er den største fil i HocusPocus - og den der har undergået flest trælse omstuktureringer.  
+
+Der anvendes ikke de gammeldags true/false returværdier i PHP filoperationer som der udmales om på php.net - det er testet at PHP 8 kan kaste kildekode linienummer dekoreret exceptions i stedet for - det er godt nok ikke vildt detaljeret med 'stat failed', men hellere det end uvisheden om korrektheden af  100'er liniers hjemmegjorte falbelader.  
+
+Alle api kald er en method og der er ingen methods som ikke er et api kald - de fleste api kald uddelegerer til functions - void for fil operationer og boolske for selv echoende kontekst tests.  
+Functions til kontekst test om brugerret og syntaks mm. er, i methods, på stribe '||' sammenstilt så den første true returværdi domino stopper og api kaldets method afsluttes idet den famøse false returnerende test har echoet beskeden der fanges af javascript.  
+Det medfører en del brug af operand _not_, fordi selve testudsagnet semantisk holdes fri fra negation. Et tests returværdi er svaret på dets udsagn.
+EOMD,srclf('progs/NNNAPI.php','function mv\(\)','^$'),<<<EOMD
+$srcExpl
+
+hasWriteAccess() returnerer false hvis noget underforstået ikke har skrivetilladelse til her \$selDataPath. Derfor anvendes operator '!' så der bailes ud. Der outputtes med echo i hasWriteAccess() - men kun når den returnerer false. Det betyder at den kun kan anvendes til bail out med foranstilt '!' for ellers vil javascript ikke modtage tilbagemelding om fejlagtig kontekst.  
+Sådan er det med alle tests - den enkelte test skal anvendes enten med eller uden negation - men det samme altid.   
+</div>
+
+#### JavaScript response functions
 
 API methods returnerer hvad der passer til den javascript function som modtager response. Det er et argument til kaldet af request funktionen, hvilke function som skal modtage response. Det er givet, for en bestemt API method, hvilken javascript function der modtager response fra netop den API method.
 
@@ -85,7 +100,9 @@ Generelle keys i \$_GET argumentet til API methods
 - 'curdir'
     - current directory for dialog menuens fil liste - den starter med pages/ og adresserer dermed fra data/ i webdir og er samtidig path i webdir for pages class.
 
-#### Om variabel navne
+
+
+#### Om variabel navne (mere stramt for hundrede gang - det er netop hvad programmering handler om.)
 
 \$\_GET keys bruges som prefix til variable navne sådan som [PHP extract](https://www.php.net/manual/en/function.extract.php) laver det med EXTR_PREFIX_ALL,'_GET-key_'  
 

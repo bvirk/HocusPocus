@@ -14,6 +14,21 @@ It is the data/pages directory tree that the dialog menu can pan around in, but 
 
 To return is used in the following about echo in the PHP API source code - because it is, seen from the javascript function that handles the response, a return from the  API call.
 
+### PHP structuring
+NNNAPI.php is the largest file in HocusPocus - and the one that has undergone the most tedious restructuring.  
+
+The old-fashioned true/false return values for PHP file operations functions are not used - it has been tested that PHP 8 can throw source code line number decorated exceptions instead - it's probably not wildly detailed with 'stat failed', but rather that than the uncertainty of the correctness of 100s of lines of home-made falbalas.  
+
+All api calls are a method and there are no methods that are not an api call - most api calls delegate to functions - void for file operations and boolean for self-echoing context tests.  
+Functions for context testing about ownership, file types and syntax etc. are logical or coupled domino bricks that keeps falling as long as false is returned. A true stops futher step in the API method with a return and with the notorious true returning test having echoed the message which will be caught by javascript.  
+This entails some use of the operand _not_, because the test statement itself is semantically kept free from negation. A test's return value is the answer to its statement.
+EOMD,srclf('progs/NNNAPI.php','function mv\(\)','^$'),<<<EOMD
+$srcExpl
+
+hasWriteAccess() returns false if something implicitly does not have write permission to here \$selDataPath. Therefore operator '!' to bail out on hasWriteAccess() returning false. A message will be outputted with echo in hasWriteAccess() - but only if it returns false. This means that it can only be used for bail out with the prefix '!' because otherwise javascript will not receive feedback about incorrect context.  
+This is the case with all tests - the individual test must be used either with or without negation - but always the same.
+</div>
+
 #### Response functions
 
 API methods return what fits the javascript function that receives the response. It is an argument to the call of the request function, which function should receive the response. It is given, for a specific API method, which javascript function receives a response from that particular API method.
