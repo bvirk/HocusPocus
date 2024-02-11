@@ -10,13 +10,11 @@ function catchResp() {
         
         if (resp[0] == isPHPErr) { // Used without error too, as confirmation of commands
             statusLine(resp[1]);
-            console.log('resp[0] == isPHPErr: '+resp[0]+','+resp[1])
         }
         return resp;
     } catch(e) {
         if (e.message.startsWith('JSON.parse')) {
             statusLine(httpRequest.responseText);
-            console.log(httpRequest.responseText)
          } else
             statusLine('perhaps som javascript error');
     }
