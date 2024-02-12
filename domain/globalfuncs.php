@@ -47,7 +47,7 @@ function varlnstr(... $argArr) {
                 $lines .= "$i: ".varlnstr($subarg);
         else
             $lines .=
-                gettype($arg) == 'string' && substr($arg,strlen($arg)-1,1) == '=' 
+                gettype($arg) == 'string' && $arg != '' && substr($arg,strlen($arg)-1,1) == '=' 
                     ? "$arg "
                     : var_export($arg,true)."\n";
     }
