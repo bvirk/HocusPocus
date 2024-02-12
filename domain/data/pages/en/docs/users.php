@@ -3,18 +3,31 @@ use function actors\srcf;
 use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
-OSes have process identification with ownership. Anyone who requests any web page is in a way logged in - also on a static page without cookies or local storage.  
-You normally put the authorized person-directed in the term logged in, but in fact an arbitrary request on some of the normal OSes cannot happen without being a user with ownership.  
+OSes have process identification with ownership. Anyone who requests any web page is in a way logged in.  
 
-On apache2 on a debian variant, here in year 2024 it was found that this user is called www-data.  
+An arbitrary request on some of the normal OSes happens as a basic user with ownership of files - the user the web server process has.  
 
-No matter how complex and detailed the logged in system is, www-data is still the owner.  
+On apache2 on a debian variant, here in 2024 it was found that this user is called www-data.  
 
-Why not just let www-data 'change hats' - when hansel has been authorized, the owner becomes www-data:hansel and when it's gretel, www-data:gretel.
+No matter how complex the level of detail the system is built on top of, it is still www-data that is the web server user and owns files the web server process creates.  
+
+Why not let www-data 'change hats' - when Leo has authorised, the owner becomes www-data:leo and when it's Grete, www-data:grete. Leo and Grete are not users in the OS sense - they are groups. In the PHP system sense it is handled as users. Only Leo can edit and delete files that in the OS sense have group leo as group. The read flag on group level determines whether others can see content. Leo can create files in directories that have leo as group and create directories located in directories that have leo as group.
+
+But how do Leo create the toplevel directory?  
+
+To act as a user in the PHP system sense, there is a login system with a password.  
+www-data is included in the list of users with login. In exactly the same way, www-data can be created, changed, deleted and, in a PHP systemic sense, hide using the group read flag.  
+
+login user www-data, as the only user, can change the group name of files - and that is the answer to how leo gets its origin in creating files.  
+
+The decision has been made in HocusPucus that files are owned by www-data - what was mentioned so far went to groups. Therefore, they get permission rw-rw-rw or octal 0666, so they can also be edited in a text editor. Directories get permission octal 0777.  
 
 HocusPucus user names are OS groups that are not OS users.
 
-EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
+EOMD,srcf('defines.php','APACHE',1,'function OSGroups'),<<<EOMD
+$srcExpl
+user www-data er også user.
+</div>
 
 Groups are created and added to the user the apache web server process has.
 
@@ -24,27 +37,27 @@ Groups are created and added to the user the apache web server process has.
 
 # systemctl restart apache2
 ```
-Users' ownership of a data file is simulated by the file's group name being user the name - and public versus private with the read flag for group access.  
-
 When creating a data file, the group is set to logged in user.  
 
-EOMD,srclf('progs/NNNAPI.php','function newFile',2,'return chgrp\("data\/\$file"','^$'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function newFile','^$'),<<<EOMD
 
 The dialog menu key 'c' toggles between private and public - can be seen in the status line.
 
 EOMD,srclf('progs/NNNAPI.php','function toogle','^$'),<<<EOMD
 
-Users can create a password and subsequently login in a PHP registration which has __nothing__ to do with OS level passwords.  
+Users can create a password and subsequently login in as a PHP user.
 
 Passwords can only be changed by deleting a user's password with file access. A session cookie registers the logged in user. No permanent cookies are used.
 
-
 Variable \$_SESSION reflects whether there is a logged in user
 EOMD,srcf('actors/Pagefuncs.php','function isLoggedIn',3),<<<EOMD
-In the dialog menu's html is a link that switches between login and logout.
+In the dialog menu's html is a link that switches between login and logged in user, which can be used to log out.
 
-EOMD,srclf('actors/StdMenu.php','<\?=\$ahref',1,'thisUrl',4),<<<EOMD
-EOMD,srcf('progs/LoginRecieve.php','windowOldLocation',3,'function logout',3),<<<EOMD
+EOMD,srclf('actors/StdMenu.php','function hamMenu()',3,'\[\$ahref,\$atxt\] = isLoggedIn\(\)',3,'<a href=\'<\?=\$ahref',1),<<<EOMD
+
+\$thisUrl is used to reopen the page from which the login was performed.
+
+EOMD,srcf('progs/LoginRecieve.php','windowOldLocation',3,'class LoginRecieve',1,'function logout',3),<<<EOMD
 $srcExpl
 After removing user from \$_SESSION the page is reopened through javascript.
 </div>
@@ -80,18 +93,31 @@ $srcExpl
 </div>
 
 #### AUTHFILE
-In AUTHFILE, users are key to pairs of encrypted password and salt - everything in one array. It has the syntax of a PHP array so it can be loaded with include.
+In AUTHFILE, users are key to pairs of encrypted password and salt - everything in one array. It has the syntax of a PHP array so it can be loaded with include. When deleting users, it must be ensured that the remainder is still a valid array.
 
 _config/encrypted.php_
 ```
-<?php
-// Deleting all password by delete from line 4, but keep last line. NO TRAILING EMPTY LINES 
-return [
-'final' => ['65nlYh2WUQ6zQ','6599e9df16cb4']
-,'bob'=>['65IYvsRzipQ2U','659abd9c9e545']
-];
+<?php return array (
+    'leo' =>
+    array (
+      0 => '65weOMddagfWf',
+      1 => '65b3963a508f0',
+    ),
+    'grete' =>
+    array (
+      0 => '65lew3AWqfivw',
+      1 => '65b396550a94d',
+    ),
+    'www-data' =>
+    array (
+      0 => '65nlYh2WUQ6zQ',
+      1 => '659abd9c9e545',
+    ),
+  );
 ```
+
 ### Automatic login
+
 Everything above is just to, e.g., to perform
 ```
 \$_SESSION[LOGGEDIN]=USERS[n]; // 0 ≦ n < antal brugere

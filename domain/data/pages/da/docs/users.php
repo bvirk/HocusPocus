@@ -4,18 +4,30 @@ use function actors\srclf;
 
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
 
-OS'er har proces identification med ejerskab. Enhver der requester en hvilket som helst webside er på en måde logged in - også på en statisk side uden cookies eller local storage.  
-Man lægger normalt det autoriserede personrettet i begrebet logged in, men faktisk kan et vilkårligt request på nogle af de normale OS'er ikke ske uden at være som bruger med ejerskab.
+OS'er har proces identification med ejerskab. Enhver der requester en hvilket som helst webside er på en måde logged ind.
+Et vilkårligt request på nogle af de normale OS'er sker som en grundlæggende user med ejerskab til filer - den user webserver processen har.
 
-På apache2 på en debian variant er her anno 2024 fundet at denne bruger hedder www-data.
+På apache2 på en debian variant er her anno 2024 fundet at denne user hedder www-data.
 
-Uanset hvor komplekst detaljegrad system man bygger ovenpå, så er det stadig  www-data som er ejer.  
+Uanset hvor komplekst detaljegrad system man bygger ovenpå, så er det stadig  www-data som er webserver user og ejer filer webserver processen skaber.
 
-Hvorfor ikke så lade www-data 'skifte hat' - når hans har autoriseret sig så bliver ejer www-data:hans og når det er grete, www-data:grete.  
+Hvorfor ikke så lade www-data 'skifte hat' - når Leo har autoriseret sig så bliver ejer www-data:leo og når det er Grete, www-data:grete. Leo og Grete er ikke users i OS forstand - der er de groups. I PHP system forstand blev det håndteret som usere. Kun Leo kan redigere og slette filer der i OS forstand har group leo som group. Read flaget på group nivea afgør om andre må se indhold. Leo kan oprette filer i directories der har leo som group og oprette directories som ligger i directories som har leo som group.  
 
-Brugernavne er OS groups som ikke er OS users.
+Hvordan opretter Leo så grenens rod?  
 
-EOMD,srcf('defines.php','function OSGroups'),<<<EOMD
+For at agere users i PHP system forstand er der et login system med password.  
+www-data er med på listen af users med login. Helt på samme måde kan www-data oprette, ændre, slette og i PHP systemisk forstand, skjule vha. group read flaget.  
+
+login user www-data kan som den eneste user ændre group navnet på filer - og det er svaret på hvordan leo får sit udspring at oprette filer i.
+
+Der er truffet det valg i HocusPucus at filer er www-data ejet - hvad der nævnt hidtil gik på groups. Derfor får de permission rw-rw-rw eller octalt 0666, så de også kan redigeres i text editor. Directories får permission octalt 0777.
+
+usernavne er OS groups som ikke er OS users samt www-data.
+
+EOMD,srcf('defines.php','APACHE',1,'function OSGroups'),<<<EOMD
+$srcExpl
+user www-data er også user.
+</div>
 
 Grupper oprettes og tilføjes den user, apache web server processen har.
 
@@ -25,29 +37,29 @@ Grupper oprettes og tilføjes den user, apache web server processen har.
 
 # systemctl restart apache2
 ```
-Brugeres ejerskab til en datafil er simuleret ved at filens gruppe navn er bruger navn - og public kontra privat med read flaget for gruppe tilgang.  
-
 Ved oprettelse af datafil sættes gruppen til logged in user.
 
-EOMD,srclf('progs/NNNAPI.php','function newDFile',2,'chgrp\("data\/\$file"','^$'),<<<EOMD
+EOMD,srclf('progs/NNNAPI.php','function newFile','^$'),<<<EOMD
 
 Dialog menuen key 'c' toogler mellem privat og public - kan iagtages i statusline.
 
 EOMD,srclf('progs/NNNAPI.php','function toogle','^$'),<<<EOMD
 
-Brugere kan oprette password og efterfølgende logge ind - i en PHP registrering som __ikke__ har noget med OS level passwords at gøre.  
+Users kan oprette password og efterfølgende logge ind som en PHP user.
 
-Passwords kan kun ændres ved, med fil adgang, at slette password for en bruger.  
+Passwords kan kun ændres ved, med fil adgang, at slette password for en user.  
 
 Variabel \$_SESSION afspejler om der er en loggedin user
 EOMD,srcf('actors/Pagefuncs.php','function isLoggedIn',3),<<<EOMD
-I dialog menuens html er et link der skifter mellem login og logout.
+I dialog menuens html er et link der skifter mellem login og logged in user på hvilken der kan logges ud.
 
-EOMD,srclf('actors/StdMenu.php','<\?=\$ahref',1,'thisUrl',4),<<<EOMD
-c
-EOMD,srcf('progs/LoginRecieve.php','windowOldLocation',3,'function logout',3),<<<EOMD
+EOMD,srclf('actors/StdMenu.php','function hamMenu()',3,'\[\$ahref,\$atxt\] = isLoggedIn\(\)',3,'<a href=\'<\?=\$ahref',1),<<<EOMD
+
+\$thisUrl bruges til at genåbne den side hvorfra login blev udført.
+
+EOMD,srcf('progs/LoginRecieve.php','windowOldLocation',3,'class LoginRecieve',1,'function logout',3),<<<EOMD
 $srcExpl
-Efter at have fjernet bruger fra \$_SESSION genåbnes siden gennem javascript.
+Efter at have fjernet user fra \$_SESSION genåbnes siden gennem javascript.
 </div>
 
 Som en tilbagemelding åbnes dialog menuen tilvejebragt af et cookie baseret flag.
@@ -72,34 +84,45 @@ Variabler tildeles så formen bliver signin eller signup - som udgangspunkt sign
 EOMD,srclf('progs/LoginRecieve.php','function saveEncryption',14),<<<EOMD
 $srcExpl
 
-Bruger, krypteret password og salt der indgår i kryptering gemmes i php AUTHFILE som array, __hvis__ bruger finde i constant array USERS, og ikke allerede findes i AUTHFILE.
+user, krypteret password og salt der indgår i kryptering gemmes i php AUTHFILE som array, __hvis__ user finde i constant array USERS, og ikke allerede findes i AUTHFILE.
 </div>
 
 EOMD,srclf('progs/LoginRecieve.php','function oneauth',11),<<<EOMD
 $srcExpl
-\$_SESSION[LOGGEDIN] sættes til bruger listet i USERS som logger ind med password som passer med det i AUTFILE, ellers sættes \$_SESSION[LOGGEDIN] til den tomme streng.
+\$_SESSION[LOGGEDIN] sættes til user listet i USERS som logger ind med password som passer med det i AUTFILE, ellers sættes \$_SESSION[LOGGEDIN] til den tomme streng.
 </div>
 
 #### AUTHFILE
-I AUTHFILE er brugere key til par af encryptet password og salt - alt i et array. Det har syntaksen på et PHP array så det kan indlæses med include.
+I AUTHFILE er usere key til par af encryptet password og salt - alt i et array. Det har syntaksen på et PHP array så det kan indlæses med include. Ved sletning af users skal det påses at resterende stadig er et gyldigt array.
 
 _config/encrypted.php_
 ```
-<?php
-// Deleting all password by delete from line 4, but keep last line. NO TRAILING EMPTY LINES 
-return [
-'final' => ['65nlYh2WUQ6zQ','6599e9df16cb4']
-,'bob'=>['65IYvsRzipQ2U','659abd9c9e545']
-];
+<?php return array (
+    'leo' =>
+    array (
+      0 => '65weOMddagfWf',
+      1 => '65b3963a508f0',
+    ),
+    'grete' =>
+    array (
+      0 => '65lew3AWqfivw',
+      1 => '65b396550a94d',
+    ),
+    'www-data' =>
+    array (
+      0 => '65nlYh2WUQ6zQ',
+      1 => '659abd9c9e545',
+    ),
+  );
 ```
 ### Automatisk login
 Alt ovenstående er blot for, f.eks, at udføre
 ```
-\$_SESSION[LOGGEDIN]=USERS[n]; // 0 ≦ n < antal brugere
+\$_SESSION[LOGGEDIN]=USERS[n]; // 0 ≦ n < antal usere
 ```
 Authentication er begrænsning af adgangsvejen til at tildele til \$_SESSION[LOGGEDIN].   
 
-Authentication er relevant ved online adgang. For at kunne slette, ændre og editere skal man være loggedin og datafiler oprettes med loggedin bruger som flaget ejer.   
+Authentication er relevant ved online adgang. For at kunne slette, ændre og editere skal man være loggedin og datafiler oprettes med loggedin user som flaget ejer.   
 
 Hvis HocusPocus bruges med adgang til webdir kan det laves sådan at der automatisk 'loggges ind' på en konto.
 
