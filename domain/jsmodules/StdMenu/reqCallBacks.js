@@ -1,6 +1,6 @@
 
 import { request, httpRequest  } from "../jslib/request.js";
-import { statusLine, initDomElements, APIName } from "./hamMenu.js";
+import { statusLine, drawDirList, drawCssOrJsList, APIName } from "./hamMenu.js";
 
 export let curDir;
 
@@ -9,7 +9,8 @@ function catchResp() {
         let resp = JSON.parse(httpRequest.responseText);
         
         if (resp[0] == isPHPErr) { // Used without error too, as confirmation of commands
-            statusLine(resp[1]);
+            if (resp[1].length)
+                statusLine(resp[1]);
         }
         return resp;
     } catch(e) {
@@ -27,7 +28,7 @@ export function nopJSCommand() {
     if (resp[0] == redrawDir || resp[0] == redrawUpperDir) {
         if (resp[0] == redrawUpperDir)
             curDirStr=curDirStr.substring(0,curDirStr.lastIndexOf('/'))
-        request(APIName,'ls','&curdir='+curDirStr,showMenu);
+        request(APIName,'ls','&curdir='+curDirStr,showDataDir);
     }    
 }
 
@@ -45,14 +46,9 @@ export function savedFileResponse() {
 export function setEditMode() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
-    let editIkon='🌥 ☑';
-    let editTip='click to edit locally only'
-    let clickfunc='allFuncs.toEditMode("file");'
-    if (httpRequest.responseText=='file') {
-        editIkon='🌥 ☐';
-        editTip='click to edit in browser';
-        clickfunc='allFuncs.toEditMode("http");'
-    }
+    let [editIkon,editTip,clickfunc] = catchResp()[1]=='file' 
+        ? ['🌥 ☐','click to edit in browser','allFuncs.toEditMode("http");']
+        : ['🌥 ☑','click to edit locally only','allFuncs.toEditMode("file");']; 
     $('#editplace').attr('title',editTip).attr('onClick',clickfunc).text(editIkon);
 }
 
@@ -65,36 +61,16 @@ export function savedFiletoeditResponse() {
         window.open('/progs/edit/content','_blank');
 }
 
-export function showMenu() {
+export function showDataDir() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     curDir = catchResp();
-    let backVisibility = curDirStr.length > 5 ? 'inline' : 'none';
-    $('#navBack').css('display',backVisibility); 
-    $('#wdFiles').empty();
+    drawDirList(curDir);
+}
 
-    for (const index in curDir) {
-        let dirChar = curDir[index][1][0] == '/' ? '/': '';
-        let look=curDir[index][0]+dirChar;
-        //let look=curDir[index][0]+(curDir[index][1]);
-        let href='/'+curDirStr+'/'+look+(dirChar.length ? 'index':'');
-        //let href='/'+curDirStr+'/'+look+(curDir[index][1].length ? 'index':'');
-        //if (!curDir[index][1].length) 
-        if (!dirChar.length) 
-            href = href.substring(0,href.lastIndexOf('.'));
-        //let clknav =  curDir[index][1].length 
-        let clknav =  dirChar.length 
-            ? "<span class='clicknav' onclick='allFuncs.cdtonum("+index+");'>📁</span>&nbsp;&nbsp;"
-            : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-        $("#wdFiles").append("<li>"
-            +clknav+"<a href='" 
-            + href 
-            +"' id='pid"+(index)
-            +"' class='sel"
-            + curDir[index][1].substring(1)
-            +"'>"+look
-            +"</a></li>");
-    }
-    $("#curDirStr").text(curDirStr);
-    initDomElements();
+export function showCssOrJsFiles() {
+    if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
+        return;
+    curDir = catchResp();
+    drawCssOrJsList(curDir);
 }
