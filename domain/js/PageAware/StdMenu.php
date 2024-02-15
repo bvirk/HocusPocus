@@ -14,6 +14,8 @@ actors\echoAssignments([
          "cid"          // index of current selected node that displays a files
         ,"curDirStr"    // current directory as it apears in url after https://domain.tld/ 
         ,"lid"          // DOM array of nodes that displays files
+        ,"selDataPath"
+        ,"refType"
     ],"let"); ?>
 
 $(  function() {
