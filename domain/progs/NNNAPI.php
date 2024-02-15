@@ -3,6 +3,7 @@
 namespace progs;
 
 use function actors\datafileExists;
+use function actors\pageExternsOfType;
 
 function  atTopDir() {
     if ($_GET['curdir'] === 'pages') {
@@ -357,6 +358,11 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
     
+    function colon() {
+        echo json_encode([CONFIRM_COMMAND,'message was '.$_GET['mes']]);
+    }
+    
+    
     function edit() {
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
@@ -372,7 +378,7 @@ class NNNAPI {
 
     function ls() {
         $dirList = [];
-        $dir = DATA_ROOT.'/'.$_GET['curdir'];
+        $dir = 'data/'.$_GET['curdir'];
         foreach (nodotScandir($dir) as $file) {
             $owner = posix_getgrgid(filegroup("$dir/$file"))['name'];
             $readFlag =  fileperms("$dir/$file") & 040;
@@ -393,6 +399,12 @@ class NNNAPI {
             
         }
         echo json_encode($dirList);
+    }
+
+    function lsExt() {
+        $selDataPath = $_GET['selDataPath'];
+        $type = $_GET['type'];
+        echo json_encode(pageExternsOfType($type,$selDataPath));
     }
     
     function mkDir() {
@@ -496,8 +508,11 @@ class NNNAPI {
     function setSessionVar() {
         $key = $_GET['sessionvar'];
         $value = $_GET[$key];
-        $_SESSION[$key]=$value;
-        echo $value;
+        if ($value == 'unset')
+            unset($_SESSION[$key]);
+        else
+            $_SESSION[$key]=$value;
+        echo json_encode([$_GET['item0'] ?? '',$value]);
     }
 
 
