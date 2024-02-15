@@ -109,6 +109,56 @@ function kvsepEncode($arr,$kv='=',$sep=';') {
     }
     return $str;
 }
+/**
+ * Extern css or js files to a page
+ * @param string $path is path to the datafile of the page
+ * @param mixed $extArr is either ['css'=>['css']] or ['js'=>['js','php']]
+ * @return array of [filename,existcode,fileDescription,filetype] arrays where existcode is either 'e' or 'n' and filetype one of css|js followed by Page|Url|Class 
+ */
+function pageExterns(string $path,mixed $extArr) : array { 
+    $ppe = explode('/',$path);
+    $pfunc = array_slice($ppe,-1,1)[0];
+    $pUrlDir=implode('/',array_slice($ppe,1,-1));
+    $pclassPath = implode('/',array_slice($ppe,0,-2)).'/'.ucfirst(array_slice($ppe,-2,1)[0]).'.php';
+
+    $ext = array_key_first($extArr);
+    $lines = [];
+    foreach ([
+        $ext.'Page' => ["$pUrlDir/$pfunc"]
+        ,$ext.'Url' => array_slice($ppe,1,-1)
+        ,$ext.'Class' => explode("\\",\actors\enheritChain($pclassPath)) 
+            ] as $eType => $eTypeArr) {
+        [$urltype,$acum,$slash]=[[],'',''];
+        foreach ($eTypeArr as $cpe) {
+            $acum .= "$slash$cpe";
+            foreach($extArr[$ext] as $extChoice) {
+                $fileRef = "$ext/$acum.$extChoice";
+                [$eFlag,$desc] = file_exists($fileRef)
+                    ? ['e',filespec($fileRef)]
+                    : ['n',"file don't exist"];
+                $urltype[] = [$fileRef,$eFlag,$desc,$eType];
+            }
+            $slash='/';
+        }
+        if ($eType !== $ext.'Page')
+            $urltype = array_reverse($urltype);
+        foreach ($urltype as $url)
+            $lines[] = $url;
+    }
+    return $lines;
+}
+
+/**
+ * wrapper around pageExterns
+ * @param string $type is one of 'css' or 'js'
+ * @param string $path is path to the datafile of the page
+ * @return array of [filename,existcode,fileDescription,filetype] arrays where existcode is either 'e' or 'n' and filetype one of css|js followed by Page|Url|Class
+ */
+function pageExternsOfType(string $type, string $path): mixed {
+    if (array_key_exists('extension',pathinfo($path)))
+        $path = dirname($path).'/'.pathinfo($path,PATHINFO_FILENAME);
+    return pageExterns($path,$type === 'js' ? ['js'=>['js','php']] : ['css'=>['css']]);
+}
 
 function queryString($exclude='path') {
     $ret='';
