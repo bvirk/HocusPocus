@@ -1,83 +1,64 @@
-import { hamDrawMenu, statusLine,lidInverse,lidNormal,cdback,quitMenu,showInput,hideInput,APIName } from "./hamMenu.js";
+import { hamDrawMenu, statusLine,lidInverse,lidNormal,cdback,quitMenu,showInput,hideInput,drawRefTypes,refTypes,APIName } from "./hamMenu.js";
 import { request } from "../jslib/request.js";
-import { showMenu, curDir,nopJSCommand,savedFiletoeditResponse } from "./reqCallBacks.js";
+import { showDataDir, showCssOrJsFiles, curDir, nopJSCommand,savedFiletoeditResponse } from "./reqCallBacks.js";
 
 let curkeyhandler;
 
-/**
- * Main nnn nagigation
- */
-
 window.addEventListener("keydown", delegateEListener,true);
 
-export const KeyHandler = Object.freeze({
-    NAV: navigate,
-    ESC: hasEscape,
-    NOMENU: whenNoMenu,
-    NEWFILEORDIR: newFileOrDir,
-    DELETEFILEORDIR: deleteFileOrDir
-});
-
-export function setCurkeyhandler(func) { 
-    curkeyhandler=func; 
-    // alert('keyhandler now '+curkeyhandler.name);
+function arrowDown(length) {
+    lidNormal();
+    cid += cid < length-1 ? 1 : 1-length;
+    lidInverse();
+    lid[cid].focus();
+    statusLine();
 }
+
+function arrowUp(length) {
+    lidNormal();
+    cid -= cid ? 1 : 1-length;
+    lid[cid].focus();
+    lidInverse();
+    statusLine();
+}
+
+function cssOrJs(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+        case "ArrowLeft":
+        case "q":
+            lsDataDir();    
+            break;
+        case "ArrowDown":
+            arrowDown(curDir.length);
+            break;
+        case "ArrowUp":
+            arrowUp(curDir.length);
+            break;
+        case "e":
+            let filetoedit = curDir[cid][0];
+            request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
+            break;
+        default:
+            return;
+    }
+    event.preventDefault();
+}
+
+
 
 function delegateEListener(event) {
     return curkeyhandler(event);
 } 
-
-function hasEscape(event) {
-    if (event.defaultPrevented)
-        return;
-    switch (event.key) {
-        case "Escape":
-            hideInput();
-            statusLine();
-            curkeyhandler=KeyHandler.NAV;
-            break;
-        default:
-            return;
-    }
-}
-
-function newFileOrDir(event) {
-    if (event.defaultPrevented)
-        return;
-    switch (event.key) {
-        case "Escape":
-            hideInput();
-            statusLine();
-            curkeyhandler=KeyHandler.NAV;
-            break;
-        case "d": // new directory
-            //if (isLoggedin) {
-                $("#command").attr("value","mkDir");
-                showInput('new directory:');
-                curkeyhandler=KeyHandler.ESC;
-            //}
-            break;
-        case "f": // new file
-            //if (isLoggedin) {
-                //alert("making file in /data/"+curDirStr);
-                $("#command").attr("value","newFile");
-                showInput('new file:');
-                curkeyhandler=KeyHandler.ESC;
-            //}
-            break;
-        default:
-            return;
-    }
-}
 
 function deleteFileOrDir(event) {
     if (event.defaultPrevented)
         return;
     switch (event.key) {
         case "Escape":
-            hideInput();
-            statusLine();
-            curkeyhandler=KeyHandler.NAV;
+            toNavigate();
             break;
         case "y": // delete file or dir
             let command=curDir[cid][1][0] == '/' ? 'rmDir' : 'rm';
@@ -101,30 +82,62 @@ function deleteFileOrDir(event) {
     }
 }
 
+function hasEscape(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+            toNavigate();
+            break;
+        default:
+            return;
+    }
+}
+
+function isLoggedIn() {
+    if (isLoggedin) {
+        return true;
+    }
+    statusLine('not logged in',2000);
+    return false;
+}
+
+export const KeyHandler = Object.freeze({
+    NAV: navigate,
+    ESC: hasEscape,
+    NOMENU: whenNoMenu,
+    NEWFILEORDIR: newFileOrDir,
+    DELETEFILEORDIR: deleteFileOrDir,
+    REFS: refs,
+    CSSORJS: cssOrJs
+});
+
+function lsDataDir(dir = undefined) {
+    if (dir)
+        curDirStr = dir
+    request(APIName,'ls','&curdir='+curDirStr,showDataDir);
+    curkeyhandler=KeyHandler.NAV;
+}
+
 function navigate(event) {
     if (event.defaultPrevented)
         return; // Do nothing if the event was already processed
     try {
         switch(event.key) {
             case "ArrowDown":
-                    lidNormal();
-                    cid += cid < curDir.length-1 ? 1 : 1-curDir.length;
-                    lidInverse();
-                    lid[cid].focus();
-                    statusLine();
+                arrowDown(curDir.length);
                 break;
             case "ArrowUp":
-                    lidNormal();
-                    cid -= cid ? 1 : 1-curDir.length;
-                    lid[cid].focus();
-                    lidInverse();
-                    statusLine();
+                arrowUp(curDir.length);
                 break;
             case "ArrowRight":
-                    if (curDir[cid][1][0] == '/') {
-                        $("#wdFiles").empty();
-                        curDirStr += '/'+curDir[cid][0];
-                        request(APIName,'ls','&curdir='+curDirStr,showMenu);
+                    if (curDir[cid][1][0] == '/') 
+                        lsDataDir(curDirStr + '/'+curDir[cid][0]);
+                    else {
+                        selDataPath=curDirStr+'/'+curDir[cid][0];
+                        curkeyhandler=KeyHandler.REFS;
+                        drawRefTypes();
+                        statusLine("chose reference type");
                     }
                 break;
             case "ArrowLeft":
@@ -140,11 +153,13 @@ function navigate(event) {
                     window.location = url;
                 break;
             case "Home":
-                curDirStr='pages';
-                request(APIName,'ls','&curdir=pages',showMenu);
+                lsDataDir('pages');
                 break;
             case "Escape":
                 quitMenu();
+                break;
+            case "b":
+                statusLine('key "b" disabled',1000);
                 break;
             case "c": // toogle public
                 if (isLoggedIn()) {
@@ -218,11 +233,74 @@ function navigate(event) {
         }
         event.preventDefault();
         
-    } catch(e) {"$dir/$file"
+    } catch(e) {
         if (!(e instanceof Error)) 
             e = new Error(e);
         statusLine(e.message);
     }
+}
+
+function newFileOrDir(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+            toNavigate();
+            break;
+        case "d": // new directory
+                $("#command").attr("value","mkDir");
+                showInput('new directory:');
+                curkeyhandler=KeyHandler.ESC;
+            break;
+        case "f": // new file
+                $("#command").attr("value","newFile");
+                showInput('new file:');
+                curkeyhandler=KeyHandler.ESC;
+            break;
+        default:
+            return;
+    }
+}
+
+function refs(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+        case "ArrowLeft":
+        case "q":    
+            lsDataDir();
+            break;
+        case "ArrowDown":
+            arrowDown(refTypes.length);
+            break;
+        case "ArrowUp":
+            arrowUp(refTypes.length);
+            break;
+        case "ArrowRight":
+            let type=refTypes[cid][0];
+            let callBack = type == 'css' || type == 'js' ? showCssOrJsFiles : null;
+            if (callBack !== null) {
+                request(APIName,'lsExt','&selDataPath='+selDataPath+'&type='+type,callBack);
+                curkeyhandler=KeyHandler.CSSORJS;
+            } else 
+                statusLine(refTypes[cid][0]+' was not assigned');
+            //
+            break;
+        default:
+            return;
+    }
+    event.preventDefault();
+}
+
+export function setCurkeyhandler(func) { 
+    curkeyhandler=func; 
+}
+
+function toNavigate() {
+    hideInput();
+    statusLine();
+    curkeyhandler=KeyHandler.NAV;
 }
 
 function whenNoMenu(event) {
@@ -239,13 +317,3 @@ function whenNoMenu(event) {
             return;
     }
 }
-
-function isLoggedIn() {
-    if (isLoggedin) {
-        return true;
-    }
-    statusLine('not logged in',2000);
-    return false;
-}
-
-
