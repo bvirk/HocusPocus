@@ -1,2 +1,2 @@
 <?php
-return actors\srclf($_GET['file'],'php',998);
+return actors\srclf($_GET['file'],1,998);
