@@ -48,6 +48,32 @@ a.selFile {
     color: black;
 }
 
+a.selabelist {
+    color: cyan;
+}
+
+a.ncssPage, a.ncssUrl, a.njsPage, a.njsUrl,a.njsClass,a.ncssClass {
+    color: lightgrey;
+}
+
+a.ecssPage, a.ejsPage  {
+    color: rgb(0,155,119);
+}
+a.ecssUrl, a.ejsrUrl {
+    color: navy;
+}
+
+a.ecssClass, a.ejsClass {
+    color: #800020;
+}
+
+
+/*
+<a href="#" id="pid0" class="ncssPage" style="background-color: rgb(0, 0, 238); color: white;">css/da/alterego/debug.css</a>
+*/
+
+
+
 #wdFiles li {
     list-style: none;  
 }
