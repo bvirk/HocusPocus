@@ -1,7 +1,7 @@
 <?php
 
 namespace progs;
-
+use utilclasses\Parsedown;
 use function actors\datafileExists;
 use function actors\pageExternsOfType;
 
@@ -57,6 +57,22 @@ function copySubDirsOf($file,$rootLen=0) {
     } else
         foreach (nodotScandir($file) as $fileInDir) 
             copySubDirsOf("$file/$fileInDir",$rootLen);
+}
+
+function cssOrJsHelp() {
+    $content = <<<EOMD
+#### Css og Js navigering
+
+|               |                                       |
+|:--            |:--                                    |
+|e              |rediger fil                            |
+|q              |afslut hjælp                           |
+|x              |flyt fil                               |
+|y              |confirm flyt til mappen trash          |
+|pile taster    |naviger rundt                          |
+|Esc            |                                       |
+EOMD;
+    return (new Parsedown())->text($content);
 }
 
 function hasWriteAccess($path) {
@@ -170,6 +186,32 @@ function mvInclLink(string $orgPath,string $newFileWOE,bool $followExtension=tru
     lgdIn_rename($orgPath,$newPath);
 }
 
+function navHelp() {
+    $content = <<<EOMD
+#### Datafiler navigering
+
+|               |                                       |
+|:--            |:--                                    |
+|F9             |menu                                   |
+|c              |skift mellem synlig og skjult          |
+|e              |rediger fil                            |
+|h              |aktivere kontekstuel hjælp             |
+|m              |ændre tilladelser                      |
+|n              |ny fil eller dir                       |
+|o              |skift ejerskab                         |
+|r              |omdøb fil eller dir                    |
+|q              |afslut menu                            |
+|t              |tøm mappen trash                       |
+|x              |flyt fil eller dir til mappen trash    |
+|y              |confirm flyt til mappen trash          |
+|z              |reetabler alt fra mappen trash         |
+|pile taster    |naviger rundt                          |
+|Esc            |afslut eller fortryd                   |
+|Enter          |vælg side                              |
+|Home           |standard side                          |
+EOMD;
+    return (new Parsedown())->text($content);
+}
 function newClass($file) {
     $dirName = dirname($file);
     $baseName= basename($file);
@@ -358,11 +400,6 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
     
-    function colon() {
-        echo json_encode([CONFIRM_COMMAND,'message was '.$_GET['mes']]);
-    }
-    
-    
     function edit() {
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
@@ -376,6 +413,12 @@ class NNNAPI {
         echo json_encode([CONFIRM_COMMAND,'trash emptied']);
     }
 
+    function help() {
+        $typeHelpFunc = __NAMESPACE__.'\\'.$_GET['type'].'Help';
+        $content = $typeHelpFunc();
+        echo json_encode(['',(new Parsedown())->text($content)]);
+    }
+        
     function ls() {
         $dirList = [];
         $dir = 'data/'.$_GET['curdir'];
@@ -416,7 +459,7 @@ class NNNAPI {
         lgdIn_mkdir($txtinputDataPath);
         lgdIn_copy('config/datafile',"$txtinputDataPath/index.md");
         newClass($txtinputPath);
-        echo [REDRAW_DIR,''];
+        echo json_encode([REDRAW_DIR,'']);
     }
 
     function mv() {
@@ -456,7 +499,7 @@ class NNNAPI {
         }
         renameOnExists($imgSelPath,$imgTxtinputPath);
         renameExterns($_GET['curdir'],$_GET['selname'],$_GET[' txtinput']);
-        echo [REDRAW_DIR,''];
+        echo json_encode([REDRAW_DIR,'']);
     }
 
     function newFile() {
@@ -465,7 +508,7 @@ class NNNAPI {
         if (atTopDir() || !isLegaldataFileName() || !isOwnerOf($_GET['curdir']))
             return;
         lgdIn_copy('config/datafile',$txtinputDataPath);
-        echo [REDRAW_DIR,''];
+        echo json_encode([REDRAW_DIR,'']);
     }
 
     function rm() {
