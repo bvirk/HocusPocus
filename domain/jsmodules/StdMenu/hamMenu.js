@@ -124,7 +124,7 @@ export function lidNormal() {
 }
 
 export function quitMenu() {
-    document.getElementById("myModal").style.display = "none";
+    $('#myModal').css('display','none');
     $("#wdFiles").empty();
     setCurkeyhandler(KeyHandler.NOMENU);
     document.cookie = "dialog=off; path=/; SameSite=None; Secure";
