@@ -1,8 +1,9 @@
 import { hamDrawMenu, statusLine,lidInverse,lidNormal,cdback,quitMenu,showInput,hideInput,drawRefTypes,refTypes,APIName } from "./hamMenu.js";
 import { request } from "../jslib/request.js";
-import { showDataDir, showCssOrJsFiles, curDir, nopJSCommand,savedFiletoeditResponse } from "./reqCallBacks.js";
+import { showDataDir, showCssOrJsFiles, curDir, nopJSCommand,savedFiletoeditResponse,importHelp } from "./reqCallBacks.js";
 
 let curkeyhandler;
+let lastCurkeyhandler;
 
 window.addEventListener("keydown", delegateEListener,true);
 
@@ -40,6 +41,9 @@ function cssOrJs(event) {
         case "e":
             let filetoedit = curDir[cid][0];
             request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
+            break;
+        case "h":
+            help('cssOrJs',KeyHandler.CSSORJS);
             break;
         default:
             return;
@@ -94,6 +98,33 @@ function hasEscape(event) {
     }
 }
 
+function help(type,keyhandler) {
+    lastCurkeyhandler = keyhandler;
+    $('#modal-content').css('display','none');
+    if ($('#dialog-help').attr('data-type') != type) {
+        request(APIName,'help','&type='+type,importHelp);
+        $('#dialog-help').attr('data-type',type);
+    } 
+    $('#dialog-help').css('display','block');
+    curkeyhandler =KeyHandler.HELPLEAVER;
+}
+
+function helpLeaver(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+        case "q":
+            $('#dialog-help').css('display','none');
+            $('#modal-content').css('display','flex');
+            curkeyhandler =lastCurkeyhandler;
+            break;
+        default:
+            return;
+    }
+    event.preventDefault();
+}
+
 function isLoggedIn() {
     if (isLoggedin) {
         return true;
@@ -109,7 +140,8 @@ export const KeyHandler = Object.freeze({
     NEWFILEORDIR: newFileOrDir,
     DELETEFILEORDIR: deleteFileOrDir,
     REFS: refs,
-    CSSORJS: cssOrJs
+    CSSORJS: cssOrJs,
+    HELPLEAVER: helpLeaver
 });
 
 function lsDataDir(dir = undefined) {
@@ -174,7 +206,10 @@ function navigate(event) {
             case "e": // edit
                 let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1][0] == '/' ? '/index.md':'');
                 request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
-                break;        
+                break;  
+            case "h": // help
+                help('nav',KeyHandler.NAV);
+                break;
             case "m": // modify file permission
                 if (isLoggedIn()) {
                     $("#command").attr("value",'chmod');
