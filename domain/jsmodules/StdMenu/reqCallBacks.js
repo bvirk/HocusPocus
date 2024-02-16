@@ -74,3 +74,10 @@ export function showCssOrJsFiles() {
     curDir = catchResp();
     drawCssOrJsList(curDir);
 }
+
+export function importHelp() {
+    if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
+        return;
+    let content = catchResp()[1];
+    $('#dialog-help').html(content);
+}
