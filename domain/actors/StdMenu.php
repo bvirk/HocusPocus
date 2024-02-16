@@ -1,9 +1,7 @@
 <?php
 namespace actors;
 
-
-
-function hamMenu() {
+function dialog() {
     global $pe;
     $thisUrl='url=/'.implode('/',$pe);
     [$ahref,$atxt] = isLoggedIn() 
@@ -16,7 +14,8 @@ function hamMenu() {
     ?> <button id="hammenu" onclick="allFuncs.hamDrawMenu();">&#8801;</button>
     <a title='extern dependencies' href='/?path=progs/html/extern&amp;refer=<?=implode('/',$pe)?>'>☕</a>
     <div id="myModal" class="modal">
-        <div class="modal-content">
+    <div id="dialog-help" data-type="kurt" class="dialog-help">XYZ</div>
+    <div id="modal-content" class="modal-content">
             <div>
                 <div>
                     <span title="Home page" ><a id='navHome' onClick ='allFuncs.cdhome();'>⌂ </a></span>
@@ -50,7 +49,7 @@ class StdMenu extends PageAware {
     protected $jsFiles= ['/js/jquery.min.js'];
 
     function stdContent() {
-    	hamMenu();
+    	dialog();
         echo $this->body;
 	}
 }
