@@ -14,7 +14,7 @@ function dialog() {
     ?> <button id="hammenu" onclick="allFuncs.hamDrawMenu();">&#8801;</button>
     <a title='extern dependencies' href='/?path=progs/html/extern&amp;refer=<?=implode('/',$pe)?>'>☕</a>
     <div id="myModal" class="modal">
-    <div id="dialog-help" data-type="kurt" class="dialog-help">XYZ</div>
+    <div id="dialog-help" data-type="unref" class="dialog-help">XYZ</div>
     <div id="modal-content" class="modal-content">
             <div>
                 <div>
