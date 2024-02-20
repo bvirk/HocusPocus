@@ -10,6 +10,8 @@ if (!array_key_exists(LOGGEDIN,$_SESSION)) {
 //  else
         $_SESSION[LOGGEDIN]='';
 }
+//setcookie('user',$_SESSION[LOGGEDIN],0,'/','',true,false);
+
 if (!array_key_exists('editmode',$_SESSION))
     $_SESSION['editmode']=DEFAULTEDITMODE;
 
