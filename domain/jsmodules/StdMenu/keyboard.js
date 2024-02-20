@@ -1,6 +1,6 @@
 import { hamDrawMenu, statusLine,lidInverse,lidNormal,cdback,quitMenu,showInput,hideInput,drawRefTypes,refTypes,APIName } from "./hamMenu.js";
 import { request } from "../jslib/request.js";
-import { showDataDir, showCssOrJsFiles, curDir, nopJSCommand,savedFiletoeditResponse,importHelp } from "./reqCallBacks.js";
+import { showDataDir, showExtFiles, curDir, nopJSCommand,savedFiletoeditResponse,importHelp } from "./reqCallBacks.js";
 
 let curkeyhandler;
 let lastCurkeyhandler;
@@ -125,6 +125,39 @@ function helpLeaver(event) {
     event.preventDefault();
 }
 
+function img(event) {
+    if (event.defaultPrevented)
+        return;
+    switch (event.key) {
+        case "Escape":
+        case "ArrowLeft":
+        case "q":
+            lsDataDir();    
+            break;
+        case "ArrowDown":
+            arrowDown(curDir.length);
+            break;
+        case "ArrowUp":
+            arrowUp(curDir.length);
+            break;
+        case "h":
+            help('img',KeyHandler.IMG);
+            break;
+        case "u":
+            if (loggedInOwnsSel) {  
+                let selDataPathDir=selDataPath.substring(0,selDataPath.lastIndexOf("."));
+                let url= `/?path=progs/uploadForm&refer=${location.pathname}&updest=img/${selDataPathDir}`;
+                window.location = url; 
+                //statusLine(url);
+            } else
+                statusLine("You are not the file owner");
+            break;
+        default:
+            return;
+    }
+    event.preventDefault();
+}
+
 function isLoggedIn() {
     if (isLoggedin) {
         return true;
@@ -141,7 +174,8 @@ export const KeyHandler = Object.freeze({
     DELETEFILEORDIR: deleteFileOrDir,
     REFS: refs,
     CSSORJS: cssOrJs,
-    HELPLEAVER: helpLeaver
+    HELPLEAVER: helpLeaver,
+    IMG: img
 });
 
 function lsDataDir(dir = undefined) {
@@ -167,6 +201,7 @@ function navigate(event) {
                         lsDataDir(curDirStr + '/'+curDir[cid][0]);
                     else {
                         selDataPath=curDirStr+'/'+curDir[cid][0];
+                        loggedInOwnsSel=curDir[cid][4];
                         curkeyhandler=KeyHandler.REFS;
                         drawRefTypes();
                         statusLine("chose reference type");
@@ -314,10 +349,13 @@ function refs(event) {
             break;
         case "ArrowRight":
             let type=refTypes[cid][0];
-            let callBack = type == 'css' || type == 'js' ? showCssOrJsFiles : null;
+            let callBack = type == 'css' || type == 'js' || type == 'img' ? showExtFiles : null;
             if (callBack !== null) {
-                request(APIName,'lsExt','&selDataPath='+selDataPath+'&type='+type,callBack);
-                curkeyhandler=KeyHandler.CSSORJS;
+                let selDataPathFileName=selDataPath.split('.')[0];
+                request(APIName,'lsExt','&selDataPathFileName='+selDataPathFileName+'&type='+type,callBack);
+                curkeyhandler = type == 'img' 
+                    ? KeyHandler.IMG
+                    : KeyHandler.CSSORJS;
             } else 
                 statusLine(refTypes[cid][0]+' was not assigned');
             //
