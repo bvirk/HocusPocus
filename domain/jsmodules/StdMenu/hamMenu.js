@@ -6,7 +6,7 @@ export const APIName='/?path=progs/NNNAPI';
 export let refTypes;
 let isFirstDraw;
 
-export function cdback(){
+export let cdback = () => {
     if (curDirStr.length > /* 'pages' */ 5) { 
         let rpos=curDirStr.lastIndexOf('/');
         curDirStr = curDirStr.substring(0,rpos);
@@ -15,19 +15,19 @@ export function cdback(){
     }
 }
 
-export function cdhome(){
+export let cdhome = () => {
     curDirStr = 'pages';
     $("#wdFiles").empty();
     request(APIName,'ls','&curdir='+curDirStr,showDataDir);
 }
 
-export function cdtonum(num){
+export let cdtonum = num => {
     curDirStr += '/'+curDir[num][0]
     //console.log(curDirStr);
     request(APIName,'ls','&curdir='+curDirStr,showDataDir);
 }
 
-export function drawRefTypes() {
+export let drawRefTypes = () => {
     refTypes = [
          ['css'," abelist",'fsp','noclass']
         ,['js'," abelist",'fsp','noclass']
@@ -35,7 +35,7 @@ export function drawRefTypes() {
     ];
     drawDirList(refTypes);
 }
-export function drawCssOrJsList(dirList) {
+export let drawExtFilesList = dirList => {
     //alert(dirList);
     //return;
     $('#navBack').css('display','inline'); 
@@ -44,7 +44,9 @@ export function drawCssOrJsList(dirList) {
         let look=dirList[index][0];
         let href =  dirList[index][1] == 'e' 
             ? '/?path=progs/html/source&file='+dirList[index][0]
-            : '#';
+            : (dirList[index][1] == 'i'
+                ? '/'+dirList[index][0]
+                : '#');
         let [itemHead,itemTail] = ["<a href='" + href + "' ","</a>"];
         $("#wdFiles").append("<li>"
             +itemHead
@@ -57,7 +59,7 @@ export function drawCssOrJsList(dirList) {
     initDomElements(dirList);
 }
 
-export function drawDirList(dirList) {
+export let drawDirList = dirList => {
     let backVisibility = curDirStr.length > 5 ? 'inline' : 'none';
     $('#navBack').css('display',backVisibility); 
     $('#wdFiles').empty();
@@ -85,7 +87,7 @@ export function drawDirList(dirList) {
 }
 
 
-export function hamDrawMenu() {
+export let hamDrawMenu = () => {
     document.cookie = "dialog=on; SameSite=None; Secure; path=/";
     setCurkeyhandler(KeyHandler.NAV);
     curDirStr=location.pathname.length>1 ? location.pathname.substring(1): defaultPage; // : never happends
@@ -97,7 +99,7 @@ export function hamDrawMenu() {
     request(APIName,'ls','&curdir='+curDirStr,showDataDir); 
 }
 
-export function initDomElements(dirList) {
+export let initDomElements = dirList => {
     lid=[];
     let method = location.pathname.length >1 ? location.pathname.split('/').pop():'index'
     cid=0;
@@ -112,31 +114,31 @@ export function initDomElements(dirList) {
     lidInverse();
 }
 
-export function lidInverse() {
+export let lidInverse = () => {
     let color= $(lid[cid]).css("color");
     $(lid[cid]).css("backgroundColor",color).css("color","white");
 }
 
 
-export function lidNormal() {
+export let lidNormal = () => {
     let color= $(lid[cid]).css("backgroundColor");
     $(lid[cid]).css("backgroundColor","white").css("color",color);
 }
 
-export function quitMenu() {
+export let quitMenu = () => {
     $('#myModal').css('display','none');
     $("#wdFiles").empty();
     setCurkeyhandler(KeyHandler.NOMENU);
     document.cookie = "dialog=off; path=/; SameSite=None; Secure";
 }
 
-export function showInput(prompt) {
+export let showInput = prompt => {
     $("#statusLine").css('display','none');
     $("#txtinputlabel").css('display','block').text(prompt);
     $("#txtinput").css('display','block').focus();
 }
 
-export function hideInput() {
+export let hideInput = () => {
     $("#statusLine").css('display','block');
     $("#txtinputlabel").css('display','none');
     $("#txtinput").css('display','none');
@@ -157,6 +159,6 @@ export async function statusLine(mes='',delay=0) {
         $("#statusLine").html(defText);
 }
 
-export function toEditMode(mode) {
+export let toEditMode = mode => {
     request(APIName,'setSessionVar','&sessionvar=editmode&editmode='+mode,setEditMode);
 }
