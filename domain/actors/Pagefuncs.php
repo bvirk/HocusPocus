@@ -96,8 +96,33 @@ function hasReadAccessFor($owner,$readFlag,$readFlagDir) {
     return $_SESSION[LOGGEDIN] == APACHE_USER || $owner == $_SESSION[LOGGEDIN] || ($readFlag & $readFlagDir);
 }
 
+function imgWxH($file) {
+    $imgInfo = getimagesize($file);
+    return "{$imgInfo[0]}x{$imgInfo[1]}";
+}
+
 function isLoggedIn() {
     return in_array($_SESSION[LOGGEDIN],USERS);
+}
+
+/**
+ * removes implicit bytes prefix K,M and G of sizes
+ * @param string $digUnit is number followed by K,M or G
+ * @return int is integer
+ */
+function kmgStrToInt(string $digUnit):int {
+    $val = intval($digUnit);
+    $unit = strtolower(trim($digUnit, " 1..9"));
+    switch($unit) {
+        // The 'G' modifier is available
+        case 'g':
+            $val *= 1024;
+        case 'm':
+            $val *= 1024;
+        case 'k':
+            $val *= 1024;
+    }
+    return $val;
 }
 
 function kvsepEncode($arr,$kv='=',$sep=';') {
@@ -155,9 +180,21 @@ function pageExterns(string $path,mixed $extArr) : array {
  * @return array of [filename,existcode,fileDescription,filetype] arrays where existcode is either 'e' or 'n' and filetype one of css|js followed by Page|Url|Class
  */
 function pageExternsOfType(string $type, string $path): mixed {
-    if (array_key_exists('extension',pathinfo($path)))
-        $path = dirname($path).'/'.pathinfo($path,PATHINFO_FILENAME);
+    if ($type == 'img')
+        return pageImages($path);
     return pageExterns($path,$type === 'js' ? ['js'=>['js','php']] : ['css'=>['css']]);
+}
+
+function pageImages(string $path) {
+    $files = [];
+    foreach (glob('img/*') as $file) {
+        if (is_dir($file))
+            continue;
+        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'jointImage'];
+    }
+    foreach (glob("img/$path/*") as $file) 
+        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'pageImage'];
+    return $files;
 }
 
 function queryString($exclude='path') {
