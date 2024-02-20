@@ -1,6 +1,6 @@
 
 import { request, httpRequest  } from "../jslib/request.js";
-import { statusLine, drawDirList, drawCssOrJsList, APIName } from "./hamMenu.js";
+import { statusLine, drawDirList, drawExtFilesList, APIName } from "./hamMenu.js";
 
 export let curDir;
 
@@ -68,11 +68,11 @@ export function showDataDir() {
     drawDirList(curDir);
 }
 
-export function showCssOrJsFiles() {
+export function showExtFiles() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     curDir = catchResp();
-    drawCssOrJsList(curDir);
+    drawExtFilesList(curDir);
 }
 
 export function importHelp() {
