@@ -15,6 +15,7 @@ actors\echoAssignments([
         ,"curDirStr"    // current directory as it apears in url after https://domain.tld/ 
         ,"lid"          // DOM array of nodes that displays files
         ,"selDataPath"
+        ,"loggedInOwnsSel" 
         ,"refType"
     ],"let"); ?>
 
