@@ -84,7 +84,25 @@ function hasWriteAccess($path) {
             
 }
 
+function imgHelp() {
+    $content = <<<EOMD
+#### Image navigering
+
+|               |                  |       
+|:--            |:--               |       
+|q              |quit this help    |        
+|u              |Upload image     |
+|x              |thash file       |
+|y              |confirm trashing |
+|Arrows ↨       |pan up or down    |     
+|Esc            |quit this help    |       
+EOMD;
+    return (new Parsedown())->text($content);
+}
+
+
 function isAUser($user) {
+    
     if (!in_array($user,USERS)) {
         echo json_encode([CONFIRM_COMMAND,"user $user don't exists"]);
         return false;
@@ -438,16 +456,17 @@ class NNNAPI {
                 $file
                 ,$liClass
                 ,\actors\filespec("$dir/$file")
-                ,\actors\enheritChain($implClass)];
+                ,\actors\enheritChain($implClass)
+                , $owner == $_SESSION[LOGGEDIN] ? 1 : 0];
             
         }
         echo json_encode($dirList);
     }
 
     function lsExt() {
-        $selDataPath = $_GET['selDataPath'];
+        $selDataPathFileName = $_GET['selDataPathFileName'];
         $type = $_GET['type'];
-        echo json_encode(pageExternsOfType($type,$selDataPath));
+        echo json_encode(pageExternsOfType($type,$selDataPathFileName));
     }
     
     function mkDir() {
@@ -558,6 +577,9 @@ class NNNAPI {
         echo json_encode([$_GET['item0'] ?? '',$value]);
     }
 
+    function test() {
+        echo json_encode(['kurt','korte']);
+    }
 
     function tooglePublic() {
         $selDataPathDir='data/'.$_GET['curdir'];
