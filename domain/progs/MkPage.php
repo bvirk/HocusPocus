@@ -32,7 +32,7 @@ class MkPage {
                         $retval .= str_repeat("  ",$indent) . "$line\n";
                         $indent += preg_match("%</$tag[1]>\$%",$line,$unused) ? 0 : 1;
                     } else {
-                        $indent -= preg_match('%^</\w+%',$line,$tag) ? 1 : 0;
+                        $indent -= preg_match('%^</\w+%',$line,$tag) && $indent > 0 ? 1 : 0;
                         $retval .= str_repeat("  ",$indent) . "$line\n";
                     }
                 }

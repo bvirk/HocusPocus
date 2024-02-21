@@ -12,7 +12,7 @@ function dialog() {
     ? ['🌥 ☐','click to edit in browser','toEditMode("http");']
     : ['🌥 ☑','click to edit locally only','toEditMode("file");'];
     ?> <button id="hammenu" onclick="allFuncs.hamDrawMenu();">&#8801;</button>
-    <a title='extern dependencies' href='/?path=progs/html/extern&amp;refer=<?=implode('/',$pe)?>'>☕</a>
+    <a title='prettify html' href='/?path=progs/mkPage&amp;redir=<?=implode('/',$pe)?>'>🦋</a>
     <div id="myModal" class="modal">
     <div id="dialog-help" data-type="unref" class="dialog-help">XYZ</div>
     <div id="modal-content" class="modal-content">
