@@ -21,16 +21,6 @@ function datafileExists(string &$dataFile, array $extensions = ['.md','.php']):b
     return false;
 }
 
-/**
- * Echos javascript assignment list
- * @param array $assm is all the assignment
- * @param string $dclr is the declaration before each assignment 
- */
-function echoAssignments(array $assm, string $dclr='const'):void {
-    foreach ($assm as $asm)
-        echo "   $dclr $asm;\n";
-}
-
 function enheritChain($phpClassFile,$isFirstCall=true) {
     $slash= $isFirstCall ? '' : "\\";
     
