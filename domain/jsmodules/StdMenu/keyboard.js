@@ -165,6 +165,21 @@ export const KeyHandler = Object.freeze({
     IMG: img
 });
 
+function loggedInOwnsDirOfSel() {
+    if (rsp.dirPermStat & 1)
+        return true;
+    dlg.statusLine("you dont owns dir");
+    return false;
+}
+
+function loggedInIsAdmin() {
+    if (loggedInIsApache)
+        return true;
+    dlg.statusLine("logged in must be www-data");
+    return false;
+}
+
+
 function lsDataDir(dir = undefined) {
     //alert(dir);
     if (dir)
@@ -217,7 +232,7 @@ function navigate(event) {
                 dlg.statusLine('key "b" disabled',1000);
                 break;
             case "c": // toogle public
-                if (isLoggedIn()) {
+                if (dlg.loggedInOwnsSel()) {
                     if (rsp.curDir[dlg.cid][1][0] == '/')
                         dlg.statusLine('only file!')
                     else {
@@ -234,7 +249,7 @@ function navigate(event) {
                 help('nav',KeyHandler.NAV);
                 break;
             case "m": // modify file permission
-                if (isLoggedIn()) {
+                if (loggedInIsAdmin()) {
                     $("#command").attr("value",'chmod');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
@@ -245,13 +260,13 @@ function navigate(event) {
             
 
             case "n": // new file or directory 
-                if (ownsDirOfSel() && !atTopDir()) {
+                if (loggedInOwnsDirOfSel() && !atTopDir()) {
                     dlg.statusLine("'f'ile/'d'ir?");
                     curkeyhandler=KeyHandler.NEWFILEORDIR;
                 }    
                 break;
             case "o": // set owner of file or dir
-                if (isLoggedIn()) {
+                if (loggedInIsAdmin()) {
                     $("#command").attr("value",'chown');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
@@ -261,7 +276,7 @@ function navigate(event) {
                 }
                 break;
             case "r": // rename file or dir
-                if (isLoggedIn()) {
+                if (dlg.loggedInOwnsSel()) {
                     $("#command").attr("value",rsp.curDir[dlg.cid][1][0] == '/' ? 'mvDir':'mv');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
@@ -277,7 +292,7 @@ function navigate(event) {
                     request(dlg.APIName,'emptyTrash','',rsp.nopJSCommand);
                 break;
             case "x": // remove file or directory
-                if (isLoggedIn()) {
+                if (dlg.loggedInOwnsSel()) {
                     dlg.statusLine("remove selected [Esc cancels]");
                     curkeyhandler=KeyHandler.DELETEFILEORDIR;
                 }
@@ -321,13 +336,6 @@ function newFileOrDir(event) {
         default:
             return;
     }
-}
-
-function ownsDirOfSel() {
-    if (rsp.dirPermStat & 1)
-        return true;
-    dlg.statusLine("you dont owns dir");
-    return false;
 }
 
 function atTopDir() {

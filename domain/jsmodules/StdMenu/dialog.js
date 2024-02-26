@@ -155,7 +155,7 @@ export let lidNormal = () => {
     $(lid[cid]).css("backgroundColor","white").css("color",color);
 }
 
-export function ownsSel() {
+export function loggedInOwnsSel() {
     if (permStatSel & 1)
         return true;
     //statusLine("you dont owns selected");

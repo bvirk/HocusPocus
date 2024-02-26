@@ -57,7 +57,7 @@ export function savedFiletoeditResponse() {
         return;
     let fileResp = catchResp();
     dlg.statusLine(fileResp[0]+' served'+(dlg.ownsSel() ? '':' only'),5000);
-    if (fileResp[1] == 'http' && dlg.ownsSel())
+    if (fileResp[1] == 'http' && dlg.loggedInOwnsSel())
         window.open('/progs/edit/content','_blank');
 }
 
