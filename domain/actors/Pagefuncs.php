@@ -136,11 +136,11 @@ function kvsepEncode($arr,$kv='=',$sep=';') {
 }
 /**
  * Extern css or js files to a page
- * @param string $path is path to the datafile of the page
+ * @param string $path is path to the datafile of the page relative to directory data/
  * @param mixed $extArr is either ['css'=>['css']] or ['js'=>['js','php']]
  * @return array of [filename,existcode,fileDescription,filetype] arrays where existcode is either 'e' or 'n' and filetype one of css|js followed by Page|Url|Class 
  */
-function pageExterns(string $path,mixed $extArr) : array { 
+function pageExterns(string $path,mixed $extArr,$permStat) : array { 
     $ppe = explode('/',$path);
     $pfunc = array_slice($ppe,-1,1)[0];
     $pUrlDir=implode('/',array_slice($ppe,1,-1));
@@ -161,7 +161,7 @@ function pageExterns(string $path,mixed $extArr) : array {
                 [$eFlag,$desc] = file_exists($fileRef)
                     ? ['e',filespec($fileRef)]
                     : ['n',"file don't exist"];
-                $urltype[] = [$fileRef,$eFlag,$desc,$eType];
+                $urltype[] = [$fileRef,$eFlag,$desc,$eType,$permStat];
             }
             $slash='/';
         }
@@ -176,25 +176,36 @@ function pageExterns(string $path,mixed $extArr) : array {
 /**
  * wrapper around pageExterns
  * @param string $type is one of 'css' or 'js'
- * @param string $path is path to the datafile of the page
+ * @param string $path is path to the datafile of the page relative to data/
  * @return array of [filename,existcode,fileDescription,filetype] arrays where existcode is either 'e' or 'n' and filetype one of css|js followed by Page|Url|Class
  */
 function pageExternsOfType(string $type, string $path): mixed {
+    extract(pathinfo($path));
     if ($type == 'img')
-        return pageImages($path);
-    return pageExterns($path,$type === 'js' ? ['js'=>['js','php']] : ['css'=>['css']]);
+        return pageImages("$dirname/$filename",permStat("data/$path"));
+    return pageExterns("$dirname/$filename",$type === 'js' ? ['js'=>['js','php']] : ['css'=>['css']],permStat("data/$path"));
 }
 
-function pageImages(string $path) {
+function pageImages(string $path,$permStat) {
     $files = [];
     foreach (glob('img/*') as $file) {
         if (is_dir($file))
             continue;
-        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'jointImage'];
+        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'jointImage',$permStat];
     }
     foreach (glob("img/$path/*") as $file) 
-        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'pageImage'];
+        $files[] = [$file,'i',filespec($file).' '.imgWxH($file),'pageImage',$permStat];
     return $files;
+}
+
+/**
+ * Status of loggedin 'owns' (is group of path) or user www-data is logged in
+ * @param string $path is file in request
+ * @return int is bit0=1 for user 'owns' and bit1=1 for www-data is logged in
+ */
+function permStat(string $path): int {
+    return (posix_getgrgid(filegroup($path))['name'] == $_SESSION[LOGGEDIN])
+    | (($_SESSION[LOGGEDIN] == APACHE_USER) *2);
 }
 
 function queryString($exclude='path') {
