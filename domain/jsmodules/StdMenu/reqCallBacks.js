@@ -1,8 +1,8 @@
-
 import { request, httpRequest  } from "../jslib/request.js";
-import { statusLine, drawDirList, drawExtFilesList, APIName } from "./hamMenu.js";
+import * as dlg from "./dialog.js";
 
 export let curDir;
+export let dirPermStat;
 
 function catchResp() {
     try {
@@ -10,14 +10,14 @@ function catchResp() {
         
         if (resp[0] == isPHPErr) { // Used without error too, as confirmation of commands
             if (resp[1].length)
-                statusLine(resp[1]);
+                dlg.statusLine(resp[1]);
         }
         return resp;
     } catch(e) {
         if (e.message.startsWith('JSON.parse')) {
-            statusLine(httpRequest.responseText);
+            dlg.statusLine(httpRequest.responseText);
          } else
-            statusLine('perhaps som javascript error');
+            dlg.statusLine('perhaps som javascript error');
     }
 }
 
@@ -27,8 +27,8 @@ export function nopJSCommand() {
     let resp = catchResp();
     if (resp[0] == redrawDir || resp[0] == redrawUpperDir) {
         if (resp[0] == redrawUpperDir)
-            curDirStr=curDirStr.substring(0,curDirStr.lastIndexOf('/'))
-        request(APIName,'ls','&curdir='+curDirStr,showDataDir);
+            dlg.setCurDirStr(dlg.curDirStr.substring(0,dlg.curDirStr.lastIndexOf('/')));
+        request(dlg.APIName,'ls','&curdir='+dlg.curDirStr,showDataDir);
     }    
 }
 
@@ -56,23 +56,25 @@ export function savedFiletoeditResponse() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let fileResp = catchResp();
-    statusLine(fileResp[0]+' served',5000);
-    if (fileResp[1] == 'http' && isLoggedin)
+    dlg.statusLine(fileResp[0]+' served'+(dlg.ownsSel() ? '':' only'),5000);
+    if (fileResp[1] == 'http' && dlg.ownsSel())
         window.open('/progs/edit/content','_blank');
 }
+
+export let setCurDir = val => curDir=val
 
 export function showDataDir() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
-    curDir = catchResp();
-    drawDirList(curDir);
+    [dirPermStat,curDir] = catchResp();
+    dlg.drawDirList(curDir);
 }
 
 export function showExtFiles() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     curDir = catchResp();
-    drawExtFilesList(curDir);
+    dlg.drawExtFilesList(curDir);
 }
 
 export function importHelp() {

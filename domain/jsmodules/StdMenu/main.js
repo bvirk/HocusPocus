@@ -1,17 +1,49 @@
-import { hamDrawMenu,cdback,cdhome,cdtonum,toEditMode,APIName,quitMenu } from "./hamMenu.js";
-import { setCurkeyhandler, KeyHandler } from "./keyboard.js";
+import * as dlg from "./dialog.js";
+import * as keyb from "./keyboard.js";
 import { postString } from "../jslib/request.js";
 import { submitAll } from "./formsubmit.js";
-import { savedFileResponse } from "./reqCallBacks.js";
+import * as rsp from "./reqCallBacks.js";
 
 allFuncs.saveContent = function(filetoedit) {
-    postString(APIName,'saveFile',filetoedit,$("#contentdiv").text(),savedFileResponse);
+    postString(dlg.APIName,'saveFile',filetoedit,$("#contentdiv").text(),rsp.savedFileResponse);
 }
-setCurkeyhandler(KeyHandler.NOMENU);
-allFuncs.hamDrawMenu = hamDrawMenu;
+keyb.setCurkeyhandler(keyb.KeyHandler.NOMENU);
+allFuncs.hamDrawMenu = dlg.hamDrawMenu;
 allFuncs.submitAll = submitAll;
-allFuncs.cdtonum = cdtonum;
-allFuncs.cdback = cdback;
-allFuncs.cdhome = cdhome;
-allFuncs.close = quitMenu;
-allFuncs.toEditMode = toEditMode;
+allFuncs.cdtonum = dlg.cdtonum;
+allFuncs.cdback = dlg.cdback;
+allFuncs.cdhome = dlg.cdhome;
+allFuncs.close = dlg.quitMenu;
+allFuncs.toEditMode = dlg.toEditMode;
+
+/*
+new object and their responsibilities
+
+Dirlist (holds the dirlist, and reports about and draw itselv
+    vars:
+        loggedInOwns
+        obj: Line[]
+        selected
+  
+    methods:
+        void Draw()
+        void up()
+        void down()
+        void invertline()
+        obj selected()
+        void rm()
+        void rmDir()
+
+
+
+Line
+    vars:
+        name:
+        isDirTag:
+        desc:
+        hierStr
+        owedByLoggedIn
+    method:
+        void rename()
+
+*/

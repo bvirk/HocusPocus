@@ -1,27 +1,14 @@
-import { hamDrawMenu, statusLine,lidInverse,lidNormal,cdback,quitMenu,showInput,hideInput,drawRefTypes,refTypes,APIName } from "./hamMenu.js";
+import * as dlg from "./dialog.js";
 import { request } from "../jslib/request.js";
-import { showDataDir, showExtFiles, curDir, nopJSCommand,savedFiletoeditResponse,importHelp } from "./reqCallBacks.js";
+import * as rsp from "./reqCallBacks.js";
 
 let curkeyhandler;
 let lastCurkeyhandler;
+export let selDataPath;
 
 window.addEventListener("keydown", delegateEListener,true);
 
-function arrowDown(length) {
-    lidNormal();
-    cid += cid < length-1 ? 1 : 1-length;
-    lidInverse();
-    lid[cid].focus();
-    statusLine();
-}
-
-function arrowUp(length) {
-    lidNormal();
-    cid -= cid ? 1 : 1-length;
-    lid[cid].focus();
-    lidInverse();
-    statusLine();
-}
+export let clearSelDataPath = () => selDataPath=''
 
 function cssOrJs(event) {
     if (event.defaultPrevented)
@@ -33,14 +20,14 @@ function cssOrJs(event) {
             lsDataDir();    
             break;
         case "ArrowDown":
-            arrowDown(curDir.length);
+            dlg.arrowDown(rsp.curDir.length);
             break;
         case "ArrowUp":
-            arrowUp(curDir.length);
+            dlg.arrowUp(rsp.curDir.length);
             break;
         case "e":
-            let filetoedit = curDir[cid][0];
-            request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
+            let filetoedit = rsp.curDir[dlg.cid][0];
+            request(dlg.APIName,'edit','&filetoedit='+filetoedit,rsp.savedFiletoeditResponse);
             break;
         case "h":
             help('cssOrJs',KeyHandler.CSSORJS);
@@ -65,20 +52,20 @@ function deleteFileOrDir(event) {
             toNavigate();
             break;
         case "y": // delete file or dir
-            let command=curDir[cid][1][0] == '/' ? 'rmDir' : 'rm';
+            let command=rsp.curDir[dlg.cid][1][0] == '/' ? 'rmDir' : 'rm';
             let isIndex = command == 'rmDir' 
                 ? false
-                : (curDir[cid][0].split('.')[0] == 'index'
+                : (rsp.curDir[dlg.cid][0].split('.')[0] == 'index'
                     ? true
                     : false);
-            let numSlash = curDirStr.split('/').length-1;
+            let numSlash = dlg.curDirStr.split('/').length-1;
             if (numSlash==0 || (numSlash==1 && isIndex)) {
-                statusLine("delete language or any default page thereoff not allowed");
+                dlg.statusLine("delete language or any default page thereoff not allowed");
                 curkeyhandler=KeyHandler.NAV;
                 break;
             }
-            let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
-            request(APIName,command,args,nopJSCommand);
+            let args = '&curdir='+dlg.curDirStr+'&selname='+rsp.curDir[dlg.cid][0];
+            request(dlg.APIName,command,args,rsp.nopJSCommand);
             curkeyhandler=KeyHandler.NAV;
             break;
         default:
@@ -102,7 +89,7 @@ function help(type,keyhandler) {
     lastCurkeyhandler = keyhandler;
     $('#modal-content').css('display','none');
     if ($('#dialog-help').attr('data-type') != type) {
-        request(APIName,'help','&type='+type,importHelp);
+        request(dlg.APIName,'help','&type='+type,rsp.importHelp);
         $('#dialog-help').attr('data-type',type);
     } 
     $('#dialog-help').css('display','block');
@@ -135,22 +122,22 @@ function img(event) {
             lsDataDir();    
             break;
         case "ArrowDown":
-            arrowDown(curDir.length);
+            dlg.arrowDown(rsp.curDir.length);
             break;
         case "ArrowUp":
-            arrowUp(curDir.length);
+            dlg.arrowUp(rsp.curDir.length);
             break;
         case "h":
             help('img',KeyHandler.IMG);
             break;
         case "u":
-            if (loggedInOwnsSel) {  
+            if (dlg.permStatSel==1) {  
                 let selDataPathDir=selDataPath.substring(0,selDataPath.lastIndexOf("."));
                 let url= `/?path=progs/uploadForm&refer=${location.pathname}&updest=img/${selDataPathDir}`;
                 window.location = url; 
-                //statusLine(url);
+                //dlg.statusLine(url);
             } else
-                statusLine("You are not the file owner");
+                dlg.statusLine("You are not the file owner");
             break;
         default:
             return;
@@ -162,7 +149,7 @@ function isLoggedIn() {
     if (isLoggedin) {
         return true;
     }
-    statusLine('not logged in',2000);
+    dlg.statusLine('not logged in',2000);
     return false;
 }
 
@@ -179,9 +166,11 @@ export const KeyHandler = Object.freeze({
 });
 
 function lsDataDir(dir = undefined) {
+    //alert(dir);
     if (dir)
-        curDirStr = dir
-    request(APIName,'ls','&curdir='+curDirStr,showDataDir);
+        dlg.setCurDirStr(dir)
+    //alert(dlg.curDirStr);
+    request(dlg.APIName,'ls','&curdir='+dlg.curDirStr,rsp.showDataDir);
     curkeyhandler=KeyHandler.NAV;
 }
 
@@ -191,56 +180,55 @@ function navigate(event) {
     try {
         switch(event.key) {
             case "ArrowDown":
-                arrowDown(curDir.length);
+                dlg.arrowDown(rsp.curDir.length);
                 break;
             case "ArrowUp":
-                arrowUp(curDir.length);
+                dlg.arrowUp(rsp.curDir.length);
                 break;
             case "ArrowRight":
-                    if (curDir[cid][1][0] == '/') 
-                        lsDataDir(curDirStr + '/'+curDir[cid][0]);
+                    if (rsp.curDir[dlg.cid][1][0] == '/') 
+                        lsDataDir(dlg.curDirStr + '/'+rsp.curDir[dlg.cid][0]);
                     else {
-                        selDataPath=curDirStr+'/'+curDir[cid][0];
-                        loggedInOwnsSel=curDir[cid][4];
+                        selDataPath=dlg.curDirStr+'/'+rsp.curDir[dlg.cid][0];
                         curkeyhandler=KeyHandler.REFS;
-                        drawRefTypes();
-                        statusLine("chose reference type");
+                        dlg.drawRefTypes();
+                        dlg.statusLine("chose reference type");
                     }
                 break;
             case "ArrowLeft":
-                    cdback();
+                    dlg.cdback();
                 break;
             case "Enter":
-                    let url='/'+curDirStr+'/'+curDir[cid][0];
-                    if ( curDir[cid][1][0] == '/')
+                    let url='/'+dlg.curDirStr+'/'+rsp.curDir[dlg.cid][0];
+                    if ( rsp.curDir[dlg.cid][1][0] == '/')
                         url +='/index';
                     else
                         url = url.split('.').shift();
-                    document.cookie = "dialog=off; path=/";
+                    document.cookie = "dialog=off; path=/; SameSite=None; Secure;"
                     window.location = url;
                 break;
             case "Home":
                 lsDataDir('pages');
                 break;
             case "Escape":
-                quitMenu();
+                dlg.quitMenu();
                 break;
             case "b":
-                statusLine('key "b" disabled',1000);
+                dlg.statusLine('key "b" disabled',1000);
                 break;
             case "c": // toogle public
                 if (isLoggedIn()) {
-                    if (curDir[cid][1][0] == '/')
-                        statusLine('only file!')
+                    if (rsp.curDir[dlg.cid][1][0] == '/')
+                        dlg.statusLine('only file!')
                     else {
-                        let args = '&curdir='+curDirStr+'&selname='+curDir[cid][0];
-                        request(APIName,'tooglePublic',args,nopJSCommand);
+                        let args = '&curdir='+dlg.curDirStr+'&selname='+rsp.curDir[dlg.cid][0];
+                        request(dlg.APIName,'tooglePublic',args,rsp.nopJSCommand);
                     }
                 }
                 break;
             case "e": // edit
-                let filetoedit = 'data/'+curDirStr+'/'+curDir[cid][0]+(curDir[cid][1][0] == '/' ? '/index.md':'');
-                request(APIName,'edit','&filetoedit='+filetoedit,savedFiletoeditResponse);
+                let filetoedit = 'data/'+dlg.curDirStr+'/'+rsp.curDir[dlg.cid][0]+(rsp.curDir[dlg.cid][1][0] == '/' ? '/index.md':'');
+                request(dlg.APIName,'edit','&filetoedit='+filetoedit,rsp.savedFiletoeditResponse);
                 break;  
             case "h": // help
                 help('nav',KeyHandler.NAV);
@@ -248,54 +236,55 @@ function navigate(event) {
             case "m": // modify file permission
                 if (isLoggedIn()) {
                     $("#command").attr("value",'chmod');
-                    $("#selname").attr("value",curDir[cid][0]);
+                    $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    showInput('file mode:');
+                    dlg.showInput('file mode:');
                     curkeyhandler=KeyHandler.ESC;
                 }
                 break;
             
 
             case "n": // new file or directory 
-                if (isLoggedIn()) {
-                    statusLine("'f'ile/'d'ir?");
+                if (ownsDirOfSel() && !atTopDir()) {
+                    dlg.statusLine("'f'ile/'d'ir?");
                     curkeyhandler=KeyHandler.NEWFILEORDIR;
                 }    
                 break;
             case "o": // set owner of file or dir
                 if (isLoggedIn()) {
                     $("#command").attr("value",'chown');
-                    $("#selname").attr("value",curDir[cid][0]);
+                    $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    showInput('set owner:');
+                    event.preventDefault();
+                    dlg.showInput('set owner:');
                     curkeyhandler=KeyHandler.ESC;
                 }
                 break;
             case "r": // rename file or dir
                 if (isLoggedIn()) {
-                    $("#command").attr("value",curDir[cid][1][0] == '/' ? 'mvDir':'mv');
-                    $("#selname").attr("value",curDir[cid][0]);
+                    $("#command").attr("value",rsp.curDir[dlg.cid][1][0] == '/' ? 'mvDir':'mv');
+                    $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    showInput('rename to:');
+                    dlg.showInput('rename to:');
                     curkeyhandler=KeyHandler.ESC;
                 }    
                 break;
             case "q":
-                    quitMenu();
+                    dlg.quitMenu();
                 break;
             case "t":
                 if (isLoggedIn())
-                    request(APIName,'emptyTrash','',nopJSCommand);
+                    request(dlg.APIName,'emptyTrash','',rsp.nopJSCommand);
                 break;
             case "x": // remove file or directory
                 if (isLoggedIn()) {
-                    statusLine("remove selected [Esc cancels]");
+                    dlg.statusLine("remove selected [Esc cancels]");
                     curkeyhandler=KeyHandler.DELETEFILEORDIR;
                 }
                 break;
             case "z": // undo trash - unified undo of all deletion to trash
                 if (isLoggedIn()) {
-                    request(APIName,'undoTrash','',nopJSCommand);
+                    request(dlg.APIName,'undoTrash','',rsp.nopJSCommand);
                 }
                 break;
             default:
@@ -306,7 +295,7 @@ function navigate(event) {
     } catch(e) {
         if (!(e instanceof Error)) 
             e = new Error(e);
-        statusLine(e.message);
+        dlg.statusLine(e.message);
     }
 }
 
@@ -319,17 +308,33 @@ function newFileOrDir(event) {
             break;
         case "d": // new directory
                 $("#command").attr("value","mkDir");
-                showInput('new directory:');
+                event.preventDefault();
+                dlg.showInput('new directory:');
                 curkeyhandler=KeyHandler.ESC;
             break;
         case "f": // new file
                 $("#command").attr("value","newFile");
-                showInput('new file:');
+                event.preventDefault();
+                dlg.showInput('new file:');
                 curkeyhandler=KeyHandler.ESC;
             break;
         default:
             return;
     }
+}
+
+function ownsDirOfSel() {
+    if (rsp.dirPermStat & 1)
+        return true;
+    dlg.statusLine("you dont owns dir");
+    return false;
+}
+
+function atTopDir() {
+    if (dlg.curDirStr != 'pages')
+        return false;
+    dlg.statusLine('not permited at topdir');
+    return true;
 }
 
 function refs(event) {
@@ -342,22 +347,21 @@ function refs(event) {
             lsDataDir();
             break;
         case "ArrowDown":
-            arrowDown(refTypes.length);
+            dlg.arrowDown(rsp.curDir.length);
             break;
         case "ArrowUp":
-            arrowUp(refTypes.length);
+            dlg.arrowUp(rsp.curDir.length);
             break;
         case "ArrowRight":
-            let type=refTypes[cid][0];
-            let callBack = type == 'css' || type == 'js' || type == 'img' ? showExtFiles : null;
+            let type=rsp.curDir[dlg.cid][0];
+            let callBack = type == 'css' || type == 'js' || type == 'img' ? rsp.showExtFiles : null;
             if (callBack !== null) {
-                let selDataPathFileName=selDataPath.split('.')[0];
-                request(APIName,'lsExt','&selDataPathFileName='+selDataPathFileName+'&type='+type,callBack);
+                request(dlg.APIName,'lsExt','&selDataPath='+selDataPath+'&type='+type,callBack);
                 curkeyhandler = type == 'img' 
                     ? KeyHandler.IMG
                     : KeyHandler.CSSORJS;
             } else 
-                statusLine(refTypes[cid][0]+' was not assigned');
+                dlg.statusLine(rsp.curDir[dlg.cid][0]+' was not assigned');
             //
             break;
         default:
@@ -371,8 +375,8 @@ export function setCurkeyhandler(func) {
 }
 
 function toNavigate() {
-    hideInput();
-    statusLine();
+    dlg.hideInput();
+    dlg.statusLine();
     curkeyhandler=KeyHandler.NAV;
 }
 
@@ -381,7 +385,7 @@ function whenNoMenu(event) {
         return;
     switch (event.key) {
         case "F9":
-            hamDrawMenu();
+            dlg.hamDrawMenu();
             break;
         case "Enter":
             document.execCommand('insertText',false,"↵\n");

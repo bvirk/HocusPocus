@@ -1,5 +1,5 @@
 <?php
-
+global $pe;
 echo "  <!-- Nasty globals -->\n  <script>\n   var allFuncs={};\n";
 
 actors\echoAssignments([
@@ -10,20 +10,13 @@ actors\echoAssignments([
     ,"redrawUpperDir='".REDRAW_UPPERDIR."'"
 ]);
 
-actors\echoAssignments([
-         "cid"          // index of current selected node that displays a files
-        ,"curDirStr"    // current directory as it apears in url after https://domain.tld/ 
-        ,"lid"          // DOM array of nodes that displays files
-        ,"selDataPath"
-        ,"loggedInOwnsSel" 
-        ,"refType"
-    ],"let"); ?>
-
+if (implode('/',$pe) != 'progs/edit/content'): ?>
 $(  function() {
         let dialogState=document.cookie.split('; ').find((row) => row.startsWith('dialog='))?.split('=')[1];
         if ( dialogState == 'on')
             allFuncs.hamDrawMenu();
     }
 );
+<?php endif; ?>
 </script>
-<script type='module' <?= actors\lastmRef('/jsmodules/StdMenu/main.js','src') ?>></script>
+<script type='module' <?= actors\lastmRef('/jsmodules/StdMenu/main.js','src') ?>></script> 
