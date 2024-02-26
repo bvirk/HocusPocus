@@ -6,7 +6,7 @@ Microprocessornes  kerne antal ekspansion og clockcycle frekvens øgning og mege
 
 i en [vps](https://en.wikipedia.org/wiki/Virtual_private_server) er det kerner - ligeså private som dem på desktop eller laptop computeren, man lejer remote med tilhørende gear - og en ip adresse.  Det er et alternativet til shared hosting og meget sjovere. Man er meget friere stillet til hvad der skal køre.
 
-Grundet markedet derfor er det ikke spor svært. Det er faktisk lettere for den viden man tilegner sig er grundviden - mens en shared hosting bare har noget service viden der retter sig mod kunde segmentet - og det kan godt virke bestemmer agtigt.  
+Grundet markedet, og dermed tilgængelig info, er det ikke spor svært. Det er faktisk mere berigende, for den viden man tilegner sig nærmer sig mere grundviden - mens en shared hosting bare har noget service viden der retter sig mod kunde segmentet.
 
 Viden eksponeres behjælpeligt af f.eks digitalocean.com - det er guider derfra der har gjort det let for mig.  
 

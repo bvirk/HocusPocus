@@ -27,7 +27,7 @@ PHP intelephense, php Debug og Live Sass Compiler gør det til en helt anden for
 Der går lidt tid før opmærksomheden retter sig mod alle de ting man får hjælp til. 
 
 Jeg er begyndt at finde fornøjelse i at indlede mine funktioner sådan:
-EOMD,actors\srcf('actors/Pagefuncs.php','prelined markdown','6'),<<<EOMD
+EOMD,actors\srcf('actors/Pagefuncs.php','prelined markdown','^$'),<<<EOMD
 
 for så for jeg samme fine popup hjælp, med parameter angivelser, som til indbyggede PHP funktioner.
 

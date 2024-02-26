@@ -1,6 +1,6 @@
 <?php
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
-Starten var uden anvendelse af classes, struktureret omkring en liste af sider. Der blev anvendt en del 'use function' deklarationer. Noget upload og image skalering. jeg lærte hvor mange måder man kan overføre parametre på i PHP.
+Starten var uden anvendelse af classes, struktureret omkring en liste af sider. Der blev anvendt en del 'use function' deklarationer når filer skulle kende indhold i andre filer. Noget upload og image skalering. Fuld skrue på overførsel af parametre, som jo er let i php med indkapsling i arrays. Erindrer ikke jeg havde opdaget splat operator eller med refernce kald på det tidspunkt.
 
 Ny start med mod\_rewrite og instantiering af class i  den index.php som modtager alle requests.
 Classes havde alle namespace 'pages' og lå dermed i directory pages. Url's path havde 2 elementer - class/method.  
@@ -12,7 +12,7 @@ Der skulle blot opfindes en fleksibel systematik til at hente data til de 'virtu
 
 For hver pages class var der et directory i pages stavet på samme måde som requestets class i hvilket der fandtes en fil med datainhold for body elementet til den pågældende side.  
 
-Datafilerne extension var .md eller .php - .md fordi de indeholdt markdown tekst. De kunne skrives som en liste af HEREDOCs -  men de blev inkluderet i \_\_call(), så det var PHP filer og det var en liste af strenge der blev returneret fra datafilen. Når de også kunne være med extension .php er det fordi de også kunne være PHP tunge - dels før det afsluttende return og med funktionskald indskudt mellem HEREDOCs afsnittene. 
+Datafilernes extension var .md eller .php - .md fordi de indeholdt markdown tekst. De kunne skrives som en liste af HEREDOCs -  men de blev inkluderet i \_\_call(), så det var PHP filer og det var en liste af strenge der blev returneret fra datafilen. Når de også kunne være med extension .php er det fordi de også kunne være PHP tunge - dels før det afsluttende return og med funktionskald indskudt mellem HEREDOCs afsnittene. 
 
 css og javascript filer var tilknyttet specifikt til en side, en class eller var altid med - der blev dannet tags til deres inkludering afhængigt at deres eksistens. Ingen konfigurering hvor den i forvejen fandtes i filsystemet i og med at css og javascript ligger i directories der afspejler relation til henholdsvis alt, en pages class eller en side.
 
@@ -25,7 +25,7 @@ Det er lavet sådan, at det findes et arve hierarki af det man har brug for til 
 En class som instantieres fra url path har en class fra class hierarkiet som base, mem ingen har den som base. Man sige PHP namespace systemet indekserer ind i et mindre antal muligheder.      
 
 css og javascript følger nu begge paradigmer. Filerne ligger i directories så de inkluderes som følge af både sammenfald med url og hierarki. Det er faktisk lidt indviklet at rode med manuelt.  
-Ikonet [☕](/?path=progs/html/extern&refer=$classPath/$func) som er øverst til venstre på alle sider, linke til oplistning af eksterne filer - eksisterende er blå, potentielle sorte.
+Der var et ☕ ikonet øverst til venstre på alle sider som  linkede til oplistning af eksterne filer - eksisterende var blå, potentielle sorte.
 
 Datafiler ligger ikke længere i pages men i directory data - men directory struktur pages er identisk med data/pages - den første indeholder PHP classes - den sidste datafiler med extension .md eller .php
 
@@ -47,6 +47,13 @@ Derfor blev javascript tags dannelsen ændret - der hvor der ikke blev fundet fi
 
 Dialog menuen er baseret på Javascript, Ajax og API'er i directory progs som returner JSON formateret.
 
-Næste skridt er at extende dialog menuens navigering sådan at højre pil på en datafil skifter listningen til at vise aktuelle og postentielle externe referencer til css og javascript filer - hver sin farve for aktuel kontra potentiel. Man kan åbne for editering eller 'slette' en aktuel (gøre potentiel.) Status linien kunne vise hvor mange sider der anvendte markerede css eller javascript fil. 
+Næste skridt var at extende dialog menuens navigering sådan at højre pil på en datafil skifter listningen til at vise aktuelle og postentielle externe referencer til css og javascript filer - hver sin farve for aktuel kontra potentiel. Man skulle kunne åbne for editering eller 'slette' en aktuel (gøre potentiel.)  
+
+Der blev lavet et brugerbegreb med login med krypteret password persistens. Farver på dirs og filer i dialog menuen afspejlende ejerskab til filer og dirs for logged in bruger - og valg af public kontra privat synlighed rettet mod andre.  
+www-data er bruger med login og eneste med superbruger rettigheder.  
+
+Højrepil på datafil blev til seperate virtuelle dir for css, js eller img til datafil. Der blev lavet cheat sheets hjælp der var forskellig for hvilken liste der panoreres i.
+
+Det tidligere link med kaffekop ikonet til externe referencer blev til en prettifying html source udvirkende sommerfugl.
 
 EOMD,actors\tocNavigate($func)];

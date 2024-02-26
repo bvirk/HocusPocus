@@ -33,7 +33,6 @@ EOMD,">!>",<<<EOMD
 EOMD,">!>",<<<EOMD
 <abbr title="Benny Andersen">👨‍💻</abbr>
 <div class='mailPic'></div>
-<span class='phone' ><a href='tel:28569086'>&#128222;</a></span>
 <span class='mail'>@</span>
 <span class='github'><a href='https://github.com/bvirk'><img src='$imgPath/github32.png'></a></span>
 
