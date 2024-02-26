@@ -5,14 +5,6 @@ use utilclasses\Parsedown;
 use function actors\datafileExists;
 use function actors\pageExternsOfType;
 
-function  atTopDir() {
-    if ($_GET['curdir'] === 'pages') {
-        echo [CONFIRM_COMMAND,'toplevel directories does not apply'];
-        return true;
-    }
-    return false;
-}
-
 function catcher($f) {
     try {
         $fn = __NAMESPACE__."\\".$f;
@@ -457,23 +449,23 @@ class NNNAPI {
                 ,$liClass
                 ,\actors\filespec("$dir/$file")
                 ,\actors\enheritChain($implClass)
-                , $owner == $_SESSION[LOGGEDIN] ? 1 : 0];
+                , $owner == $_SESSION[LOGGEDIN] | ($_SESSION[LOGGEDIN] == APACHE_USER) *2];
             
         }
-        echo json_encode($dirList);
+        echo json_encode([\actors\permStat($dir),$dirList]);
     }
 
     function lsExt() {
-        $selDataPathFileName = $_GET['selDataPathFileName'];
+        $selDataPath = $_GET['selDataPath'];
         $type = $_GET['type'];
-        echo json_encode(pageExternsOfType($type,$selDataPathFileName));
+        echo json_encode(pageExternsOfType($type,$selDataPath));
     }
     
     function mkDir() {
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['txtinput'];
  
-        if (txtinputContainsDot() || atTopDir() || !isOwnerOf($_GET['curdir']))
+        if (txtinputContainsDot() || !isOwnerOf($_GET['curdir']))
             return;
         lgdIn_mkdir($txtinputDataPath);
         lgdIn_copy('config/datafile',"$txtinputDataPath/index.md");
@@ -508,7 +500,7 @@ class NNNAPI {
         $imgSelPath = 'img/'.$_GET['curdir'].'/'.$_GET['selname'];
         $imgTxtinputPath = 'img/'.$_GET['curdir'].'/'.$_GET[' txtinput'];
         
-        if (!hasWriteAccess($selDataPath) || txtinputContainsDot() || atTopDir()) 
+        if (!hasWriteAccess($selDataPath) || txtinputContainsDot() ) 
             return;
         lgdIn_rename($selDataPath,$txtinputDataPath);
         renameClass($_GET['selname'],$_GET['txtinput'],$_GET['curdir']);
@@ -524,9 +516,9 @@ class NNNAPI {
     function newFile() {
         $txtinputDataPath = $_GET['curdir'].'/'.$_GET['txtinput'];
  
-        if (atTopDir() || !isLegaldataFileName() || !isOwnerOf($_GET['curdir']))
+        if (!isLegaldataFileName())
             return;
-        lgdIn_copy('config/datafile',$txtinputDataPath);
+        lgdIn_copy('config/datafile',"data/$txtinputDataPath");
         echo json_encode([REDRAW_DIR,'']);
     }
 
