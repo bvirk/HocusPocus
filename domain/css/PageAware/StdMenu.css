@@ -57,8 +57,14 @@ a.selFile {
     color: black;
 }
 
-a.selabelist {
+a.selcss-files {
     color: cyan;
+}
+a.seljs-files {
+    color: rgb(94, 255, 0);
+}
+a.selimage-files {
+    color: rgb(255, 0, 0);
 }
 
 a.ncssPage, a.ncssUrl, a.njsPage, a.njsUrl,a.njsClass,a.ncssClass {
@@ -69,7 +75,7 @@ a.ecssPage, a.ejsPage  {
     color: rgb(0,155,119);
 }
 a.ecssUrl, a.ejsrUrl {
-    color: navy;
+    color: blue;
 }
 
 a.ecssClass, a.ejsClass {
