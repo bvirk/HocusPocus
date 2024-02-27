@@ -92,42 +92,12 @@ EOMD;
     return (new Parsedown())->text($content);
 }
 
-
-function isAUser($user) {
-    
-    if (!in_array($user,USERS)) {
-        echo json_encode([CONFIRM_COMMAND,"user $user don't exists"]);
-        return false;
-    }
-    return true;
-}
-
 function isClassDir($classPath) {
     if (file_exists($classPath)) {
         echo json_encode([CONFIRM_COMMAND, "$classPath has subdirs - delete them first"]);
         return true;
     }
     return false;
-}
-
-function isOwnerOf($path) {
-    $group = posix_getgrgid(filegroup($path))['name'];
-    if ( $group == $_SESSION[LOGGEDIN])
-        return true;
-    echo json_encode([CONFIRM_COMMAND, $_SESSION[LOGGEDIN].' is not owner of '.$path ]);
-    return false;
-            
-}
-
-function isLegaldataFileName() {
-    extract(pathinfo($_GET['txtinput']),EXTR_PREFIX_ALL,"txtinput");
-    $txtinput_ext = $txtinput_extension ?? '';
-                
-    if ( ($txtinput_ext !=='md' && $txtinput_ext !== 'php') || strpos($txtinput_filename,'.') !== false) {
-        echo json_encode([CONFIRM_COMMAND,"file must have extension 'md' or 'php' and not contain other dots"]);
-        return false;
-    }
-    return true;
 }
 
 function indexIsLinkOf($file) {
@@ -162,14 +132,6 @@ function lgdIn_mkdir($dir) {
 function lgdIn_rename($from,$dest) {
     rename($from,$dest);
     chgrp($dest,$_SESSION[LOGGEDIN]);
-}
-
-function loggedInIsApache() {
-    if (APACHE_USER !== $_SESSION[LOGGEDIN]) {
-        echo json_encode([CONFIRM_COMMAND,"only for ".APACHE_USER]);
-        return false;
-    }
-    return true;
 }
 
 /**
@@ -283,14 +245,6 @@ function selectedIsIndex() {
     return false;
 }
 
-function txtinputContainsDot() {
-    if (array_key_exists('extension',pathinfo($_GET['txtinput']))) {
-        echo [CONFIRM_COMMAND,'dots in txtinput not allowed here'];
-        return true;
-    }
-    return false;
-}
-
 function toTrash($file) {
     if (!file_exists($file))
         return;
@@ -393,24 +347,20 @@ class NNNAPI {
         $usesJSON=true;
     }
 
-    function chmod() {
-        if (!loggedInIsApache())
-            return;
+    function chmod() { // checked0227
         $selnameDataPath= 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
         $mode = intval($_GET['txtinput'],8);
         chmod($selnameDataPath,$mode);
         echo json_encode([REDRAW_DIR,'']);
     }
     
-    function chown() {
-        if (!loggedInIsApache() || !isAUser($_GET['txtinput']))
-            return;
+    function chown() { // checked0227
         $selnameDataPath= 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
         $result = chgrp($selnameDataPath,$_GET['txtinput']);
         echo json_encode([REDRAW_DIR,'']);
     }
     
-    function edit() {
+    function edit() { // checked0227
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
         file_put_contents(FILETOEDIT,"$message ".DOC_ROOT.'/'.$fileToEdit);
@@ -423,21 +373,24 @@ class NNNAPI {
         echo json_encode([CONFIRM_COMMAND,'trash emptied']);
     }
 
-    function help() {
+    function help() { // checked0227
         $typeHelpFunc = __NAMESPACE__.'\\'.$_GET['type'].'Help';
         $content = $typeHelpFunc();
         echo json_encode(['',(new Parsedown())->text($content)]);
     }
         
-    function ls() {
+    function ls() { // checked0227
         $dirList = [];
         $dir = 'data/'.$_GET['curdir'];
+        $dirHasDir=false;
         foreach (nodotScandir($dir) as $file) {
             $owner = posix_getgrgid(filegroup("$dir/$file"))['name'];
             $readFlag =  fileperms("$dir/$file") & 040;
             if (! \actors\hasReadAccessFor($owner,$readFlag,$readFlag))
                 continue;
             $fileIsDir = is_dir("$dir/$file");
+            if ($fileIsDir)
+                $dirHasDir=true;
             $liClass = $fileIsDir ? '/Dir' : ' File';
             if ($owner == $_SESSION[LOGGEDIN])
                 $liClass .= $readFlag ? 'OwnerRead' : 'OwnerNotRead';
@@ -452,21 +405,19 @@ class NNNAPI {
                 , $owner == $_SESSION[LOGGEDIN] | ($_SESSION[LOGGEDIN] == APACHE_USER) *2];
             
         }
-        echo json_encode([\actors\permStat($dir),$dirList]);
+        echo json_encode([$dirHasDir,\actors\permStat($dir),$dirList]);
     }
 
-    function lsExt() {
+    function lsExt() { // checked0227
         $selDataPath = $_GET['selDataPath'];
         $type = $_GET['type'];
         echo json_encode(pageExternsOfType($type,$selDataPath));
     }
     
-    function mkDir() {
+    function mkDir() { // checked0227
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['txtinput'];
  
-        if (txtinputContainsDot() || !isOwnerOf($_GET['curdir']))
-            return;
         lgdIn_mkdir($txtinputDataPath);
         lgdIn_copy('config/datafile',"$txtinputDataPath/index.md");
         newClass($txtinputPath);
@@ -480,7 +431,7 @@ class NNNAPI {
         $imgSelPath = 'img/'.$_GET['curdir']."/$selname_filename";
         $selDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
  
-        if (!hasWriteAccess($selDataPath) || selectedIsIndex() || !isLegaldataFileName()) 
+        if (!hasWriteAccess($selDataPath) || selectedIsIndex() ) 
             return;
         
         renameOnExists($imgSelPath,$txtinput_filename);
@@ -500,7 +451,7 @@ class NNNAPI {
         $imgSelPath = 'img/'.$_GET['curdir'].'/'.$_GET['selname'];
         $imgTxtinputPath = 'img/'.$_GET['curdir'].'/'.$_GET[' txtinput'];
         
-        if (!hasWriteAccess($selDataPath) || txtinputContainsDot() ) 
+        if (!hasWriteAccess($selDataPath) ) 
             return;
         lgdIn_rename($selDataPath,$txtinputDataPath);
         renameClass($_GET['selname'],$_GET['txtinput'],$_GET['curdir']);
@@ -515,9 +466,6 @@ class NNNAPI {
 
     function newFile() {
         $txtinputDataPath = $_GET['curdir'].'/'.$_GET['txtinput'];
- 
-        if (!isLegaldataFileName())
-            return;
         lgdIn_copy('config/datafile',"data/$txtinputDataPath");
         echo json_encode([REDRAW_DIR,'']);
     }
