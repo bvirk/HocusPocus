@@ -1,6 +1,7 @@
 import * as dlg from "./dialog.js";
 import { request } from "../jslib/request.js";
 import * as rsp from "./reqCallBacks.js";
+import * as frm from "./formsubmit.js";
 
 let curkeyhandler;
 let lastCurkeyhandler;
@@ -168,7 +169,7 @@ export const KeyHandler = Object.freeze({
 function loggedInOwnsDirOfSel() {
     if (rsp.dirPermStat & 1)
         return true;
-    dlg.statusLine("you dont owns dir");
+    dlg.statusLine("you dont owns dir of selected");
     return false;
 }
 
@@ -229,7 +230,7 @@ function navigate(event) {
                 dlg.quitMenu();
                 break;
             case "b":
-                dlg.statusLine('key "b" disabled',1000);
+                dlg.statusLine('dirhasdir='+rsp.dirHasDir,1000);
                 break;
             case "c": // toogle public
                 if (dlg.loggedInOwnsSel()) {
@@ -253,7 +254,7 @@ function navigate(event) {
                     $("#command").attr("value",'chmod');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    dlg.showInput('file mode:');
+                    dlg.showInput('file mode:',frm.isDataFileFormat);
                     curkeyhandler=KeyHandler.ESC;
                 }
                 break;
@@ -280,7 +281,7 @@ function navigate(event) {
                     $("#command").attr("value",rsp.curDir[dlg.cid][1][0] == '/' ? 'mvDir':'mv');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    dlg.showInput('rename to:');
+                    dlg.showInput('rename to:',frm.hasLength);
                     curkeyhandler=KeyHandler.ESC;
                 }    
                 break;
@@ -324,13 +325,13 @@ function newFileOrDir(event) {
         case "d": // new directory
                 $("#command").attr("value","mkDir");
                 event.preventDefault();
-                dlg.showInput('new directory:');
+                dlg.showInput('new directory:',frm.isWithoutDot);
                 curkeyhandler=KeyHandler.ESC;
             break;
         case "f": // new file
                 $("#command").attr("value","newFile");
                 event.preventDefault();
-                dlg.showInput('new file:');
+                dlg.showInput('new file:',frm.isDataFileFormat);
                 curkeyhandler=KeyHandler.ESC;
             break;
         default:

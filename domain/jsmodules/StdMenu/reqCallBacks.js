@@ -3,6 +3,7 @@ import * as dlg from "./dialog.js";
 
 export let curDir;
 export let dirPermStat;
+export let dirHasDir;
 
 function catchResp() {
     try {
@@ -56,7 +57,7 @@ export function savedFiletoeditResponse() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let fileResp = catchResp();
-    dlg.statusLine(fileResp[0]+' served'+(dlg.ownsSel() ? '':' only'),5000);
+    dlg.statusLine(fileResp[0]+' served'+(dlg.loggedInOwnsSel() ? '':' only'),5000);
     if (fileResp[1] == 'http' && dlg.loggedInOwnsSel())
         window.open('/progs/edit/content','_blank');
 }
@@ -66,7 +67,7 @@ export let setCurDir = val => curDir=val
 export function showDataDir() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
-    [dirPermStat,curDir] = catchResp();
+    [dirHasDir,dirPermStat,curDir] = catchResp();
     dlg.drawDirList(curDir);
 }
 

@@ -1,6 +1,7 @@
 import { request }    from "../jslib/request.js";
 import * as rsp from "./reqCallBacks.js";
 import * as keyb  from "./keyboard.js";
+import * as frm from "./formsubmit.js";
 
 export const APIName='/?path=progs/NNNAPI';
 export let cid;
@@ -171,7 +172,8 @@ export let quitMenu = () => {
 
 export let setCurDirStr = (val) =>  curDirStr=val
 
-export function showInput(prompt) {
+export function showInput(prompt, validateFunc=frm.hasLength) {
+    frm.setValiDateFunc(validateFunc);
     $("#statusLine").css('display','none');
     $("#txtinputlabel").css('display','block').text(prompt);
     $("#txtinput").css('display','block').focus();
