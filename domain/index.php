@@ -56,14 +56,13 @@ function instantiatePath() {
         [new ("$namespace\\$class")(),$pe[count($pe)-1]]();
     } catch (Exception $e) {
         if ($e->getFile() == __FILE__ && $e->getLine() == 12 && strpos($e->getMessage(),'No such file or directory') > 0) 
-            header('Location: '
-                .$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].'/'.defaultPage());
+            header('Location: /'.defaultPage());
         else {
             if ($usesJSON) {
                 errLog($e);
                 [$file,$line]=[$e->getfile(),$e->getLine()];
                 file_put_contents(FILETOEDIT,str_replace(' ','_',$e->getMessage())." $file:$line");
-                echo json_encode([IS_PHP_ERR,"PHP ERROR in .../".substr($file,DOCROOTSTRLEN+1).":$line"]);
+                echo json_encode([IS_PHP_ERR,"PHP ERROR in .../".substr($file,strlen($_SERVER['DOCUMENT_ROOT'])+1).":$line"]);
             } else {
                 headerCTText();    
                 echo "$e\n";
