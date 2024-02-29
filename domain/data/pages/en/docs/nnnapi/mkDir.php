@@ -6,10 +6,4 @@ The creation of a new data directory involves
 2. the index.md file therein is created
 3. class which can be instantiated with the context that the url to new dir is, is created
 
-EOMD,actors\srclf('progs/NNNAPI.php','function mkDir','^$','function mkDDir','^$'),<<<EOMD
-$srcExpl
-
-Directories must not contain periods and must be located beneath the directory that contains language selection. It will be reflected in \$txtinputIsOK under whose assignment success versus fail messages are also made.
-Originating in that, 'and chained' execution as long as steps returns true.
-</div>
-EOMD,actors\tocNavigate($func)];
+EOMD,actors\srclf('progs/NNNAPI.php','function mkDir','^$'),actors\tocNavigate($func)];

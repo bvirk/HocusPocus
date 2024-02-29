@@ -1,5 +1,5 @@
 <?php
-$domain=DOMAIN;
+$domain=$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'];
 use function actors\srclf;
 use function actors\srcf;
 

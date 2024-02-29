@@ -19,32 +19,34 @@ NNNAPI.php er den største fil i HocusPocus - og den der har undergået flest tr
 
 Der anvendes ikke de gammeldags true/false returværdier i PHP filoperationer som der udmales om på php.net - det er testet at PHP 8 kan kaste kildekode linienummer dekoreret exceptions i stedet for - det er godt nok ikke vildt detaljeret med 'stat failed', men hellere det end uvisheden om korrektheden af  100'er liniers hjemmegjorte falbelader.  
 
-Alle api kald er en method og der er ingen methods som ikke er et api kald - de fleste api kald uddelegerer til functions - void for fil operationer og boolske for selv echoende kontekst tests.  
-Functions til kontekst test om brugerret og syntaks mm. er, i methods, på stribe '||' sammenstilt så den første true returværdi domino stopper og api kaldets method afsluttes idet den famøse false returnerende test har echoet beskeden der fanges af javascript.  
-Det medfører en del brug af operand _not_, fordi selve testudsagnet semantisk holdes fri fra negation. Et tests returværdi er svaret på dets udsagn.
-EOMD,srclf('progs/NNNAPI.php','function mv\(\)','^$'),<<<EOMD
-$srcExpl
+Alle api kald er en method i class progs\\NNNAPI og der er ingen methods i den class som ikke er et api kald - de fleste api kald uddelegerer til void functions.
 
-hasWriteAccess() returnerer false hvis noget underforstået ikke har skrivetilladelse til her \$selDataPath. Derfor anvendes operator '!' så der bailes ud. Der outputtes med echo i hasWriteAccess() - men kun når den returnerer false. Det betyder at den kun kan anvendes til bail out med foranstilt '!' for ellers vil javascript ikke modtage tilbagemelding om fejlagtig kontekst.  
-Sådan er det med alle tests - den enkelte test skal anvendes enten med eller uden negation - men det samme altid.   
-</div>
+Verification af brugerrettighed til filer og syntax chekkes og tilbagemeldes på statuslinie i javascript. Her eksempelvis for oprettelse af et directory - som ikke kan indeholde dots fordi der også skabes en PHP class med navnet.
+
+EOMD,actors\srclf('jsmodules/StdMenu/keyboard.js'
+        ,"\/\/ new file or directory",4
+        ,'let curkeyhandler',1
+        ,'export const KeyHandler',1
+        ,'NEWFILEORDIR: newFileOrDir',1
+        ,'addEventListener',1
+        ,'function delegateEListener',2
+        ,"function newFileOrDir",1,'\/\/ new directory',4)
+    ,actors\srclf('jsmodules/StdMenu/dialog.js','function showInput',3)
+    ,actors\srclf('jsmodules/StdMenu/formsubmit.js'
+        ,'export let setValiDateFunc',7
+        ,'validateFunc\(txtinput\)',2
+        ,'function isWithoutDot','^$'),<<<EOMD
+
 
 #### JavaScript response functions
 
 API methods returnerer hvad der passer til den javascript function som modtager response. Det er et argument til kaldet af request funktionen, hvilke function som skal modtage response. Det er givet, for en bestemt API method, hvilken javascript function der modtager response fra netop den API method.
 
-Der er 5 response functions - de starter alle med de samme 3 liner og 3 af dem med samme 4. linie som her showMenu
+Der er 7 response functions - de starter alle med de samme 3 liner og 5 af dem med kald til catchResp() som 4. linie som her i showDataDir
 
-EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showMenu',4 ),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function showDataDir',4 ),<<<EOMD
 
-API tilbagemelding kan deles i to grupper.
-- fil listen gentegnes
-- statusline meddelelse
-
-API'er returnerer en string, et JSON encoded array af to strenge eller for dannelse af fil listens vedkommende et JSON encoded array af arrays. 
-
-
-
+API'er returnerer forskelligt - en enkelt string eller et array som kan indeholde strings eller arrays
 
 EOMD,srclf('jsmodules/StdMenu/reqCallBacks.js','function catchResp','^$' ),<<<EOMD
 $srcExpl
@@ -54,12 +56,7 @@ Parse error indtræffer når PHP kaster en af de fatal errors som ikke kan fange
 
 IsPhpErr, redrawDir og redrawUpperDir er defineret på sider som arver af class StdMenu
 
-```
-<script>
-    const isPHPErr='errOrConf';
-    const redrawDir='redrawDir';
-    const redrawUpperDir='redrawUpperDir';
-```
+EOMD,srcf('js/PageAware/StdMenu.php',1),<<<EOMD
 
 EOMD,srcf('defines.php','IS_PHP_ERR',1,'CONFIRM_COMMAND',1),<<<EOMD
 
@@ -142,11 +139,16 @@ Det anvendes til input verifikation - det er fastlagt at directories ikke må in
 ```
 
 ### TOC
+- [chmod](chmod)
+- [chown](chown)
 - [edit](edit)
 - [emptyTrash](emptyTrash)
+- [help](help)
 - [ls](ls)
+- [lsExt](lsExt)
 - [mkDir](mkDir)
 - [mv](mv)
+- [mvImg](mvImg)
 - [mvDir](mvDir)
 - [newFile](newFile)
 - [rm](rm)
