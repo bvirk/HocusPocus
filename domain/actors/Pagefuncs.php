@@ -135,7 +135,7 @@ function pageExterns(string $path,mixed $extArr,$permStat) : array {
     $pfunc = array_slice($ppe,-1,1)[0];
     $pUrlDir=implode('/',array_slice($ppe,1,-1));
     $pclassPath = implode('/',array_slice($ppe,0,-2)).'/'.ucfirst(array_slice($ppe,-2,1)[0]).'.php';
-
+ 
     $ext = array_key_first($extArr);
     $lines = [];
     foreach ([
@@ -221,7 +221,7 @@ function lnRel(string $target,string $link) {
     chdir(dirname($target));
     $baselink = basename($link);
     $status = file_exists($baselink) ? true : symlink(basename($target),$baselink);
-    chdir(DOC_ROOT);
+    chdir($_SERVER['DOCUMENT_ROOT']);
     return $status;
 }
 
