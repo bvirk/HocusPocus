@@ -32,7 +32,7 @@ return ["<!<div class='auto80'>#html#</div>"
     <<<EOMD
 EOMD,srclf('index.php','require',1)
     ,srclf('globalfuncs.php','require',1)
-    ,srclf('defines.php',1,2,'PAGES_ROOT',1)
+    ,srclf('defines.php',1,2)
     ,srclf('HocusPocus.php','abstract class',1),<<<EOMD
 
 ### actors
