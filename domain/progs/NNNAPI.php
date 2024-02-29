@@ -23,12 +23,10 @@ function changeNameSpace($oldBasename,$newBasename,$path) {
     file_put_contents($path,$all);
 }
 
-function changeNamespaceInDirs(string $old,string $new,string $path,$relPos=0) { 
-    if (!$relPos)
-        $relPos = strlen(PAGES_ROOT)+1;
+function changeNamespaceInDirs(string $old,string $new,string $path) { 
     foreach (glob("$path/*") as $file)
         if (is_dir($file)) {
-            changeNamespaceInDirs($old,$new,$file,$relPos);
+            changeNamespaceInDirs($old,$new,$file);
         } else 
             changeNameSpace($old,$new,$file);
 }
@@ -67,15 +65,6 @@ EOMD;
     return (new Parsedown())->text($content);
 }
 
-function hasWriteAccess($path) {
-    $group = posix_getgrgid(filegroup($path))['name'];
-    if ( $group == APACHE_USER || $group == $_SESSION[LOGGEDIN])
-        return true;
-    echo json_encode([CONFIRM_COMMAND, $_SESSION[LOGGEDIN].' is not owner of '.$_GET['selname'] ]);
-    return false;
-            
-}
-
 function imgHelp() {
     $content = <<<EOMD
 #### Image navigering
@@ -90,14 +79,6 @@ function imgHelp() {
 |Esc            |quit this help    |       
 EOMD;
     return (new Parsedown())->text($content);
-}
-
-function isClassDir($classPath) {
-    if (file_exists($classPath)) {
-        echo json_encode([CONFIRM_COMMAND, "$classPath has subdirs - delete them first"]);
-        return true;
-    }
-    return false;
 }
 
 function indexIsLinkOf($file) {
@@ -209,7 +190,7 @@ function removeBesidesRoot($str,$removeThisDir=false) {
 
 function renameClass(string $old,string $new,string $dataPath) {
     [$Old,$New] = [ucfirst($old),ucfirst($new)];
-    [$OldFile,$NewFile] = [DOC_ROOT."/$dataPath/$Old.php",DOC_ROOT."/$dataPath/$New.php"];
+    [$OldFile,$NewFile] = ["$dataPath/$Old.php","$dataPath/$New.php"];
     
     $content=preg_replace('/\nclass\s+'.$Old.'/',"\nclass $New",file_get_contents($OldFile));
     file_put_contents($NewFile,$content);
@@ -219,8 +200,8 @@ function renameClass(string $old,string $new,string $dataPath) {
 
 function renameExterns($path,$from,$to) {
     foreach ([ //
-        CSS_ROOT => ['css']
-       ,JS_ROOT => ['js','php']
+        'css' => ['css']
+       ,'js' => ['js','php']
        ] as $docRoot => $extArr) {
           
        foreach ($extArr as $ext) {
@@ -230,19 +211,21 @@ function renameExterns($path,$from,$to) {
    }
 }
 
+function renameExternsDir() {
+    $extCurDir = substr($_GET['curdir'],1+strlen(DEFCONTENT));
+    foreach (['css','js'] as $extRoot) {
+        $from = "$extRoot/$extCurDir/".$_GET['selname'];
+        $to = "$extRoot/$extCurDir/".$_GET['txtinput'];
+        if (file_exists($from))
+            rename($from,$to);
+    }
+}
+
 function renameOnExists(string $pathFrom,string $fileWOETo) {
     if (file_exists($pathFrom)) { 
         mvInclLink($pathFrom,$fileWOETo);
     }
 
-}
-
-function selectedIsIndex() {
-    if (pathinfo($_GET['selname'],PATHINFO_FILENAME) == 'index') {
-        echo json_encode([CONFIRM_COMMAND,'index does not apply']);     
-        return true;
-    }
-    return false;
 }
 
 function toTrash($file) {
@@ -317,30 +300,22 @@ function ucAfterLast($text,$search='/') {
     return substr($text,0,$sPos+1).ucfirst(substr($text,$sPos+1,1)).substr($text,$sPos+2);
 }
 
-
-
-
-/**
- * HELPER proxies that must be all outcommentet
- */
-//function rename($from,$to) { return false; }
-//function rename($from,$to) { return true; }
-//function file_put_contents($f,$c) { return false; }
-//function file_put_contents($f,$c) { return 1 /* byte */; }
-//function unlink($f) { return false; }
-//function unlink($f) { return true; }
-
-function thrower() {
-    $num = intval($_GET['test']);
-    if ($num==1)
-        throw new \Exception("ettal");
-    return [IS_PHP_ERR,"called  with $num"];
+function travChGrp($path,$newGrp,$ifGrp='') {
+    if ($ifGrp == '')
+        $ifGrp=posix_getgrgid(filegroup($path))['name'];
+    $isOrgGrp = posix_getgrgid(filegroup($path))['name'] == $ifGrp;
+    if (is_dir($path) && $isOrgGrp) {
+        chgrp($path,$newGrp);
+        foreach (glob("$path/*") as $file)
+            travChGrp($file,$newGrp,$ifGrp);
+    } else
+        if ($isOrgGrp) 
+            chgrp($path,$newGrp);
 }
-
 
 class NNNAPI {
     use \actors\Pagefuncs;
-    
+
     function __construct() {
         global $usesJSON;
         headerCTText();
@@ -353,21 +328,20 @@ class NNNAPI {
         chmod($selnameDataPath,$mode);
         echo json_encode([REDRAW_DIR,'']);
     }
-    
+
     function chown() { // checked0227
         $selnameDataPath= 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
-        $result = chgrp($selnameDataPath,$_GET['txtinput']);
+        travChGrp($selnameDataPath,$_GET['txtinput']);
         echo json_encode([REDRAW_DIR,'']);
     }
-    
+
     function edit() { // checked0227
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
-        file_put_contents(FILETOEDIT,"$message ".DOC_ROOT.'/'.$fileToEdit);
+        file_put_contents(FILETOEDIT,"$message ".$_SERVER['DOCUMENT_ROOT'].'/'.$fileToEdit);
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
     }
 
-    
     function emptyTrash() {
         removeBesidesRoot('trash/'.$_SESSION[LOGGEDIN]);
         echo json_encode([CONFIRM_COMMAND,'trash emptied']);
@@ -378,7 +352,7 @@ class NNNAPI {
         $content = $typeHelpFunc();
         echo json_encode(['',(new Parsedown())->text($content)]);
     }
-        
+
     function ls() { // checked0227
         $dirList = [];
         $dir = 'data/'.$_GET['curdir'];
@@ -390,7 +364,9 @@ class NNNAPI {
                 continue;
             $fileIsDir = is_dir("$dir/$file");
             if ($fileIsDir)
-                $dirHasDir=true;
+                foreach( glob("$dir/$file/*") as $fileOfDir)
+                    if (is_dir($fileOfDir))
+                        $dirHasDir=true;
             $liClass = $fileIsDir ? '/Dir' : ' File';
             if ($owner == $_SESSION[LOGGEDIN])
                 $liClass .= $readFlag ? 'OwnerRead' : 'OwnerNotRead';
@@ -413,7 +389,7 @@ class NNNAPI {
         $type = $_GET['type'];
         echo json_encode(pageExternsOfType($type,$selDataPath));
     }
-    
+
     function mkDir() { // checked0227
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['txtinput'];
@@ -424,47 +400,44 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
 
-    function mv() {
+    function mv() { // checked0227
         $selname_filename=pathinfo($_GET['selname'],PATHINFO_FILENAME);
         extract(pathinfo($_GET['txtinput']),EXTR_PREFIX_ALL,"txtinput");
         $txtinput_ext = $txtinput_extension ?? '';
         $imgSelPath = 'img/'.$_GET['curdir']."/$selname_filename";
         $selDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
  
-        if (!hasWriteAccess($selDataPath) || selectedIsIndex() ) 
-            return;
-        
         renameOnExists($imgSelPath,$txtinput_filename);
         renameExterns($_GET['curdir'],$selname_filename,$txtinput_filename);
         mvInclLink($selDataPath,$txtinput_filename,false);
         echo json_encode([REDRAW_DIR,'']); 
     }
 
-    
-    // Not Testet from here
-    
-    function mvDir()  {   
+    function mvImg() { // checked0228
+        $selname=$_GET['selname'];
+        $txtinput=$_GET['txtinput'];
+        rename($selname,dirname($selname)."/$txtinput");
+        echo json_encode([REDRAW_IMG_DIR,'']); 
+    }
+
+    function mvDir()  {   // checked0228
         $selPath = $_GET['curdir'].'/'.$_GET['selname'];
         $selDataPath = "data/$selPath";
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = "data/$txtinputPath";
-        $imgSelPath = 'img/'.$_GET['curdir'].'/'.$_GET['selname'];
-        $imgTxtinputPath = 'img/'.$_GET['curdir'].'/'.$_GET[' txtinput'];
         
-        if (!hasWriteAccess($selDataPath) ) 
-            return;
         lgdIn_rename($selDataPath,$txtinputDataPath);
         renameClass($_GET['selname'],$_GET['txtinput'],$_GET['curdir']);
         if (file_exists(/* as dir in pages/ */ $selPath  )) { 
             rename("$selPath",/* new name of that dir */ $txtinputPath);
             changeNamespaceInDirs($_GET['selname'],$_GET['txtinput'],$txtinputPath);
         }
-        renameOnExists($imgSelPath,$imgTxtinputPath);
-        renameExterns($_GET['curdir'],$_GET['selname'],$_GET[' txtinput']);
+        renameOnExists('img/'.$_GET['curdir'].'/'.$_GET['selname'],$_GET['txtinput']);
+        renameExternsDir();
         echo json_encode([REDRAW_DIR,'']);
     }
 
-    function newFile() {
+    function newFile() { // checked0228
         $txtinputDataPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         lgdIn_copy('config/datafile',"data/$txtinputDataPath");
         echo json_encode([REDRAW_DIR,'']);
@@ -472,16 +445,12 @@ class NNNAPI {
 
     function rm() {
         $selDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
-        if (!hasWriteAccess($selDataPath))
-            return;
  
         if ($_GET['selname'] !== 'index.md' && $_GET['selname'] !== 'index.php' && !indexIsLinkOf($selDataPath)) 
             trashReferedByDataFile('data/'.$_GET['curdir'],$_GET['selname']);
-        else {
-            if (isClassDir($_GET['curdir']))
-                return;
+        else 
             trashDir($_GET['curdir']);
-        }
+        
         echo json_encode([REDRAW_UPPERDIR,'']);
     }
 
@@ -489,8 +458,6 @@ class NNNAPI {
         $selPath = $_GET['curdir'].'/'.$_GET['selname'];
         $selDataPath = 'data/'.$selPath;
  
-        if (!hasWriteAccess($selDataPath) || isClassDir($_GET['curdir']))
-                return;
         trashDir($selPath);
         echo json_encode([count(glob($_GET['curdir'].'/*')) ? REDRAW_DIR : REDRAW_UPPERDIR,'']);
     } 
@@ -525,8 +492,8 @@ class NNNAPI {
         $selDataPathDir='data/'.$_GET['curdir'];
         $selDataPath = $selDataPathDir.'/'.$_GET['selname'];
         
-        if (!hasWriteAccess($selDataPath))
-            return;
+
+
         $GR_xorBit = (fileperms($selDataPath) & 040)^040;
         chmod($selDataPath,(fileperms($selDataPath) & 0737) | $GR_xorBit);
         if (pathinfo($_GET['selname'],PATHINFO_FILENAME) == 'index')
