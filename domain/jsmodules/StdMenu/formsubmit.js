@@ -3,34 +3,35 @@ import * as rsp from "./reqCallBacks.js";
 import * as keyb  from "./keyboard.js";
 import * as dlg from "./dialog.js"
 
-
 let validateFunc;
+let keyhandler;
 
-export let setValiDateFunc = func => validateFunc=func;
+export let setValiDateFunc = func => validateFunc=func
+export let setKeyHandler = func => keyhandler=func
 
 export function submitAll(event) {
     event.preventDefault();
-    keyb.setCurkeyhandler(keyb.KeyHandler.NAV);
+    keyb.setCurkeyhandler(keyhandler);
     let txtinput=event.target['txtinput'].value;
     dlg.hideInput();
-    let parms = '&curdir='
+    let method=event.target['command'].value;
+    let valAct = validateFunc(txtinput);
+    if (valAct) {
+        if (typeof(valAct) == 'string')
+            txtinput = valAct;
+        let parms = '&curdir=' 
         +dlg.curDirStr
         +'&txtinput='
         +txtinput
-        +'&selname='    // used for rename - doesn't do anything for other commands
+        +'&selname='    // used for rename 
         +event.target['selname'].value;
-    let method=event.target['command'].value;
-    if (validateFunc(txtinput))
         request(dlg.APIName,method,parms,rsp.nopJSCommand);
-    
-};
-
-export function isWithoutDot(txtinput) {
-    if (txtinput.indexOf('.') == -1 )
-        return true;
-    dlg.statusLine('input must not contain a dot');
-    return false;
+    }
 }
+
+export let differsFromSelectedAndHasLength = txtinput => 
+    (txtinput != rsp.curDir[dlg.cid][0]) && txtinput.length > 0
+
 
 export function isDataFileFormat(txtinput) {
     let dotPos = txtinput.lastIndexOf('.');
@@ -40,6 +41,22 @@ export function isDataFileFormat(txtinput) {
     }
     return true; 
 }
+
+export function isWithoutDot(txtinput) {
+    if (txtinput.indexOf('.') == -1 )
+        return true;
+    dlg.statusLine('input must not contain a dot');
+    return false;
+}
+
+export function ensureSameExtension(txtinput) {
+    if (txtinput.length == 0)
+        return false;
+    let selPath = rsp.curDir[dlg.cid][0];
+    let ext = selPath.substr(selPath.lastIndexOf('.'));
+    let inputLastDotPos=txtinput.lastIndexOf('.');
+    return txtinput.substring(0,(inputLastDotPos == -1 ? txtinput.length : inputLastDotPos))+ext;
+} 
 
 export let hasLength = txtinput => txtinput.length
 

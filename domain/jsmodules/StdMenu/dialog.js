@@ -159,7 +159,7 @@ export let lidNormal = () => {
 export function loggedInOwnsSel() {
     if (permStatSel & 1)
         return true;
-    //statusLine("you dont owns selected");
+    statusLine("you dont owns selected");
     return false;
 }
 
@@ -172,8 +172,9 @@ export let quitMenu = () => {
 
 export let setCurDirStr = (val) =>  curDirStr=val
 
-export function showInput(prompt, validateFunc=frm.hasLength) {
+export function showInput(prompt, keyhandler, validateFunc=frm.hasLength) {
     frm.setValiDateFunc(validateFunc);
+    frm.setKeyHandler(keyhandler);
     $("#statusLine").css('display','none');
     $("#txtinputlabel").css('display','block').text(prompt);
     $("#txtinput").css('display','block').focus();

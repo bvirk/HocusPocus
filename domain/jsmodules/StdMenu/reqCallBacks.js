@@ -1,5 +1,6 @@
 import { request, httpRequest  } from "../jslib/request.js";
 import * as dlg from "./dialog.js";
+import * as keyb from "./keyboard.js";
 
 export let curDir;
 export let dirPermStat;
@@ -30,7 +31,11 @@ export function nopJSCommand() {
         if (resp[0] == redrawUpperDir)
             dlg.setCurDirStr(dlg.curDirStr.substring(0,dlg.curDirStr.lastIndexOf('/')));
         request(dlg.APIName,'ls','&curdir='+dlg.curDirStr,showDataDir);
-    }    
+    }
+    if (resp[0] == redrawImgDir ) {
+        request(dlg.APIName,'lsExt','&selDataPath='+keyb.selDataPath+'&type=img',showExtFiles);
+    }
+
 }
 
 export function savedFileResponse() {

@@ -4,6 +4,11 @@ import { postString } from "../jslib/request.js";
 import { submitAll } from "./formsubmit.js";
 import * as rsp from "./reqCallBacks.js";
 
+$(function() {
+    let dialogState=document.cookie.split('; ').find((row) => row.startsWith('dialog='))?.split('=')[1];
+    if ( dialogState == 'on' && location.pathname != '/progs/edit/content') 
+        allFuncs.hamDrawMenu();
+});
 allFuncs.saveContent = function(filetoedit) {
     postString(dlg.APIName,'saveFile',filetoedit,$("#contentdiv").text(),rsp.savedFileResponse);
 }

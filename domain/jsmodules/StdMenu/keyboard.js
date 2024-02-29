@@ -131,6 +131,18 @@ function img(event) {
         case "h":
             help('img',KeyHandler.IMG);
             break;
+        case "r": // rename file or dir
+            if (dlg.loggedInOwnsSel()) {
+                let selFile=rsp.curDir[dlg.cid][0];
+                let defInp = selFile.substring(selFile.lastIndexOf('/')+1);
+                $("#command").attr("value",'mvImg');
+                $("#selname").attr("value",selFile);
+                $("#txtinput").attr("value",defInp);
+                dlg.showInput('rename to:',KeyHandler.IMG,frm.ensureSameExtension);
+                curkeyhandler=KeyHandler.ESC;
+            } else
+                dlg.statusLine('you are not the user');
+            break;
         case "u":
             if (dlg.permStatSel==1) {  
                 let selDataPathDir=selDataPath.substring(0,selDataPath.lastIndexOf("."));
@@ -254,7 +266,7 @@ function navigate(event) {
                     $("#command").attr("value",'chmod');
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
-                    dlg.showInput('file mode:',frm.isDataFileFormat);
+                    dlg.showInput('file mode:',KeyHandler.NAV,frm.isDataFileFormat);
                     curkeyhandler=KeyHandler.ESC;
                 }
                 break;
@@ -272,17 +284,23 @@ function navigate(event) {
                     $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
                     $("#txtinput").attr("value","");
                     event.preventDefault();
-                    dlg.showInput('set owner:');
+                    dlg.showInput('set owner:',KeyHandler.NAV,);
                     curkeyhandler=KeyHandler.ESC;
                 }
                 break;
             case "r": // rename file or dir
                 if (dlg.loggedInOwnsSel()) {
-                    $("#command").attr("value",rsp.curDir[dlg.cid][1][0] == '/' ? 'mvDir':'mv');
-                    $("#selname").attr("value",rsp.curDir[dlg.cid][0]);
-                    $("#txtinput").attr("value","");
-                    dlg.showInput('rename to:',frm.hasLength);
-                    curkeyhandler=KeyHandler.ESC;
+                    let selFile=rsp.curDir[dlg.cid][0];
+                    let isDir = rsp.curDir[dlg.cid][1][0] == '/';
+                    if (!isDir && selFile.substring(0,selFile.indexOf('.')) == 'index') 
+                        dlg.statusLine('index can not be renamed',2000);
+                    else {
+                        $("#command").attr("value",isDir ? 'mvDir':'mv');
+                        $("#selname").attr("value",selFile);
+                        $("#txtinput").attr("value","");
+                        dlg.showInput('rename to:',KeyHandler.NAV,frm.differsFromSelectedAndHasLength);
+                        curkeyhandler=KeyHandler.ESC;
+                    }
                 }    
                 break;
             case "q":
@@ -325,13 +343,13 @@ function newFileOrDir(event) {
         case "d": // new directory
                 $("#command").attr("value","mkDir");
                 event.preventDefault();
-                dlg.showInput('new directory:',frm.isWithoutDot);
+                dlg.showInput('new directory:',KeyHandler.NAV,frm.isWithoutDot);
                 curkeyhandler=KeyHandler.ESC;
             break;
         case "f": // new file
                 $("#command").attr("value","newFile");
                 event.preventDefault();
-                dlg.showInput('new file:',frm.isDataFileFormat);
+                dlg.showInput('new file:',KeyHandler.NAV,frm.isDataFileFormat);
                 curkeyhandler=KeyHandler.ESC;
             break;
         default:
