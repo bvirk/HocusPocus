@@ -338,6 +338,15 @@ class NNNAPI {
     function edit() { // checked0227
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
+        if (!file_exists($fileToEdit)) { //css or js files
+            if (!file_exists(dirname($fileToEdit))) {
+                $oldM = umask(0);
+                mkdir(dirname($fileToEdit),0777,true);
+                umask($oldM);
+            }
+            touch($fileToEdit);
+            chmod($fileToEdit,0666);
+        }
         file_put_contents(FILETOEDIT,"$message ".$_SERVER['DOCUMENT_ROOT'].'/'.$fileToEdit);
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
     }
