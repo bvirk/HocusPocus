@@ -51,35 +51,3 @@ $(function() {
     if ( dialogState == 'on' && location.pathname != '/progs/edit/content') 
         allFuncs.hamDrawMenu();
 });
-
-/*
-new object and their responsibilities
-
-Dirlist (holds the dirlist, and reports about and draw itselv
-    vars:
-        loggedInOwns
-        obj: Line[]
-        selected
-  
-    methods:
-        void Draw()
-        void up()
-        void down()
-        void invertline()
-        obj selected()
-        void rm()
-        void rmDir()
-
-
-
-Line
-    vars:
-        name:
-        isDirTag:
-        desc:
-        hierStr
-        owedByLoggedIn
-    method:
-        void rename()
-
-*/
