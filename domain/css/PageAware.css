@@ -26,4 +26,13 @@ img[alt='floatright-00-15-15'] {
 	margin-bottom: 15px;
 }      
 
+p.clearRight {
+    clear:right;
+}
+p.clearLeft {
+    clear:left;
+}
+p.clearBoth {
+    clear:both;
+}
 
