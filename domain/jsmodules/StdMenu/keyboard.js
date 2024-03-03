@@ -227,7 +227,7 @@ function navigate(event) {
                     dlg.cdback();
                 break;
             case "Enter":
-                    let url=dlg.curDirStr+'/'+rsp.curDir[dlg.cid][0];
+                    let url='/'+dlg.curDirStr+'/'+rsp.curDir[dlg.cid][0];
                     if ( rsp.curDir[dlg.cid][1][0] == '/')
                         url +='/index';
                     else
