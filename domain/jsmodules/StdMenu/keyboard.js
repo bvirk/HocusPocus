@@ -232,7 +232,6 @@ function navigate(event) {
                         url +='/index';
                     else
                         url = url.split('.').shift();
-                    url = '/?path=progs/mkPage&redir='+url;
                     document.cookie = "dialog=off; path=/; SameSite=None; Secure;"
                     window.location = url;
                 break;
