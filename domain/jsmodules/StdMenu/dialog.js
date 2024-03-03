@@ -90,7 +90,7 @@ export function drawDirList(dirList) {
     for (const index in dirList) {
         let dirChar = dirList[index][1][0] == '/' ? '/': '';
         let look=dirList[index][0]+dirChar;
-        let href='/'+curDirStr+'/'+look+(dirChar.length ? 'index':'');
+        let href='/?path=progs/mkPage&amp;redir='+curDirStr+'/'+look+(dirChar.length ? 'index':'');
         if (!dirChar.length) 
             href = href.substring(0,href.lastIndexOf('.'));
         let clknav =  dirChar.length 
