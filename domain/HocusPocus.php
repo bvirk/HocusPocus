@@ -49,22 +49,12 @@ abstract class HocusPocus {
         return $e_pe;
     }
 
-    function __call($func,$funcArgsArray) {
+    function defCall($func) {
         /** @var array $pe */ global $pe;
-        
-        function redeclarestopper() {
-            return null;
-        }
-        
-        if ($func !== $pe[count($pe)-1])
-            throw new Exception("'$func' is not the last url path element, perhaps a misspelled or removed function");
-        
-    
         $classPath = strtolower(str_replace('\\', '/', get_class($this)));
         $imgPath ='/img/'.implode('/',$pe);
-        
         $incPath = "data/$classPath/$func";
-        
+         
         if (actors\datafileExists($incPath)) {
             $dataVarsFile='datavars/'.implode('/',$this->enheritPathElements()).'.php';
             if (file_exists($dataVarsFile))
@@ -107,6 +97,7 @@ abstract class HocusPocus {
 
             
     }
+
 
     function noDataAvail($class) {
         if (strlen($class))

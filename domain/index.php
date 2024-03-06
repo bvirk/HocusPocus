@@ -50,10 +50,15 @@ function instantiatePath() {
     $namespace =  implode("\\",array_slice($pe,0,-2));
 
     //Uncomment for inspection
-    //header("Content-type: text/plain;charset=UTF-8");varln('path=',$_REQUEST['path'],'$pe=',$pe,'$class=',"$namespace\\$class",'method=',$pe[count($pe)-1]); exit;
+    //header("Content-type: text/plain;charset=UTF-8");varLn('path=',$_REQUEST['path'],'$pe=',$pe,'$class=',"$namespace\\$class",'method=',$pe[count($pe)-1]); exit;
 
     try {
-        [new ("$namespace\\$class")(),$pe[count($pe)-1]]();
+        $reqClass = "$namespace\\$class";
+        $func = $pe[count($pe)-1];
+        if (method_exists($reqClass,$func))
+            [new $reqClass(),$func]();
+        else
+            (new $reqClass())->defCall($func);
     } catch (Exception $e) {
         if ($e->getFile() == __FILE__ && $e->getLine() == 12 && strpos($e->getMessage(),'No such file or directory') > 0) 
             header('Location: /'.defaultPage());
