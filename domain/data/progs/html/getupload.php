@@ -12,9 +12,9 @@ $updest = $_POST['updest'];
 extract($_FILES[$formInputTypeFileName]);
 
 function returnText($infoLast,$infoInPre=''){
-    $get = varlnstr('$_GET',$_GET);
-    $post = varlnstr('$_POST',$_POST);
-    $files = varlnstr('$_FILES',$_FILES);
+    $get = varLnStr('$_GET',$_GET);
+    $post = varLnStr('$_POST',$_POST);
+    $files = varLnStr('$_FILES',$_FILES);
     $button = "<button onClick = \"window.open('".$_POST['refer'] ."','_self');\">Exit Upload</button>";
     return <<< EOMD
 ### Image upload
@@ -46,7 +46,7 @@ $mimetype = mime_content_type($tmp_name);
 if (!in_array(mime_content_type($tmp_name),$permittedMimes))
     return returnText("mimetype $mimetype is not allowed");
 
-$imageInfo = varlnstr('getimagesize',getimagesize($tmp_name));
+$imageInfo = varLnStr('getimagesize',getimagesize($tmp_name));
 $script = "<!DOCTYPE html><html><body><script>window.open('".$_POST['refer']."','_self');</script></body></html>";
 
 if ( !file_exists($updest)) {
