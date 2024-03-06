@@ -15,7 +15,12 @@ if (!array_key_exists(LOGGEDIN,$_SESSION)) {
 if (!array_key_exists('editmode',$_SESSION))
     $_SESSION['editmode']=DEFAULTEDITMODE;
 
-function defaultPage() {
+
+/**
+ * Return default page
+ * @return string default page
+ **/    
+function defaultPage():string {
     return DEFCONTENT.'/'.array_key_first(LANGUAGES).'/index';
 }
 
@@ -28,7 +33,11 @@ function errLog(... $argArr): void {
     error_log(varLnStr(... $argArr));
 }
 
-function headerCTText($usesJSONParm=false) {
+/**
+ * Sets Content-type to txt/plain on first call as opposed to following call in processing of the a request. Global variable $usesJSON default to false. 
+ * @param bool $usesJSONParm overrides assigning false to $usesJSON
+ */
+function headerCTText(bool $usesJSONParm=false):void {
     global $usesJSON;
     $usesJSON = $usesJSONParm;
     static $isSet=false;
