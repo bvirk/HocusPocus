@@ -27,7 +27,7 @@ errLog(get_defined_vars());
 
 Apaches error.log viser alt muligt som det svært for øjnene at udelukke - derfor filteret [alog](https://raw.githubusercontent.com/bvirk/localebin/main/alog)  
 
-Følgende er terminal output efter request med linien 'errLog(get_defined_vars());' før return statement i datafilen for denne side.
+Følgende er terminal output efter request med linien 'errLog(get_defined_vars());' før return statement i datafilen for denne side. (datafil baserede sider inkluderer datafilen i HocusPocus->defCall)
 
 ```
 \$ alog
@@ -48,7 +48,7 @@ clearBoth: '<p class='clearBoth'></p>'
 ```
 
 #### Xdebug
-Ikke alene kan man slippe for linier med 'errLog(get_defined_vars());' - man kan stoppe scriptafvikling og løbende beslutte at 'gå ind i' eller 'overspringe' med Xdebug. Dermed kan fejlfindings kapaciteten øges.  
+Ikke alene kan man slippe for linier med 'errLog(get_defined_vars());' - man kan stoppe scriptafvikling og løbende beslutte at 'gå ind i' eller 'overspringe' med Xdebug. Dermed kan den mentale fejlfindings kapaciteten øges og det er mindre resourcekrævende at verificere at noget er som antaget.  
 
 
 EOMD,actors\tocNavigate($func)];
