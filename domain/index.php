@@ -55,7 +55,7 @@ function instantiatePath() {
     try {
         $reqClass = "$namespace\\$class";
         $func = $pe[count($pe)-1];
-        if (method_exists($reqClass,$func)) // year partnership with __call ends here.
+        if (method_exists($reqClass,$func)) // years partnership with __call ends here.
             [new $reqClass(),$func]();      // mostly API's
         else
             (new $reqClass())->defCall($func);
