@@ -59,7 +59,7 @@ abstract class HocusPocus {
             $dataVarsFile='datavars/'.implode('/',$this->enheritPathElements()).'.php';
             if (file_exists($dataVarsFile))
                 include($dataVarsFile);
-            $content = include($incPath);
+            $content = include($incPath); // the datafile
             if (!is_array($content))
                 $content = [$content];
             $tStack = [];
