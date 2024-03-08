@@ -10,7 +10,7 @@ Med en php funktion markeret kunne jeg aktivere [macro cyberkiss](https://raw.gi
 
 Senere porterede jeg det til et  selvstændige Beanshell program [ck](https://raw.githubusercontent.com/bvirk/localebin/main/ck) hvormed sites hvis url'er former en slags api, kan åbnes på dermed indekseret side.  
 
-Dets wrapper [cck](https://raw.githubusercontent.com/bvirk/localebin/main/cck) anvender jeg stadig i næ, som f.eks sådan:
+Dets wrapper [cck](https://raw.githubusercontent.com/bvirk/localebin/main/cck) anvender jeg stadig i ny og næ, som f.eks sådan:
 ```
 $ cck phpf preg_match
 ```
