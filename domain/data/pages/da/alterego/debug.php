@@ -1,5 +1,4 @@
 <?php
-errLog(get_defined_vars());
 return ["<!<div class='auto80'>#html#</div>",actors\tocHeadline($func),<<<EOMD
 Mange programmører har været der - man finder let vidnesbyrd derom.  
 
@@ -32,7 +31,6 @@ Følgende er terminal output efter request med linien 'errLog(get_defined_vars()
 ```
 \$ alog
 func: 'debug'
-funcArgsArray: array[]
 pe: 0: 'pages'
 1: 'da'
 2: 'alterego'
@@ -44,7 +42,7 @@ dataVarsFile: 'datavars/PageAware/StdMenu.php'
 srcExpl: '<div class='srcExpl'>'
 clearLeft: '<p class='clearLeft'></p>'
 clearRight: '<p class='clearRight'></p>'
-clearBoth: '<p class='clearBoth'></p>'
+clearBoth: '<p class='clearBoth'></p>
 ```
 
 #### Xdebug
