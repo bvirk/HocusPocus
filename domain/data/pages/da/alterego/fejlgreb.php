@@ -29,4 +29,17 @@ Derfor blev løsningen at url path var et index ind et andet arvehierarki, et ar
 
 Enhver url path afstedkommer instantiering af class som arver fra en actors class og intet arver fra den.
 
+##### Magicke \_\_call
+
+Navnet HocusPocus var et 'se hvor lidt der skal til' flagen med magiske \_\_call i arsenalet. Jeg opfattede skepsisen om dens anvendelse som det udtrykkes på php.net som religion.  
+
+På et tidspunkt var der en bug i function varsStr som jeg anvendte til debug logging af lokale variabler. Fejlagtig mistænkte jeg \_\_call for at klude med 2'nd parametre.  
+
+En anden slags magi tonede frem -  hvor er det dog fantastisk behjælpeligt at IDE kan 'gennemskue' hvordan dit refererer til dat og giver bølgestreger hvis argument antallet er forkert.  
+Man slipper helt for at møde en exception!  
+Det hjælper dog ikke noget hvis man bruger PHP's smidighed til at kompakte alt ned arrays, for så flyttes fejlen fra semantik til logik.
+
+function method\_exists() præsenterede sig - og nå ja, jeg kunne jo også selectere explicit - det som \_\_call gjorde implicit.  
+\_\_call blev simpelt hen kaseret til fordel for betinget kald til dens erstatning, function defCall().
+
 EOMD,actors\tocNavigate($func)];
