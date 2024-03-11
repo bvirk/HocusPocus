@@ -66,7 +66,7 @@ abstract class HocusPocus {
             $cStack[] = '';
             foreach($content as $elem) {
                 if (/* template element */ substr($elem,0,3) == '<!<') {
-                    $tStack[] = substr($elem,2);
+                    $tStack[] = substr(preg_replace('/\s+#html#/','#html#',preg_replace('/\s+</','<',$elem)),2);
                     $cStack[] = '';
                     continue;
                 }
