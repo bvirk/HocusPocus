@@ -6,7 +6,7 @@ abstract class PageAware extends \HocusPocus {
     protected $jsFiles = [];
     protected $cssFiles = [];
     protected $title = null;
-    protected $useJSX = false;
+    //protected $useJSX = false;
     protected $useMarkDown=true;
     
     
@@ -19,12 +19,7 @@ abstract class PageAware extends \HocusPocus {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php $this->getExterns(); ?>  
   <title><?= $this->title ?: implode('/',array_slice($pe,-2)) ?></title>
-<?php
-echo $this->useJSX 
-    ? substr(str_replace('src="/','src="'.JSX.'/',file_get_contents(JSX)),6)
-    : '</head>';
-?>
-<body>
+</head><body>
 <?php }
 
     function __destruct() { 
