@@ -393,6 +393,46 @@ class NNNAPI {
         echo json_encode([$dirHasDir,\actors\permStat($dir),$dirList]);
     }
 
+    function lsWithPath() {
+        $dirList = [];
+        $dir = $_GET['curdir'];
+        $dirHasDir=false;
+        foreach (glob($dir.($dir?'/*':'*')) as $fileWP) {
+            $owner = posix_getgrgid(filegroup($fileWP))['name'];
+            $readFlag =  fileperms($fileWP) & 040;
+            if (! \actors\hasReadAccessFor($owner,$readFlag,$readFlag))
+                continue;
+            $fileIsDir = is_dir($fileWP);
+            if ($fileIsDir)
+                foreach( glob("$fileWP/*") as $fileOfDir)
+                    if (is_dir($fileOfDir))
+                        $dirHasDir=true;
+            $liClass = $fileIsDir ? '/Dir' : ' File';
+            if ($owner == $_SESSION[LOGGEDIN])
+                $liClass .= $readFlag ? 'Vis' : 'Hid';
+            
+            // the class that implement the files of dir or the file 
+            if (str_starts_with($dir,'data/pages/')) {
+                $classPath = substr($dir,5);
+                $file = substr($fileWP,strrpos($fileWP,'/')+1);
+                $implClass = $fileIsDir 
+                    ? ("$classPath/".ucfirst("$file.php")) 
+                    : ucAfterLast($classPath).'.php';
+                $enhChn = \actors\enheritChain($implClass);
+            } else
+                $enhChn = '';
+            $dirList[] = [
+                $fileWP
+                ,$liClass
+                ,\actors\filespec($fileWP)
+                , $enhChn
+                , $owner == $_SESSION[LOGGEDIN] | ($_SESSION[LOGGEDIN] == APACHE_USER) *2];
+            
+        }
+        echo json_encode([$dirHasDir,\actors\permStat($dir),$dirList]);
+    }
+
+
     function lsExt() { // checked0227
         $selDataPath = $_GET['selDataPath'];
         $type = $_GET['type'];
@@ -452,6 +492,20 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
 
+    function pageContext() {
+        //include('snyd');
+        echo json_encode(       
+        [defaultPage()          // defaultpage
+        ,$_SESSION[LOGGEDIN]    // SES{loggedin:}
+        ,$_SESSION['editmode']  // SES{editmode:}
+        ,DEFAULTEDITMODE
+        ,APACHE_USER            
+        ,REDRAW_DIR
+        ,REDRAW_IMG_DIR
+        ,REDRAW_UPPERDIR]);
+    }
+        
+
     function rm() {
         $selDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
  
@@ -498,6 +552,7 @@ class NNNAPI {
     }
 
     function tooglePublic() {
+        header('Access-Control-Allow-Origin: *');
         $selDataPathDir='data/'.$_GET['curdir'];
         $selDataPath = $selDataPathDir.'/'.$_GET['selname'];
         
