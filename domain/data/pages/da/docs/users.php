@@ -64,7 +64,7 @@ Efter at have fjernet user fra \$_SESSION genåbnes siden gennem javascript.
 
 Som en tilbagemelding åbnes dialog menuen tilvejebragt af et cookie baseret flag.
 
-EOMD,srcf('jsmodules/StdMenu/hamMenu.js','function hamDrawMenu',2)
+EOMD,srcf('jsmodules/StdMenu/dialog.js','function hamDrawMenu',2)
     ,srcf('js/PageAware/StdMenu.php','function\(\)',4),<<<EOMD
 $srcExpl
 Det er ready funktionen som jquery giver - køres når siden er loadet
