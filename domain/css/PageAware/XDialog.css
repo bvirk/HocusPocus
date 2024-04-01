@@ -1,4 +1,20 @@
 /* menu system */
+:root {
+    --bgColorScreen: rgba(32, 32, 32, 0.8);
+    --bgColor: rgb(250,250,210);
+    --fgColor: black;
+    --invertColor: rgb(250,250,210);
+    --selFileColor: black;
+    --selDirColor: darkblue;
+    --selFileColorVis: darkgreen;
+    --selDirColorVis: green;
+    --selFileColorHid: red;
+    --selDirColorHid: darkred;
+    --selExtExists: darkblue;
+    --selExtNotExists: lightblue;
+    
+}
+
 #dlgBG {
     display: none; /* Hidden by default */
     position: fixed; /* Stay in place */
@@ -9,20 +25,190 @@
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(231, 224, 120, 0.185);  /* Black w/ opacity */
+    background-color: var(--bgColorScreen);
 }
 
+
 #dialog {
-    background-color: #fefefe;
+    /* background-color: amber; */
+    color: var(--fgColor);
+    background-color: var(--bgColor);
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px 0px 20px 20px;
-    border: 2px solid #da9c28;
+    border: 6px solid lightskyblue;
+    border-radius: 0 20px 0 0;
     width: 50%; /* Could be more or less, depending on screen size */
-    /* display: flex; */
+    /* display: flex; */ 
 }
 
 #openDialog, #closeDialog {
     float: right;
     margin-right: 2%;
     font-size: 2em;
+    color: var(--fgColor);
+    border: 0;
+    background-color: var(--bgColor);
+    cursor: pointer;
+}
+
+#wdFiles li a, #wdFiles li span  {
+    font-family: sans-serif;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#wdFiles li {
+    list-style: none;  
+}
+
+span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
+    cursor: pointer;
+}
+
+#headNav{
+    margin-bottom: 2%;
+}
+
+#headNav span {
+    color: var(--fgColor);
+}
+
+#login {
+    color: var(--fgColor);
+}
+
+#dialog div  span a {
+    font-size: 2em;
+}
+
+#statusLine {
+    font-size: 0.8em;
+}
+
+#login {
+    text-decoration: none;
+    margin-left: 2%;
+}
+
+ul {
+    padding: 0;
+    width: 80%;
+}
+
+
+/* not logged in color - sel for selected */
+.selDir {
+    color: var(--invertColor);
+    background-color: var(--selDirColor);
+}
+.selFile {
+    color: var(--invertColor);
+    background-color: var(--selFileColor);
+}
+.unselDir {
+    background-color: var(--invertColor);
+    color: var(--selDirColor);
+}
+.unselFile {
+    background-color: var(--invertColor);
+    color: var(--selFileColor);
+}
+
+/* logged in visible to all */
+.selDirVis {
+    color: var(--invertColor);
+    background-color: var(--selDirColorVis);
+}
+.selFileVis {
+    color: var(--invertColor);
+    background-color: var(--selFileColorVis);
+}
+.unselDirVis {
+    background-color: var(--invertColor);
+    color: var(--selDirColorVis);
+}
+.unselFileVis {
+    background-color: var(--invertColor);
+    color: var(--selFileColorVis);
+}
+
+
+/* logged in hidden for others than owner */
+.selDirHid {
+    color: var(--invertColor);
+    background-color: var(--selDirColorHid);
+}
+.selFileHid {
+    color: var(--invertColor);
+    background-color: var(--selFileColorHid);
+}
+.unselDirHid {
+    background-color: var(--invertColor);
+    color: var(--selDirColorHid);
+}
+.unselFileHid {
+    background-color: var(--invertColor);
+    color: var(--selFileColorHid);
+}
+
+/* css, js and img types choise */
+.selcss, .seljs, .selimg {
+    color : var(--invertColor);
+    background-color:  var(--selDirColor);
+}
+.unselcss, .unseljs, .unselimg {
+    color:  var(--selDirColor);
+    background-color : var(--invertColor);
+}
+
+/* css files that exists */
+.sel-css-ex {
+    color : var(--invertColor);
+    background-color:  var(--selExtExists);
+}
+.unsel-css-ex {
+    color:  var(--selExtExists);
+    background-color : var(--invertColor);
+}
+
+/* css files that dont exists */
+.sel-css-mis {
+    color : var(--invertColor);
+    background-color:  var(--selExtNotExists);
+}
+.unsel-css-mis {
+    color:  var(--selExtNotExists);
+    background-color : var(--invertColor);
+}
+
+
+
+/* js files that exists */
+.sel-js-ex {
+    color : var(--invertColor);
+    background-color:  var(--selExtExists);
+}
+.unsel-js-ex {
+    color:  var(--selExtExists);
+    background-color : var(--invertColor);
+}
+
+/* js files that don't exists   */
+.sel-js-mis {
+    color : var(--invertColor);
+    background-color:  var(--selExtNotExists);
+}
+.unsel-js-mis {
+    color:  var(--selExtNotExists);
+    background-color : var(--invertColor);
+}
+
+/* img files --selExtNotExists */
+.sel-img-ex,.sel-img-mis {
+    color : var(--invertColor);
+    background-color:  var(--selExtExists);
+}
+.unsel-img-ex,.unsel-img-mis {
+    color:  var(--selExtExists);
+    background-color : var(--invertColor);
 }
