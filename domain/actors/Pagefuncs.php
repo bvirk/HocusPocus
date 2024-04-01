@@ -207,7 +207,7 @@ function queryString($exclude='path') {
 } 
 
 function lastmRef($url,$attName) {
-	return "$attName='$url?lastm=".filemtime($_SERVER['DOCUMENT_ROOT'].$url)."'";
+	return "$attName='$url?lastm=".filemtime(substr($url,1))."'";
 }
 
 /**
