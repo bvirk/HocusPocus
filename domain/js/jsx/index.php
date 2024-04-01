@@ -1,1 +1,0 @@
-<script type='text/jsx' src='/js/index.jsx'></script>
