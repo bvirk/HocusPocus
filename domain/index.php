@@ -41,8 +41,8 @@ function instantiatePath() {
         exit(header('Location: /pages/'.array_key_first(LANGUAGES).'/index',true,302));
     if (count($pe) == 2) // used for 2 path element /progs
         $pe[] = 'index';
-
-
+    if ($pe[0] == 'progs')
+        header('Access-Control-Allow-Origin: *');
     // second to last element in $pe 
     $class = ucfirst(array_slice($pe,-2,1)[0]);
 
