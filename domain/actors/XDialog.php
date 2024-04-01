@@ -2,10 +2,13 @@
 namespace actors;
 
 class XDialog extends PageAware {
-    protected $jsFiles= ['/js/jquery.min.js'];
-    //protected $useJSX=true;
-
+    protected $jsFiles= ['/js/jquery.min.js',['/jsmodules/XDialog/main.js','type' => 'module']];
+    protected $useClassInheritance=false;
+    protected $cssFiles= [
+         ['/css/PageAware/XDialog.css?','rel' =>'stylesheet','type' => 'text/css']
+        ,['/css/PageAware.css?','rel' =>'stylesheet','type' => 'text/css']];
+    
     function stdContent() {
-    	echo "<div id='root'></div>\n".$this->body;
+    	echo "<div id='root' data-IS_PHP_ERR='".IS_PHP_ERR."'></div>\n".$this->body;
 	}
 }
