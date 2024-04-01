@@ -42,7 +42,7 @@ Request er formidlet af XMLHttpRequest objektet - property onreadystatechange ti
 </div>
 
 For at få et single point of source bruges en constant overalt som første argument til request(...) 
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','const APIName',1),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/dialog.js','const APIName',1),<<<EOMD
 $srcExpl
 Af det følger at argument streng, som er '&' adskilt liste af 'key=value' par, skal indldes med '&'
 </div>
@@ -53,7 +53,7 @@ Hamburger ikonets onClick attribut har en function
 EOMD,srclf('jsmodules/StdMenu/main.js','hamDrawMenu = hamDrawMenu',1),<<<EOMD
 Den kan også åbnes med F9
 EOMD,srclf('jsmodules/StdMenu/keyboard.js','function whenNoMenu',7)
-    ,srclf('jsmodules/StdMenu/hamMenu.js','let isFirstDraw',1,'function hamDrawMenu',9,'function hideInput',3),<<<EOMD
+    ,srclf('jsmodules/StdMenu/dialog.js','let isFirstDraw',1,'function hamDrawMenu',9,'function hideInput',3),<<<EOMD
 $srcExpl
 
 Med setCurkeyhandler skiftes til keyboard handler navigate(event).  
@@ -91,7 +91,7 @@ curDirStr er også id for et &lt;div&gt; som så også vises.
 </div>
 
 showMenu afsluttes med kald til initDomElements.
-EOMD,srclf('jsmodules/StdMenu/hamMenu.js','function initDomElements',14),<<<EOMD
+EOMD,srclf('jsmodules/StdMenu/dialog.js','function initDomElements',14),<<<EOMD
 $srcExpl
 
 lid indeholder det array af DOM elementer der bruges til at udvælge en fil.
