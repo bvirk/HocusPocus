@@ -493,16 +493,14 @@ class NNNAPI {
     }
 
     function pageContext() {
-        //include('snyd');
-        echo json_encode(       
-        [defaultPage()          // defaultpage
-        ,$_SESSION[LOGGEDIN]    // SES{loggedin:}
-        ,$_SESSION['editmode']  // SES{editmode:}
-        ,DEFAULTEDITMODE
-        ,APACHE_USER            
-        ,REDRAW_DIR
-        ,REDRAW_IMG_DIR
-        ,REDRAW_UPPERDIR]);
+        echo json_encode([0,[
+            'SES'             => $_SESSION
+           ,'DEFAULTEDITMODE' => DEFAULTEDITMODE
+           ,'APACHE_USER'     => APACHE_USER        
+           ,'REDRAW_DIR'      => REDRAW_DIR
+           ,'REDRAW_IMG_DIR'  => REDRAW_IMG_DIR
+           ,'REDRAW_UPPERDIR' => REDRAW_UPPERDIR
+       ]]);
     }
         
 
@@ -548,7 +546,14 @@ class NNNAPI {
     }
 
     function test() {
-        echo json_encode(['kurt','korte']);
+        echo json_encode([0,[
+             'SES'             => $_SESSION
+            ,'DEFAULTEDITMODE' => DEFAULTEDITMODE
+            ,'APACHE_USER'     => APACHE_USER        
+            ,'REDRAW_DIR'      => REDRAW_DIR
+            ,'REDRAW_IMG_DIR'  => REDRAW_IMG_DIR
+            ,'REDRAW_UPPERDIR' => REDRAW_UPPERDIR
+        ]]);
     }
 
     function tooglePublic() {
@@ -569,5 +574,14 @@ class NNNAPI {
         copySubDirsOf('trash/'.$_SESSION[LOGGEDIN]);
         echo json_encode([CONFIRM_COMMAND,'trash/'.$_SESSION[LOGGEDIN]." restored - use 't' for emptying"]);
     }
+
+    function viewSessionVars() {
+        $out='';
+        foreach ($_SESSION as $k => $v)
+            $out .= "$k=>$v, ";
+        echo "\"$out\"";
+        
+    }
+
 
 }
