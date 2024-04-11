@@ -1,8 +1,8 @@
 import * as view from './dirView.js';
 import { setCurkeyhandler, KeyHandler } from "./keyHandlerDelegater.js"
+import dirlistExtTypes from './dirlistExtTypes.js';
 import * as fm from './filemanage.js';
 import {getRequest} from './requests.js';
-import {APIName,SES } from './webPageContext.js'
 
 export function whenExtTypes(event) {
     if (event.defaultPrevented)
@@ -15,6 +15,7 @@ export function whenExtTypes(event) {
         case "ArrowLeft":
         case "q":
         case "Escape":
+            dirlistExtTypes.selIndex=0;
             setCurkeyhandler(KeyHandler.WEBROOT);
             view.fetchWebRoot(true);
             break;
