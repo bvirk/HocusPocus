@@ -1,9 +1,10 @@
 import dirWR from "./dirlistWebRoot.js";
 import dirExtFiles from "./dirlistExtFiles.js";
 import dirExtTypes from './dirlistExtTypes.js';
+import but from './buttons.js';
 
 import { setCurkeyhandler, KeyHandler } from "./keyHandlerDelegater.js"
-import {IS_PHP_ERR, APIName, SES, setWebPageContext, setEditMode, APACHE_USER } from './webPageContext.js'
+import conf, { APIName, IS_PHP_ERR } from './webPageContext.js'
 import {getRequest} from './requests.js';
 
 
@@ -18,7 +19,7 @@ function basename(path) {
     return path.split('/').reverse()[0];
 }
 
-function dirname(path) {
+export function dirname(path) {
     let spos = path.lastIndexOf('/');
     return spos != -1 ? path.substring(0,spos) : path;
 }
@@ -48,7 +49,6 @@ function choseDir(f) {
     dir=f;
     return f;
 }
-//let dirlist;
 
 function draw(resp, fromCache) {
     if (!fromCache)
@@ -136,38 +136,39 @@ export function openDialog() {
     document.getElementById("dlgBG").style.display = 'block';
     $('#wdFiles').empty();
     setCurkeyhandler(KeyHandler.WEBROOT);
+    dirWR.clearDirCache();
     getRequest(pageContextreciever,APIName+'pageContext');   
 }
 
 function pageContextreciever(parsed) {
-    if (setWebPageContext(parsed)) 
+    if (conf.setWebPageContext(parsed)) 
         openDialogAfterInit();
     else
         statusLine(parsed[1]);
 }
 
+
 function openDialogAfterInit() {
     wRPath='data'+dirname(location.pathname);
-    let [loginHref,loginTitle,loginText] = SES.loggedin.length
-        ? ['/?path=progs/loginRecieve/logout&url='+window.location.pathname,'log out '+SES.loggedin,'➝🔒']
-        : ['/?path=progs/html/login&url='+window.location.pathname,'log in','➝🔓'];
-    $('#login').attr('href',loginHref).attr('title',loginTitle).text(loginText);
-    setEditMode();
+    but.setupLoginButton();
+    but.setupEditModeButton();
     fetchWebRoot();
 }
 
 export function selectAbove() {
     dir.selIndex -= dir.selIndex ? 1 : 1-dir.length;
     dir.dirlistData(draw);
+    dir.cacheSelFile();
 }
 
 export function selectBelow() {
     dir.selIndex += dir.selIndex < dir.length-1 ? 1 : 1-dir.length;
     dir.dirlistData(draw);
+    dir.cacheSelFile();
 }
 
 export function selectWRParentFolder() {
-    if (wRPath.length && (wRPath.length > 10 || SES.loggedin == APACHE_USER)) {
+    if (wRPath.length && (wRPath.length > 10 || conf.SES.loggedin == conf.APACHE_USER)) {
         let lastSlashPos = wRPath.lastIndexOf('/')
         wRPath = lastSlashPos == -1 ? '' : wRPath.substring(0,lastSlashPos);
         fetchWebRoot();
@@ -179,11 +180,14 @@ export function selectWRSubFolder() {
     if (selFileItem[1][0] === '/') {
         wRPath += (wRPath.length ? '/' : '')+basename(selFileItem[0]);
         fetchWebRoot();
-    } else if (wRPath.substring(0,10) == 'data/pages') {
-        setCurkeyhandler(KeyHandler.EXTTYPES);
-        choseDir(dirExtTypes).setDirty().dirlistData(draw);
-    } 
+    } else if (wRPath.substring(0,10) == 'data/pages') 
+        selectExtTypesDir();
 }
+
+export function selectExtTypesDir() {
+    setCurkeyhandler(KeyHandler.EXTTYPES);
+    choseDir(dirExtTypes).setDirty().dirlistData(draw);
+}    
 
 export function selectExtFiles() {
     let type = dir.typeName();
@@ -193,6 +197,8 @@ export function selectExtFiles() {
 }
 
 export function statusLine(mes) {
+    if (Array.isArray(mes))
+        mes = mes.join();
     $("#statusLine").css('display','block');
     $("#statusLine").html(mes);
 }
