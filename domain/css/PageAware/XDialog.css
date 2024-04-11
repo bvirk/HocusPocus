@@ -61,7 +61,7 @@
     list-style: none;  
 }
 
-span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
+span.clicknav:hover,#navBack:hover,#navHome:hover,#login, #editplace {
     cursor: pointer;
 }
 
@@ -73,8 +73,25 @@ span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
     color: var(--fgColor);
 }
 
+#loginbox {
+    border: 2px outset lightgray;
+    padding-top: 14px;
+    padding-bottom: 5px;
+}
+
+
 #login {
     color: var(--fgColor);
+    background-color: var(--bg);
+    text-decoration: none;
+    border: 0;
+    font-size: 1.8rem;
+
+}
+
+#editplace {
+    font-size: 1.8rem;
+    background-color: var(--bg);
 }
 
 #dialog div  span a {
@@ -85,14 +102,44 @@ span.clicknav:hover,#navBack:hover,#navHome:hover,#editplace {
     font-size: 0.8em;
 }
 
-#login {
-    text-decoration: none;
-    margin-left: 2%;
+
+span>div {
+    display: inline-block;
+    /* border: 1px solid red; */
+    margin: 0 0 0 20px;
+    
 }
+
+span>div>div:first-child {
+    /* border: 1px solid blue; */
+    text-align: right;
+    font-size: 2rem;
+}
+span>div>div:nth-child(2) {
+    /* border: 3px solid purple; */
+    font-size: 0.8rem;
+}
+
+/*
+span>div:nth-child(2) {
+    display: inline-block;
+    border: 1px solid blue;
+}
+*/
 
 ul {
     padding: 0;
     width: 80%;
+}
+
+#dialog-help {
+    display: none;
+    width: 50%;
+    margin: 15% auto;
+    background-color: var(--bgColor);
+    color: var(--fgColor);
+    border: 6px solid lightcoral;
+    padding-left: 10%;
 }
 
 
