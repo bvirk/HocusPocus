@@ -48,6 +48,6 @@ $(function() {
     allFuncs.close = dlg.quitMenu;
     allFuncs.toEditMode = dlg.toEditMode;
         let dialogState=document.cookie.split('; ').find((row) => row.startsWith('dialog='))?.split('=')[1];
-    if ( dialogState == 'on' && location.pathname != '/progs/edit/content') 
+    if ( dialogState == 'on' && location.pathname != '/progs/edit/content')
         allFuncs.hamDrawMenu();
 });
