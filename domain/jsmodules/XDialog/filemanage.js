@@ -7,3 +7,9 @@ export function edit([file,editLoc]) {
     }
     
 }
+
+export function webRootHelp([unused,resp]) {
+    $('#dialog').css('display','none');
+    $('#dialog-help').html(resp).css('display','block');
+
+}
