@@ -7,30 +7,22 @@ import {statusLine} from './dirView.js';
  * php simple values get identical name=vales
  */
 
-export let APIName = "/?path=progs/NNNAPI/";
-export let IS_PHP_ERR;
-export let CONFIRM_COMMAND;
-
-
+export let APIName = "/?path=progs/NNNAPIObj/";
+export let APIClass = "/progs/NNNAPIObj/";
+export let PHP_ERR;
 
 
 function listProps() {
     return stringifyObject(this);
 }
 
-export function primeWebPageContext({_IS_PHP_ERR}) {
-    IS_PHP_ERR = _IS_PHP_ERR;
-    CONFIRM_COMMAND = _IS_PHP_ERR;
+export function primeWebPageContext(phpErrKey) {
+    PHP_ERR = phpErrKey
 }
 
-export function setWebPageContext([err,obj]) {
-    if (err === IS_PHP_ERR) {
-        statusLine(obj);
-        return false;
-    }
+export function setWebPageContext(obj) {
     for (const pr in obj)
-            this[pr] = obj[pr];
-    return true;
+        this[pr] = obj[pr];
 }
 
 function stringifyObject(obj) {
