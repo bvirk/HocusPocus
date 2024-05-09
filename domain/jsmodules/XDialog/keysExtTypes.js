@@ -1,31 +1,20 @@
 import * as view from './dirView.js';
 import { setCurkeyhandler, KeyHandler } from "./keyHandlerDelegater.js"
 import dirlistExtTypes from './dirlistExtTypes.js';
-import * as fm from './filemanage.js';
-import {getRequest} from './requests.js';
+import { commonKeys } from './keysCommon.js';
 
 export function whenExtTypes(event) {
     if (event.defaultPrevented)
         return; // Do nothing if the event was already processed
+    commonKeys(event);
     switch(event.key) {
-        case "ArrowDown":
-            event.preventDefault();
-            view.selectBelow();
-            break;
         case "ArrowLeft":
-        case "q":
-        case "Escape":
             dirlistExtTypes.selIndex=0;
             setCurkeyhandler(KeyHandler.WEBROOT);
-            view.fetchWebRoot(true);
+            view.fetchWebRoot();
             break;
         case "ArrowRight":
             view.selectExtFiles();
-            //view.statusLine('traet');
-            break;
-        case "ArrowUp":
-            event.preventDefault();
-            view.selectAbove();
             break;
         default:
     }
