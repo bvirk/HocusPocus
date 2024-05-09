@@ -1,10 +1,15 @@
+import { whenCssOrJS } from './keysCssOrJs.js';
+import { whenConfirmY } from './keysConfirmY.js';
+import { whenExtTypes } from './keysExtTypes.js';
+import { whenHelp } from './keysHelp.js'
+import { whenImg } from './keysImg.js';
+import { whenNewFileOrDir } from './keysNew.js';
 import { whenNoDialog } from './keysNoDialog.js'
 import { whenWebRoot } from './keysWebRoot.js'
-import { whenExtTypes } from './keysExtTypes.js';
-import { whenExtFiles } from './keysExtFiles.js'
-import { whenHelp } from './keysHelp.js'
+import { whenEscapeToInvoker } from './keysEscToInvoker.js';
 
-let curkeyhandler;
+
+export let curkeyhandler;
 export let returnToKeyhandler;
 
 window.addEventListener("keydown", delegateEListener,true);
@@ -17,12 +22,17 @@ export const KeyHandler = Object.freeze({
     WEBROOT:    whenWebRoot,
     NODIALOG:   whenNoDialog,
     EXTTYPES:   whenExtTypes,
-    EXTFILES:   whenExtFiles,
-    HELP:       whenHelp
+    IMG:        whenImg,
+    CSSORJS:    whenCssOrJS,
+    HELP:       whenHelp,
+    CONFIRM_Y:  whenConfirmY,
+    NEWFILEORDIR: whenNewFileOrDir,
+    ESCTOINVOKER: whenEscapeToInvoker
 });
 
 export function setCurkeyhandler(func,returnTo) { 
     curkeyhandler=func;
     if (returnTo)
         returnToKeyhandler=returnTo;
+    $('#keyhandler').text(func.name);
 }
