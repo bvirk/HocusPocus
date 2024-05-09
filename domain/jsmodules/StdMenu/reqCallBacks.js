@@ -11,15 +11,20 @@ function catchResp() {
         let resp = JSON.parse(httpRequest.responseText);
         
         if (resp[0] == isPHPErr) { // Used without error too, as confirmation of commands
-            if (resp[1].length)
-                dlg.statusLine(resp[1]);
+            if (resp[1].length) 
+                simpleStatLine(resp[1]);
+            return null;
+        }
+        if ('phpError' in resp) {
+            simpleStatLine(resp.phpError)
+            return null;
         }
         return resp;
     } catch(e) {
         if (e.message.startsWith('JSON.parse')) {
-            dlg.statusLine(httpRequest.responseText);
+            simpleStatLine(httpRequest.responseText);
          } else
-            dlg.statusLine('perhaps som javascript error');
+            simpleStatLine('perhaps som javascript error');
     }
 }
 
@@ -27,6 +32,7 @@ export function nopJSCommand() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let resp = catchResp();
+    if (resp == null) return;
     if (resp[0] == redrawDir || resp[0] == redrawUpperDir) {
         if (resp[0] == redrawUpperDir)
             dlg.setCurDirStr(dlg.curDirStr.substring(0,dlg.curDirStr.lastIndexOf('/')));
@@ -62,6 +68,7 @@ export function savedFiletoeditResponse() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     let fileResp = catchResp();
+    if (fileResp == null) return;
     dlg.statusLine(fileResp[0]+' served'+(dlg.loggedInOwnsSel() ? '':' only'),5000);
     if (fileResp[1] == 'http' && dlg.loggedInOwnsSel())
         window.open('/progs/edit/content','_blank');
@@ -72,7 +79,9 @@ export let setCurDir = val => curDir=val
 export function showDataDir() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
-    [dirHasDir,dirPermStat,curDir] = catchResp();
+    let dir=catchResp();
+    if (dir == null) return;
+    [dirHasDir,dirPermStat,curDir] = dir;
     dlg.drawDirList(curDir);
 }
 
@@ -80,6 +89,7 @@ export function showExtFiles() {
     if (httpRequest.readyState !== XMLHttpRequest.DONE || httpRequest.status !== 200) 
         return;
     curDir = catchResp();
+    if (curDir == null) return;
     dlg.drawExtFilesList(curDir);
 }
 
@@ -89,3 +99,7 @@ export function importHelp() {
     let content = catchResp()[1];
     $('#dialog-help').html(content);
 }
+
+function simpleStatLine(mes) {
+    $("#statusLine").css('display','block').html(mes);
+} 
