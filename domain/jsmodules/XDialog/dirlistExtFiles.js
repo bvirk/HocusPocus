@@ -1,31 +1,37 @@
-import { APIName } from './webPageContext.js'
-import { getRequest } from './requests.js';
+import { APIClass } from './webPageContext.js'
+import { postRequest } from './requests.js';
 
 
 let cache;
 let dirty=true;
+let wRFile;
 
-export function cacheSelFile() {
+function cacheSelFile() {
 }
 
-export function dirlistData(drawer,extType,selWRFile) {
+function dirlistData(drawer) {
     if (dirty) {
-        this.type = extType;
-        getRequest(drawer,APIName+'lsExt&selDataPath='+ selWRFile.substring(5) +'&type='+extType);
+        postRequest(drawer,{selDataPath:wRFile.substring(5),type:this.type}, APIClass+'lsExt');
     } else
         drawer(cache,true);
 }
-export function selFileItem() {
-    return dirty ? "no valid cache" :  cache[this.selIndex];
+function selFileItem() {
+    return dirty ? "no valid cache" :  cache.dirlist[this.selIndex];
 }
 
-export function setDirty() { dirty=true; this.selIndex=0; return module;}
+function setBranch(type,_wRFile) {
+    this.type = type;
+    wRFile = _wRFile;
+    return module;
+}
 
-export function store(newcache,newDirty) {
+function setDirty() { dirty=true; this.selIndex=0; return module;}
+
+function store(newcache,newDirty) {
     cache=newcache;
-    this.length = cache.length;
+    this.length = newcache['dirlist'].length;
     dirty=newDirty;
 }
 
-const module = { cacheSelFile, dirIndex: 0, length: 0, selIndex: 0, type:'', dirlistData, /* fileItem, */ selFileItem, setDirty, store };
+const module = { cacheSelFile, dirIndex: 0, length: 0, selIndex: 0, type:'', dirlistData, selFileItem, setBranch, setDirty, store };
 export default module;
