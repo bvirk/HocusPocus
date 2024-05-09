@@ -9,6 +9,6 @@ class XDialog extends PageAware {
         ,['/css/PageAware.css?','rel' =>'stylesheet','type' => 'text/css']];
     
     function stdContent() {
-    	echo "<div id='root' data-IS_PHP_ERR='".IS_PHP_ERR."'></div>\n".$this->body;
+    	echo "<div id='root' data-phpErrorKey='".PHP_ERR."'></div>\n".$this->body;
 	}
 }
