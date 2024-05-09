@@ -79,7 +79,6 @@ span.clicknav:hover,#navBack:hover,#navHome:hover,#login, #editplace {
     padding-bottom: 5px;
 }
 
-
 #login {
     color: var(--fgColor);
     background-color: var(--bg);
@@ -98,8 +97,21 @@ span.clicknav:hover,#navBack:hover,#navHome:hover,#login, #editplace {
     font-size: 2em;
 }
 
-#statusLine {
+#keyhandler_statusLine, #fileInfo, #txtinputlabel, #passwordlabel, #unamelabel {
     font-size: 0.8em;
+}
+
+#keyhandler_statusLine {
+    padding-top: 2%;
+}
+
+
+#statusLine {
+     color: navy;
+     
+}
+#keyhandler { 
+    color:red;
 }
 
 
