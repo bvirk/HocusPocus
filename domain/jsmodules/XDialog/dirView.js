@@ -1,43 +1,41 @@
 import dirWR from "./dirlistWebRoot.js";
 import dirExtFiles from "./dirlistExtFiles.js";
 import dirExtTypes from './dirlistExtTypes.js';
-import but from './buttons.js';
+import buts from './buttons.js';
+import * as fm from './filemanage.js';
+import * as frm from './formsubmit.js';
 
 import { setCurkeyhandler, KeyHandler } from "./keyHandlerDelegater.js"
-import conf, { APIName, IS_PHP_ERR } from './webPageContext.js'
-import {getRequest} from './requests.js';
+import conf, { APIClass, PHP_ERR } from './webPageContext.js'
+import { postRequest } from './requests.js';
 
 
-let dir; // function to chosendir
+export let dir; // function to chosendir
 
 /**
  * Only for webroot dir
  */
 export let wRPath;
 
-function basename(path) {
-    return path.split('/').reverse()[0];
-}
-
 export function dirname(path) {
     let spos = path.lastIndexOf('/');
     return spos != -1 ? path.substring(0,spos) : path;
 }
 
-export function cdhome(num) {
+export function cdhome() {
     // this most be have dir context
     wRPath = 'data/pages';
     fetchWebRoot();
 }
 
 export function cdtonum(num) {
-    wRPath += '/'+basename(dirWR.fileItem(num)[0]);
+    wRPath += '/'+fm.basename(dirWR.fileItem(num).file);
     fetchWebRoot();
 }
 
 export function closeDialog(url) { // must be called from WR context 
     document.getElementById("dlgBG").style.display = 'none';
-    dir.setDirty();
+    //dir.setDirty();
 
     document.cookie = "dialog=off; path=/; SameSite=None; Secure";
     setCurkeyhandler(KeyHandler.NODIALOG);
@@ -50,27 +48,20 @@ function choseDir(f) {
     return f;
 }
 
-function draw(resp, fromCache) {
+function draw({someDirHasDir, permstat, dirlist},fromCache) {
     if (!fromCache)
-        dir.store(resp,resp[0] === IS_PHP_ERR);
-    if (resp[0] === IS_PHP_ERR) { 
-        if (resp[1].length)
-            $("#statusLine").text(resp[1]);
-    } else if ( dir == dirExtTypes)
-        drawExttypes(resp);
-    else if ( dir == dirExtFiles)
-        drawExtFiles(resp)
+        dir.store({someDirHasDir, permstat, dirlist});
+    if ( dir == dirExtTypes)
+        drawExttypes(dirlist);
+    else  if ( dir == dirExtFiles)
+        drawExtFiles(dirlist)
     else { // dir = dirWR
-        let dirlist;
-        [dir.dirHasDir,dir.dirPermStat,dirlist] = resp;
-        let dirLen = dirlist.length;
         $('#wdFiles').empty();
         dirlist.forEach((e,index) => { 
-            let dirChar = e[1][0] == '/' ? '/': '';
-            let look = basename(e[0])+dirChar;
-            let href = '/?path=progs/mkPage&amp;redir='+urlOfFile(e[0]);
-            let className=(index == dir.selIndex ? 'sel': 'unsel')+e[1].substring(1);
-            let clknav =  dirChar.length 
+            let look = fm.basename(e.file)+ (e.isDir ? '/':'');
+            let href = '/?path=progs/mkPage&amp;redir='+urlOfFile(e.file);
+            let className=(index == dir.selIndex ? 'sel': 'unsel')+e.styleClass;
+            let clknav =  e.isDir
                 ? "<span class='clicknav' onclick='wobj.cdtonum("+index+");'>📁</span>&nbsp;&nbsp;"
                 : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
             $("#wdFiles").append(`
@@ -79,95 +70,101 @@ function draw(resp, fromCache) {
                 </li>
             `);
         });
-        let selPath = dirlist[dir.selIndex][0];
+        let selPath = dirlist[dir.selIndex].file;
         let lslPos =selPath.lastIndexOf('/');
         $('#curDirStr').text(lslPos == -1 ? 'Document Root':selPath.substring(0,lslPos));
         let permstrs = ['--','-o','r-','ro'];
-        let permstat = permstrs[dir.dirPermStat] + '/' + permstrs[dirlist[dir.selIndex][4]];
-        let message = (dir.selIndex +1)+'/'+ dirLen +' '+dirlist[dir.selIndex][2]
-           +' '+permstat+"<br>"+dirlist[dir.selIndex][3];
-        statusLine(message);
+        let permstatStr = permstrs[permstat] + '/' + permstrs[dirlist[dir.selIndex].filePermstat];
+        let message = (dir.selIndex +1)+'/'+ dirlist.length 
+            +' '+dirlist[dir.selIndex].desc
+            +' '+permstatStr
+            + (dirlist[dir.selIndex].linksTo ? ' '+dirlist[dir.selIndex].linksTo:'') 
+            +"<br>"+dirlist[dir.selIndex].enheritClass;
+        fileInfoLine(message);
     }
 }
-       
 
-function drawExtFiles(resp) {
-    let dirlist=resp;
+function drawExtFiles(dirlist) {
     let dirLen=dirlist.length;
     $('#wdFiles').empty();
     dirlist.forEach((e,index) => {
-        let look = basename(e[0]);
-        let className=(index == dir.selIndex ? 'sel-': 'unsel-')+ dir.type+ (e[1]== 'e' ? '-ex' : '-mis')
-        let href = '/'+e[0];
+        let look = fm.basename(e.file);
+        let className=(index == dir.selIndex ? 'sel-': 'unsel-')+ dir.type+ (e.eFlag== 'e' ? '-ex' : '-mis')
+        let href = '/'+e.file;
         $("#wdFiles").append(`
             <li><a href='${href}' id='pid${index}' class='${className}'>${look}</a></li>
         `);
     });
-    let selPath = dirlist[dir.selIndex][0];
+    let selPath = dirlist[dir.selIndex].file;
     let lslPos =selPath.lastIndexOf('/');
-    $('#curDirStr').html('Datafile: '+dirWR.selFileItem()[0]+'<br>Path: '+selPath.substring(0,lslPos));
-    let message = (dir.selIndex +1)+'/'+ dirLen +' '+dirlist[dir.selIndex][2];
-    statusLine(message);
+    $('#curDirStr').html('Datafile: '+dirWR.selFileItem().file+'<br>Path: '+selPath.substring(0,lslPos));
+    let message = (dir.selIndex +1)+'/'+ dirLen +' '+dirlist[dir.selIndex].desc;
+    fileInfoLine(message);
 }
 
-
-function drawExttypes(resp) {
-    let dirlist=resp[0];
+function drawExttypes(dirlist) {
     let dirLen=dirlist.length;
     $('#wdFiles').empty();
     dirlist.forEach((e,index) => {
-        let className=(index == dir.selIndex ? 'sel': 'unsel')+e[1].substring(1);
+        let className=(index == dir.selIndex ? 'sel': 'unsel')+e.styleClass;
         $("#wdFiles").append(`
-            <li><span class='${className}'>${e[0]}</span></li>
+            <li><span class='${className}'>${e.file}</span></li>
         `);
     });
-    let message=dirlist[dir.selIndex][2]+' of ' +dirWR.selFileItem()[0];
-    statusLine(message);
+    let message=dirlist[dir.selIndex].desc +' of ' +dirWR.selFileItem().file;
+    fileInfoLine(message);
 }
 
-export function fetchWebRoot() {
-    choseDir(dirWR).setDirty().dirlistData(draw);
-    //dir.selIndex=7;
-    //statusLine(`became X`);
+export function fetchWebRoot(useUrlPath=false) {
+    if (useUrlPath)
+        dirWR.useUrlPath();
+    choseDir(dirWR);
+    fetchDir();
+}
+
+export function fetchDir() {
+    dir.setDirty().dirlistData(draw);
+}
+
+function fileInfoLine(mes) {
+    $('#fileInfo').css('display','block').html(mes);
 }
 
 export function openDialog() {
     document.cookie = "dialog=on; SameSite=None; Secure; path=/";
+    frm.hideAllInput();
     document.getElementById("dlgBG").style.display = 'block';
     $('#wdFiles').empty();
     setCurkeyhandler(KeyHandler.WEBROOT);
     dirWR.clearDirCache();
-    getRequest(pageContextreciever,APIName+'pageContext');   
+    statusLine('');
+    postRequest(openDialogWithPageContext,{},APIClass+'pageContext');   
 }
 
-function pageContextreciever(parsed) {
-    if (conf.setWebPageContext(parsed)) 
-        openDialogAfterInit();
-    else
-        statusLine(parsed[1]);
-}
-
-
-function openDialogAfterInit() {
+function openDialogWithPageContext(pageContext) {
+    conf.setWebPageContext(pageContext)
     wRPath='data'+dirname(location.pathname);
-    but.setupLoginButton();
-    but.setupEditModeButton();
-    fetchWebRoot();
+    choseDir(dirWR);
+    buts.attLoginButton();
+    buts.attButEditmode();
 }
 
 export function selectAbove() {
+    statusLine('');
     dir.selIndex -= dir.selIndex ? 1 : 1-dir.length;
     dir.dirlistData(draw);
     dir.cacheSelFile();
 }
 
 export function selectBelow() {
+    statusLine('');
     dir.selIndex += dir.selIndex < dir.length-1 ? 1 : 1-dir.length;
     dir.dirlistData(draw);
     dir.cacheSelFile();
 }
 
 export function selectWRParentFolder() {
+    statusLine('');
     if (wRPath.length && (wRPath.length > 10 || conf.SES.loggedin == conf.APACHE_USER)) {
         let lastSlashPos = wRPath.lastIndexOf('/')
         wRPath = lastSlashPos == -1 ? '' : wRPath.substring(0,lastSlashPos);
@@ -176,31 +173,41 @@ export function selectWRParentFolder() {
 }
 
 export function selectWRSubFolder() {
-    let selFileItem = dirWR.selFileItem();
-    if (selFileItem[1][0] === '/') {
-        wRPath += (wRPath.length ? '/' : '')+basename(selFileItem[0]);
+    statusLine('');
+    if (dirWR.selFileItem().isDir) {
+        wRPath += (wRPath.length ? '/' : '')+fm.basename(dirWR.selFileItem().file);
         fetchWebRoot();
     } else if (wRPath.substring(0,10) == 'data/pages') 
         selectExtTypesDir();
 }
 
 export function selectExtTypesDir() {
+    statusLine('');
     setCurkeyhandler(KeyHandler.EXTTYPES);
     choseDir(dirExtTypes).setDirty().dirlistData(draw);
 }    
 
 export function selectExtFiles() {
+    statusLine('');
     let type = dir.typeName();
-    setCurkeyhandler(KeyHandler.EXTFILES);
-    choseDir(dirExtFiles).setDirty().dirlistData(draw,type,dirWR.selFileItem()[0]);
-    //statusLine(type);
+    setCurkeyhandler(type === 'img' ? KeyHandler.IMG : KeyHandler.CSSORJS);
+    choseDir(dirExtFiles).setDirty().setBranch(type,dirWR.selFileItem().file).dirlistData(draw);
 }
 
 export function statusLine(mes) {
     if (Array.isArray(mes))
         mes = mes.join();
-    $("#statusLine").css('display','block');
+    if (typeof mes == 'object')
+        mes = JSON.stringify(mes);
     $("#statusLine").html(mes);
+}
+
+export function test() {
+    let k1 = 'kurt';
+    let v1 = 'hansen';
+    let k2 = 'gitte';
+    let v2 = 'gotten';
+    postRequest(statusLine,{},APIClass+'recievePost');
 }
 
 export function urlOfFile(datafile) {
