@@ -316,6 +316,21 @@ function travChGrp($path,$newGrp,$ifGrp='') {
 class NNNAPI {
     use \actors\Pagefuncs;
 
+    private $dirProps = [
+         'file' => 'file'
+        ,'styleClass' => 'styleClass'
+        ,'isDir' => 'isDir'
+        ,'isIndexTarget' => 'isIndexTarget'
+        ,'desc' => 'desc'
+        ,'dirHasDir' => 'dirHasDir'
+        ,'enheritClass' => 'enheritClass'
+        ,'filePermstat' => 'filePermstat'
+        ,'eFlag' => 'eFlag'
+        ,'someDirHasDir' => 'someDirHasDir'
+        ,'permstat' => 'permstat'
+        ,'dirlist' => 'dirlist'
+    ];
+
     function __construct() {
         global $usesJSON;
         headerCTText();
@@ -335,6 +350,11 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
 
+    function du() {
+        $usage = \actors\du($_POST['file']);
+        echo json_encode([__FUNCTION__ => ['usage' => \actors\formatBytes($usage) ]]);
+    }
+
     function edit() { // checked0227
         $fileToEdit  = $_GET['filetoedit'];
         $message = $_GET['message'] ?? '_';
@@ -351,9 +371,33 @@ class NNNAPI {
         echo json_encode([$fileToEdit,$_SESSION['editmode']]);
     }
 
+    function editObj() {
+        $fileToEdit  = $_POST['filetoedit'];
+        $message = $_POST['message'] ?? '_';
+        if (!file_exists($fileToEdit)) { //css or js files
+            if (!file_exists(dirname($fileToEdit))) {
+                $oldM = umask(0);
+                mkdir(dirname($fileToEdit),0777,true);
+                umask($oldM);
+            }
+            touch($fileToEdit);
+            chmod($fileToEdit,0666);
+        }
+        file_put_contents(FILETOEDIT,"$message ".$_SERVER['DOCUMENT_ROOT'].'/'.$fileToEdit);
+        echo json_encode([$fileToEdit,$_SESSION['editmode']]);
+    }
+
     function emptyTrash() {
         removeBesidesRoot('trash/'.$_SESSION[LOGGEDIN]);
         echo json_encode([CONFIRM_COMMAND,'trash emptied']);
+    }
+    
+    function emptyObjTrash() {
+        $userTrash = 'trash/'.$_SESSION[LOGGEDIN];
+        $bef = \actors\du($userTrash);
+        removeBesidesRoot('trash/'.$_SESSION[LOGGEDIN]);
+        $after = \actors\du($userTrash);
+        echo json_encode([__FUNCTION__ => ['released' => \actors\formatBytes($bef-$after)]]);
     }
 
     function help() { // checked0227
@@ -394,22 +438,23 @@ class NNNAPI {
     }
 
     function lsWithPath() {
+        
         $dirList = [];
-        $dir = $_GET['curdir'];
-        $dirHasDir=false;
-        foreach (glob($dir.($dir?'/*':'*')) as $fileWP) {
+        $dir = $_POST['curdir'];
+        $someDirHasDir=false;
+        $d = $this->dirProps;
+        $indexFile = "$dir/index";
+        \actors\datafileExists($indexFile);
+        $indexLink = is_link($indexFile) ? readlink($indexFile):'';
+        foreach (glob($dir.($dir?'/*':'*')) as $fileWP /* webroot path */) {
             $owner = posix_getgrgid(filegroup($fileWP))['name'];
             $readFlag =  fileperms($fileWP) & 040;
             if (! \actors\hasReadAccessFor($owner,$readFlag,$readFlag))
                 continue;
             $fileIsDir = is_dir($fileWP);
-            if ($fileIsDir)
-                foreach( glob("$fileWP/*") as $fileOfDir)
-                    if (is_dir($fileOfDir))
-                        $dirHasDir=true;
-            $liClass = $fileIsDir ? '/Dir' : ' File';
+            $styleClass = $fileIsDir ? 'Dir' : 'File';
             if ($owner == $_SESSION[LOGGEDIN])
-                $liClass .= $readFlag ? 'Vis' : 'Hid';
+                $styleClass .= $readFlag ? 'Vis' : 'Hid';
             
             // the class that implement the files of dir or the file 
             if (str_starts_with($dir,'data/pages/')) {
@@ -421,15 +466,33 @@ class NNNAPI {
                 $enhChn = \actors\enheritChain($implClass);
             } else
                 $enhChn = '';
+            
+            $dirHasDir = false;
+            if ($fileIsDir) {
+                foreach( glob("$fileWP/*") as $fileOfDir)
+                    if (is_dir($fileOfDir)) {
+                        $dirHasDir = true;
+                        $someDirHasDir=true;
+                        break;
+                    }
+            }
+            
+            
             $dirList[] = [
-                $fileWP
-                ,$liClass
-                ,\actors\filespec($fileWP)
-                , $enhChn
-                , $owner == $_SESSION[LOGGEDIN] | ($_SESSION[LOGGEDIN] == APACHE_USER) *2];
+                 $d['file'] => $fileWP
+                ,$d['styleClass'] => $styleClass
+                ,$d['isDir'] => $fileIsDir
+                ,$d['isIndexTarget'] => basename($fileWP) === $indexLink ? 'index link target' : null
+                ,$d['desc'] => \actors\filespec($fileWP)
+                ,$d['dirHasDir'] => $dirHasDir 
+                ,$d['enheritClass'] => $enhChn
+                ,$d['filePermstat'] => $owner == $_SESSION[LOGGEDIN] | ($_SESSION[LOGGEDIN] == APACHE_USER) *2];
             
         }
-        echo json_encode([$dirHasDir,\actors\permStat($dir),$dirList]);
+        echo json_encode([
+             $d['someDirHasDir'] => $someDirHasDir
+            ,$d['permstat'] => \actors\permStat($dir)
+            ,$d['dirlist']=> $dirList]);
     }
 
 
@@ -437,6 +500,16 @@ class NNNAPI {
         $selDataPath = $_GET['selDataPath'];
         $type = $_GET['type'];
         echo json_encode(pageExternsOfType($type,$selDataPath));
+    }
+
+    function lsObjExt() { 
+        $d = $this->dirProps;
+        $selDataPath = $_POST['selDataPath'];
+        $type = $_POST['type'];
+        $keyedFilespec = [];
+        foreach (pageExternsOfType($type,$selDataPath) as $fileSpec)
+            $keyedFilespec[] = [$d['file'] => $fileSpec[0],$d['eFlag'] => $fileSpec[1],$d['desc'] => $fileSpec[2]]; 
+        echo json_encode([$d['dirlist'] => $keyedFilespec]);
     }
 
     function mkDir() { // checked0227
@@ -447,6 +520,19 @@ class NNNAPI {
         lgdIn_copy('config/datafile',"$txtinputDataPath/index.md");
         newClass($txtinputPath);
         echo json_encode([REDRAW_DIR,'']);
+    }
+
+    function mkObjDir() { // checked0227
+        $dirOfNewDir = $_GET['dir'];
+        $newDir = "$dirOfNewDir/".$_GET['txtinput'];
+        foreach (["$dirOfNewDir/pageScheme","$dirOfNewDir/index"] as $srcFile)
+            if (\actors\datafileExists($srcFile))
+                break;
+        $destFile = 'index.'. pathinfo($srcFile,PATHINFO_EXTENSION);
+        lgdIn_mkdir($newDir);
+        lgdIn_copy($srcFile,"$newDir/".basename($destFile));
+        newClass(substr($newDir,/* without leading data/ */ 5)); 
+        echo json_encode([__FUNCTION__ => ['index copied from' => $srcFile] ]);
     }
 
     function mv() { // checked0227
@@ -470,7 +556,7 @@ class NNNAPI {
     }
 
     function mvDir()  {   // checked0228
-        $selPath = $_GET['curdir'].'/'.$_GET['selname'];
+        $selPath = $_GET['curdikr'].'/'.$_GET['selname'];
         $selDataPath = "data/$selPath";
         $txtinputPath = $_GET['curdir'].'/'.$_GET['txtinput'];
         $txtinputDataPath = "data/$txtinputPath";
@@ -492,17 +578,37 @@ class NNNAPI {
         echo json_encode([REDRAW_DIR,'']);
     }
 
+    function newObjFile() { // checked0228
+        $dir = $_GET['dir'];
+        $newFile = "$dir/".$_GET['txtinput'];
+        foreach (["$dir/pageScheme","$dir/index"] as $orgFile)
+            if (\actors\datafileExists($orgFile))
+                break;
+        lgdIn_copy($orgFile,$newFile);
+        echo json_encode([__FUNCTION__ => ['index source' => $orgFile]]);
+    }
+
     function pageContext() {
-        echo json_encode([0,[
+        $all = [
             'SES'             => $_SESSION
            ,'DEFAULTEDITMODE' => DEFAULTEDITMODE
            ,'APACHE_USER'     => APACHE_USER        
            ,'REDRAW_DIR'      => REDRAW_DIR
            ,'REDRAW_IMG_DIR'  => REDRAW_IMG_DIR
            ,'REDRAW_UPPERDIR' => REDRAW_UPPERDIR
-       ]]);
+        ];
+        foreach ($this->dirProps as $k => $v)
+            $all[$k] = $v;
+        echo json_encode($all);
+
+       //echo json_encode([PHP_ERR => "This is an intendede php error"]);
     }
         
+    function recievePost() {
+        //foreach ($_POST as $key => $val)
+        $cnt = '';
+        echo json_encode([__FUNCTION__ => count($_POST)]);
+    }
 
     function rm() {
         $selDataPath = 'data/'.$_GET['curdir'].'/'.$_GET['selname'];
@@ -515,12 +621,24 @@ class NNNAPI {
         echo json_encode([REDRAW_UPPERDIR,'']);
     }
 
+    function rmObj() {
+        $dir = dirname($_GET['file']);
+        $basefile = basename($_GET['file']);
+        trashReferedByDataFile($dir,$basefile);
+        echo json_encode(['succes' =>__FUNCTION__ ]);
+    }
+
     function rmDir() {
         $selPath = $_GET['curdir'].'/'.$_GET['selname'];
         $selDataPath = 'data/'.$selPath;
  
         trashDir($selPath);
         echo json_encode([count(glob($_GET['curdir'].'/*')) ? REDRAW_DIR : REDRAW_UPPERDIR,'']);
+    } 
+
+    function rmObjDir() {
+        trashDir($_GET['file']);
+        echo json_encode([ __FUNCTION__ => ['trashed' => $_GET['file']] ]);
     } 
 
     function saveFile() {
@@ -535,6 +653,13 @@ class NNNAPI {
         echo "close";
     }
 
+    function sessionVar() {
+        $key = $_GET['sessionvar'];
+        $value = $_GET[$key];
+        $_SESSION[$key]=$value;
+        echo json_encode([$key => $value]);
+    }
+
     function setSessionVar() {
         $key = $_GET['sessionvar'];
         $value = $_GET[$key];
@@ -546,14 +671,19 @@ class NNNAPI {
     }
 
     function test() {
-        echo json_encode([0,[
+        $d = $this->dirProps;
+        $all = [
              'SES'             => $_SESSION
             ,'DEFAULTEDITMODE' => DEFAULTEDITMODE
             ,'APACHE_USER'     => APACHE_USER        
             ,'REDRAW_DIR'      => REDRAW_DIR
             ,'REDRAW_IMG_DIR'  => REDRAW_IMG_DIR
             ,'REDRAW_UPPERDIR' => REDRAW_UPPERDIR
-        ]]);
+            ,$d['fileK'] => $d['fileK']
+        ];
+        foreach ($this->dirProps as $k => $v)
+            $all[$k] = $v;
+        echo json_encode($all);
     }
 
     function tooglePublic() {
@@ -573,6 +703,14 @@ class NNNAPI {
     function undoTrash() {
         copySubDirsOf('trash/'.$_SESSION[LOGGEDIN]);
         echo json_encode([CONFIRM_COMMAND,'trash/'.$_SESSION[LOGGEDIN]." restored - use 't' for emptying"]);
+    }
+
+    function undoObjTrash() {
+        $userTrash = 'trash/'.$_SESSION[LOGGEDIN];
+        copySubDirsOf($userTrash);
+        $userUsage = \actors\du($userTrash);
+        
+        echo json_encode([__FUNCTION__ => \actors\formatBytes($userUsage-4096). '' ]);
     }
 
     function viewSessionVars() {
