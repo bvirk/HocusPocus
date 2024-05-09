@@ -7,6 +7,11 @@ function baseClass($classFile) {
             return preg_replace('/^class\s+\w+\s+extends\s+([\w\\\\]+)\s*{\s*/','$1',$line);
     return false;
 }
+
+function blkUsage($size,$blkSize=4096) {
+    return fmod($size,$blkSize) == 0 ? $size : $blkSize + $blkSize*intval($size/$blkSize);
+}
+
 /**
  * Append the extension by which the file exists
  * @param string &$dataFile without extension
@@ -20,6 +25,21 @@ function datafileExists(string &$dataFile, array $extensions = ['.md','.php']):b
         }
     return false;
 }
+
+function du($fileOrDir) {
+    if (!is_dir($fileOrDir))
+        return blkUsage(filesize($fileOrDir));
+ 
+    $used = 0;
+ 
+    foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($fileOrDir)) as $file) {
+        if ($file->getFilename() == '..')
+            continue;
+        $used += blkUsage($file->getSize());
+    }
+    return $used;
+}
+
 
 function enheritChain($phpClassFile,$isFirstCall=true) {
     $slash= $isFirstCall ? '' : "\\";
