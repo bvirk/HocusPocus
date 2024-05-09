@@ -10,6 +10,7 @@ define("FILETOEDIT",$_SERVER['DOCUMENT_ROOT'].'/config/filetoedit.txt');
 define("IS_PHP_ERR",'errOrConf');
 define("LANGUAGES", array('da' => 'Danish','en' => 'English'));
 define("LOGGEDIN",'loggedin');
+define("PHP_ERR",'phpError');
 define("REDRAW_DIR",'redrawDir');
 define("REDRAW_IMG_DIR",'redrawImgDir');
 define("REDRAW_UPPERDIR",'redrawUpperDir');
