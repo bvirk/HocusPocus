@@ -1,15 +1,15 @@
-import {IS_PHP_ERR } from './webPageContext.js'
-import { getRequest } from './requests.js';
-import { APIName } from './webPageContext.js'
-import { wRPath } from './dirView.js';
-import { dirname } from './dirView.js';
+import { postRequest } from './requests.js';
+import { APIClass } from './webPageContext.js'
+import { wRPath, dirname } from './dirView.js';
+import { barename } from './filemanage.js';
 
 let cache;
 let dirty=true;
 let dirdir;
 let dircache = {};
+let navigateToUrlPath=false;
 
-export function cacheSelFile() {
+ function cacheSelFile() {
     const pattern = new RegExp(`^${dirdir}/`);
     Object.keys(dircache)
         .filter(key => pattern.test(key))
@@ -17,63 +17,86 @@ export function cacheSelFile() {
     dircache[dirdir] = this.selIndex;
 }
 
-export function clearDirCache() {
+ function clearDirCache() {
     for (const key in dircache) 
         if (dircache.hasOwnProperty(key)) 
             delete dircache[key];
+    dircache = {};
+
 }
 
-export function dirlistData(drawer) {
+ function dirlistData(drawer) {
     if (dirty) 
-        getRequest(drawer,APIName+'lsWithPath&curdir='+wRPath);
+        postRequest(drawer,{curdir:wRPath},APIClass+'ls');
     else
         drawer(cache,true);
 }
 
-export function fileItem(index) {
-    return cache[this.dirIndex][index];
+ function fileItem(index) {
+    return cache['dirlist'][index];
 }
 
-//export function freeze() {
-//    let fileName=cache[this.dirIndex][this.selIndex][0];
-//    if (this.frozen.length)
-//        this.frozen[this.frozen.length-1] = fileName
-//    else
-//        this.frozen.push(fileName);
-//}
-
-export function getCachedDir() {
+ function getCachedDir() {
     console.log(dircache);
-    //return dircache.dirdir;
+    //return dircache;
+}
+
+ function getUrlIndex() {
+    let num=0;
+    let lastUrlPart = location.pathname.split('/').reverse()[0];
+    cache.dirlist.forEach((element,index) => {
+        if ( lastUrlPart === barename(element.file))
+            num = index;
+    });
+    return num;
+}
+
+ function selFileItem() {
+    return dirty ? "WR - no valid cache" : this.fileItem(this.selIndex);
+}
+ function selPathParts() {
+    return cache['dirlist'][this.selIndex].file.split('/').length-1;
+}
+
+/**
+ * 
+ * @returns module
+ */
+function setDirty() { 
+    dirty=true;
+    return module;
+}
+
+function setNextSelNum(num) {
+    this.nextSelNum=selNum;
+    return module;
 }
 
 
-export function selFileItem() {
-    return dirty ? "no valid cache" : this.fileItem(this.selIndex);
-}
-
-
-export function setDirty() { dirty=true; this.selIndex=0; return module;}
-
-export function store(newcache,newDirty) {
+function store(newcache) {
     cache=newcache;
-    dirty=newDirty;
-    this.length = cache[this.dirIndex].length;
-    dirdir = dirname(cache[this.dirIndex][0][0]);
-    this.selIndex = dirdir in dircache ? dircache[dirdir] : 0;
+    dirty=false;
+    this.length = newcache['dirlist'].length;
+    this.permstat = newcache.permstat;
+    dirdir = dirname(cache['dirlist'][0].file);
+    if ( this.nextSelNum) {
+        this.selIndex = this.nextSelNum-1;
+        this.nextSelNum=0;
+    } else if (navigateToUrlPath) {
+        navigateToUrlPath=false;
+        this.selIndex = getUrlIndex();
+    } else if (dirdir in dircache) {
+        this.selIndex = dircache[dirdir];
+    } else
+        this.selIndex=0;
     this.cacheSelFile();
-    
 }
 
-const module = { cacheSelFile, clearDirCache, dirHasDir:null, dirIndex: 2, dirPermStat:null, getCachedDir, length: 0, selIndex: 0, dirlistData, fileItem, selFileItem, setDirty, store };
-export default module;
-/*
-on store: this.dirdir = dirname(file[0])
-after cursor down and up
-    entry in dircache
-        dir: file
-cursor right:
-    dir: file[0]
-cursor left
-    remove dir
-*/
+function useUrlPath() {
+    navigateToUrlPath=true;
+    return module;
+}
+
+const module = { cacheSelFile, clearDirCache, 
+    getCachedDir, length: 0, nextSelNum: 0, selIndex: 0, dirlistData, fileItem, permstat:0, selFileItem, setNextSelNum, selPathParts, setDirty, store, useUrlPath };
+ export default module;
