@@ -60,7 +60,7 @@ export function attLoginButton(obj) {
         : ['log in','🔓'];
     $('#login').attr('title',loginTitle).text(loginText);
     $('#loggedin').html('&nbsp;'+conf.SES.loggedin);
-    fetchWebRoot(obj === undefined ? true : undefined);
+    fetchWebRoot();
 }
 
 export function loginSignup(reset=false) {
