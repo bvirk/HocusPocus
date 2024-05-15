@@ -115,6 +115,22 @@ function lgdIn_rename($from,$dest) {
     chgrp($dest,$_SESSION[LOGGEDIN]);
 }
 
+function lgdIn_renameSymLinkAware($from,$dest) {
+    $linkTarget = '';
+    $index = "$from/index";
+    datafileExists($index);
+    if (is_link($index))
+        $linkTarget = readlink($index);
+    lgdIn_rename($from,$dest);
+    $renIndex= "$dest/".basename($index);
+    $renTarget = "$dest/".basename($linkTarget);
+    unlink($renIndex);
+    \actors\lnRel($renTarget,$renIndex);
+
+
+}
+
+
 /**
  * Rename including make filename index, when being a link that points to the original file or directory, 
  * a link the point to the new file or directory.
@@ -340,25 +356,25 @@ class NNNAPIObj {
         $usesJSON=true;
     }
 
-    function chmod() { // checked
+    function chmod() { // checkedt0509
         $selname= $_POST['selname'];
         $mode = intval($_POST['txtinput'],8);
         chmod($selname,$mode);
         echo json_encode([__FUNCTION__ => [basename($selname) => decbin($mode)]]);
     }
 
-    function chown() { // checked0227
+    function chown() { // checked0509
         $selname= $_POST['selname'];
         travChGrp($selname,$_POST['txtinput']);
         echo json_encode([__FUNCTION__ => ['newOwner' => $_POST['txtinput']]]);
     }
 
-    function du() {
+    function du() { // checked0509
         $usage = \actors\du($_POST['file']);
         echo json_encode([__FUNCTION__ => ['usage' => \actors\formatBytes($usage) ]]);
     }
 
-    function edit() {
+    function edit() { // checked0509
         $fileToEdit  = $_POST['filetoedit'];
         $message = $_POST['message'] ?? '_';
         if (!file_exists($fileToEdit)) { //css or js files
@@ -374,21 +390,21 @@ class NNNAPIObj {
         echo json_encode(['file' => $fileToEdit,'editLoc' => $_SESSION['editmode']]);
     }
 
-    function emptyTrash() {
+    function emptyTrash() { // checked0512
         $userTrash = 'trash/'.$_SESSION[LOGGEDIN];
         $bef = \actors\du($userTrash);
         removeBesidesRoot('trash/'.$_SESSION[LOGGEDIN]);
         $after = \actors\du($userTrash);
-        echo json_encode([__FUNCTION__ => ['released' => \actors\formatBytes($bef-$after)]]);
+        echo json_encode([__FUNCTION__ => ['dir' => 'trash/'.$_SESSION[LOGGEDIN], 'released' => \actors\formatBytes($bef-$after)]]);
     }
 
-    function help() { // checked0227
+    function help() { // checked0512
         $typeHelpFunc = __NAMESPACE__.'\\'.$_POST['type'].'Help';
         $content = $typeHelpFunc();
         echo json_encode(['content' => (new Parsedown())->text($content)]);
     }
 
-    function login() {
+    function login() { // checked0512
         $uname = $_POST['uname'];
         $allUsers =include(AUTHFILE); 
         $stat['userExist'] = array_key_exists($uname,$allUsers);
@@ -406,7 +422,7 @@ class NNNAPIObj {
         echo json_encode(['loggedin' => $_SESSION[LOGGEDIN],'status' => $stat]);
     }
 
-    function ls() {
+    function ls() { // checked0512
         
         $dirList = [];
         $dir = $_POST['curdir'];
@@ -465,7 +481,7 @@ class NNNAPIObj {
     }
 
 
-    function lsExt() { 
+    function lsExt() { // checked 0512
         $d = $this->dirProps;
         $selDataPath = $_POST['selDataPath'];
         $type = $_POST['type'];
@@ -480,7 +496,7 @@ class NNNAPIObj {
     }
 
     
-    function mkDir() { // checked0227
+    function mkDir() { // checked 0512
         $dirOfNewDir = $_POST['dir'];
         $newDir = "$dirOfNewDir/".$_POST['txtinput'];
         foreach (["$dirOfNewDir/pageScheme","$dirOfNewDir/index"] as $srcFile)
@@ -490,10 +506,10 @@ class NNNAPIObj {
         lgdIn_mkdir($newDir);
         lgdIn_copy($srcFile,"$newDir/".basename($destFile));
         newClass(substr($newDir,/* without leading data/ */ 5)); 
-        echo json_encode([__FUNCTION__ => ['index copied from' => $srcFile] ]);
+        echo json_encode([__FUNCTION__ => ['index source' => $srcFile] ]);
     }
 
-    function mv() {
+    function mv() { // checked 0512
         $selBare = pathinfo($_POST['selname'],PATHINFO_FILENAME);
         $selFromPages=substr($_POST['selname'],5);
         $dirSelFromPages=dirname($selFromPages);
@@ -507,14 +523,14 @@ class NNNAPIObj {
         echo json_encode([__FUNCTION__ => ['newname' => $_POST['txtinput']]]); 
     }
 
-    function mvImg() {
+    function mvImg() { // checked 0512
         $selname=$_POST['selname'];
         $txtinput=$_POST['txtinput'];
         rename($selname,dirname($selname)."/$txtinput");
         echo json_encode([__FUNCTION__ => ['selname' => $selname,'new file' => dirname($selname)."/$txtinput"]]); 
     }
 
-    function mvDir()  {
+    function mvDir()  {  // checked 0512
         $pagesSibOffset = strlen('data/' /* in data/pages/da/...// */);
         $selname = $_POST['selname'];
         $txtinput = $_POST['txtinput'];
@@ -523,14 +539,14 @@ class NNNAPIObj {
         $newPagesSib = substr($newName,$pagesSibOffset);
         $baseSelName = basename($selname);
 
-        lgdIn_rename($selname,$newName);
-        renameClass($selname,$txtinput);
-        if (file_exists(/* as dir in pages/ */ $selPagesSib  )) { 
-            rename($selPagesSib,/* new name of that dir */ $newPagesSib);
-            changeNamespaceInDirs($baseSelName,$txtinput,$newPagesSib);
-        }
-        renameOnExists("img/$selPagesSib",$txtinput);
-        renameExternsDir();
+        lgdIn_renameSymLinkAware($selname,$newName);
+        //renameClass($selname,$txtinput);
+        //if (file_exists(/* as dir in pages/ */ $selPagesSib  )) { 
+        //    rename($selPagesSib,/* new name of that dir */ $newPagesSib);
+        //    changeNamespaceInDirs($baseSelName,$txtinput,$newPagesSib);
+        //}
+        //renameOnExists("img/$selPagesSib",$txtinput);
+        //renameExternsDir();
         echo json_encode([__FUNCTION__ => ['newname' => $_POST['txtinput']]]);
     }
 
