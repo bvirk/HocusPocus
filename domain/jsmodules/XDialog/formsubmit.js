@@ -1,4 +1,3 @@
-
 import dirWR from "./dirlistWebRoot.js";
 import { curkeyhandler, KeyHandler, returnToKeyhandler, setCurkeyhandler } from './keyHandlerDelegater.js';
 import { dirname } from "./filemanage.js";
@@ -6,6 +5,7 @@ import { apiAnswer, postRequest} from './requests.js';
 import { APIClass } from "./webPageContext.js";
 import { attLoginButton, loginSignup } from './buttons.js';
 import { basename, extension } from './filemanage.js'
+import { statusLine, dir } from "./dirView.js";
 
 let validateFunc;
 //let invokeKeyhandler;
