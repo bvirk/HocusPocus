@@ -5,10 +5,17 @@ export function apiAnswer(resp) {
     let mes='';
     let apiFunc = Object.keys(resp)[0];
     switch(apiFunc) {
-        case 'mvImg': {
+        case 'mvImg': 
+        case 'chmod':
+        case 'chown':
+        case 'mkDir':
+        case 'mv':
+        case 'mvDir':
             fetchDir();
             break;
-        }
+        case 'du':
+        case 'emptyTrash':
+            break;
         default:
             mes = apiFunc+' not implemented';
     }
