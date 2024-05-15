@@ -2,8 +2,11 @@ import * as view from './dirView.js';
 
 export function edit({file,editLoc}) {
     view.statusLine(file+' served as '+editLoc);
-    if (editLoc == 'http' && (view.dir.selFileItem().filePermstat & 1)) {
-        window.open('/progs/edit/content','_blank');
+    if (editLoc == 'http' ) {
+        if (view.dir.selFileItem().filePermstat & 1) 
+            window.open('/progs/edit/content','_blank');
+        else
+            view.statusLine(`In browser edit only for owner, but ${file} still served locally`);
     }
     
 }
