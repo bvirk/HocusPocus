@@ -14,7 +14,7 @@ function catcher($f) {
     }
 }
 
-function changeNameSpace($oldBasename,$newBasename,$path) {
+function changeNameSpace( $oldBasename, $newBasename, $path ) {
     $all='';
     foreach (file($path) as $line)
         $all .= preg_match('/^namespace /',$line)
@@ -514,7 +514,7 @@ class NNNAPIObj {
         $selFromPages=substr($_POST['selname'],5);
         $dirSelFromPages=dirname($selFromPages);
         extract(pathinfo($_POST['txtinput']),EXTR_PREFIX_ALL,"txtinput");
-        $txtinput_ext = $txtinput_extension ?? '';
+        //$txtinput_ext = $txtinput_extension ?? '';
         $imgSelPath = "img/$dirSelFromPages/$selBare";
 
         renameOnExists($imgSelPath,$txtinput_filename);
@@ -531,13 +531,13 @@ class NNNAPIObj {
     }
 
     function mvDir()  {  // checked 0512
-        $pagesSibOffset = strlen('data/' /* in data/pages/da/...// */);
+        //$pagesSibOffset = strlen('data/' /* in data/pages/da/...// */);
         $selname = $_POST['selname'];
         $txtinput = $_POST['txtinput'];
-        $selPagesSib = substr($selname,$pagesSibOffset);
+        //$selPagesSib = substr($selname,$pagesSibOffset);
         $newName = dirname($selname)."/$txtinput";
-        $newPagesSib = substr($newName,$pagesSibOffset);
-        $baseSelName = basename($selname);
+        //$newPagesSib = substr($newName,$pagesSibOffset);
+        //$baseSelName = basename($selname);
 
         lgdIn_renameSymLinkAware($selname,$newName);
         //renameClass($selname,$txtinput);
