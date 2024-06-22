@@ -8,6 +8,7 @@ $qs = actors\queryString();
 return ["<!<div class='top'>\n#html#\n</div>\n<div class='bottom'>\n#html#\n</div>",
     <<< EOTMD
 ### $func of type $pe[0]
+
 All local variables in \_\_call(...) of \\HocusPocus->\_\_call() is accessible here.
 
 |var          |value            |
