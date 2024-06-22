@@ -2,14 +2,14 @@
 require "globalfuncs.php";
 
 function exceptions_error_handler($severity, $message, $filename, $lineno) {
-    //errLog("$filename:$lineno");
+	//errLog("$filename:$lineno");
     throw new ErrorException($message, 0, $severity, $filename, $lineno);
 }
 
 set_error_handler('exceptions_error_handler');
 
 spl_autoload_register(function($classPath) {
-    require_once str_replace("\\","/",$classPath).'.php'; // THIS MUST BE AT LINE 12
+	require_once str_replace("\\","/",$classPath).'.php'; // THIS MUST BE AT LINE 12
 });
 
 $pe=[];
@@ -24,7 +24,7 @@ function instantiatePath() {
     /* We dont allow url ending with slash, because it ruins relative links */
     if ( str_ends_with($_REQUEST['path'] ?? '','/')) 
         exit(header('Location: /'.rtrim($_REQUEST['path'],'/'),true,302));
-
+	
 
 
     /**
