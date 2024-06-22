@@ -32,7 +32,7 @@ RewriteRule ^pages/da$ /pages/da/index [R=302]
 RewriteRule ^pages/en$ /pages/en/index [R=302]
 RewriteRule ^da$ /pages/da/index [R=302]
 RewriteRule ^en$ /pages/en/index [R=302]
-RewriteRule ^([\w+/]+)$ ?path=
+RewriteRule ^([\w+/]+)$ ?path=$1
 </Directory>
 ...
 ```
