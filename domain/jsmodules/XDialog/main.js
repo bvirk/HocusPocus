@@ -10,7 +10,7 @@ $('#root').html(`
 <div id="dlgBG">
     <div id="dialog-help" data-type="unref" >XYZ</div>
     <div id="dialog">
-        <button id='closeDialog'>X</button>\n
+        <button id='closeDialog'>X</button>
         <div id='headNav'>
             <span title="Home page" ><a id='navHome'>⌂ </a></span>
             <span title="One level up"><a id='navBack'>⏪</a></span>
