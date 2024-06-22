@@ -1,4 +1,6 @@
 <?php 
+if (!file_exists(AUTHFILE)) 
+		file_put_contents(AUTHFILE,'<?php return '.var_export([],true).';');
 [$h3label,$method,$sendTxt,$signShift] = count(file(AUTHFILE)) < 5 || array_key_exists('signup',$_GET)
     ? ['Make Encryption of password','saveEncryption','Save encryption'
         ,"'window.location = window.location.toString().replace(/&signup$/,\"\");' value='Sign in'>"]
