@@ -144,6 +144,13 @@ function kvsepEncode($arr,$kv='=',$sep=';') {
     }
     return $str;
 }
+
+function logvars($defVars,$logfile='/tmp/phplogvars') {
+    $fp = fopen($logfile, "w");
+    fclose($fp);
+    return error_log(var_export($defVars,true),3,$logfile);
+}
+
 /**
  * Extern css or js files to a page
  * @param string $path is path to the datafile of the page relative to directory data/
