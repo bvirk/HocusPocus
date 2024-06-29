@@ -13,7 +13,7 @@ Programmering og microprocessor udstyret gear er en interesse jeg, i tidens ånd
 Med varierende intensitet, de sidste 40 år, har jeg kastet mig over emneområder som løste småopgaver.
 
 EOMD,">!>",<<<EOMD
-  
+$fail  
 
 #### Sprog
 
