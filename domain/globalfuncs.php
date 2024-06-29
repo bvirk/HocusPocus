@@ -34,6 +34,15 @@ function errLog(... $argArr): void {
 }
 
 /**
+ * Used as logVars(get_defined_var())
+*/
+function logvars($defVars,$logfile='/tmp/phplogvars') {
+    $fp = fopen($logfile, "w");
+    fclose($fp);
+    return error_log(var_export($defVars,true),3,$logfile);
+}
+
+/**
  * Sets Content-type to txt/plain on first call as opposed to following call in processing of the a request. Global variable $usesJSON default to false. 
  * @param bool $usesJSONParm overrides assigning false to $usesJSON
  */
