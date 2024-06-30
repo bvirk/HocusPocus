@@ -21,9 +21,9 @@ a[href="tel:28569086"] {
 }
 
 .mailPic {
-	width: 140px;
-	height: 42px;
-	/* border: 1px solid red; */
+	 width: 140px; 
+	 height: 42px; 
+	/* border: 1px solid blue; */
 	background-image: url(/img/blank.png);
 	background-repeat: no-repeat;
     margin-left: auto; 
@@ -46,9 +46,7 @@ a[href="tel:28569086"] {
 .flex {
     display:flex;
     width: 100%;
-}
-.flex > div {
-    width: 33%;
+ /*   margin-top: 50px;*/
 }
 /*
 .colleft {
@@ -57,13 +55,13 @@ a[href="tel:28569086"] {
     border: 1px solid magenta;
 } */
 .colright {
-/*    border: 1px solid red; */
+    /* border: 1px solid red; */
     text-align: right;
     font-size: 1.5rem;
 }
 .colright p {
-    font-size: 3em;
-    margin: 0 40px 0 0;
+    font-size: 2em;
+    margin: 0;
     padding: 0;
     cursor: help;
 }
