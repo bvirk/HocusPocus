@@ -1,34 +1,16 @@
 <?php return ["<!<div class='auto80'>#html#</div>"
-    ,"<!<div class='about'>#html#</div><div class='flex'><div class='colleft'>#html#</div><div class='colmid'>#html#</div><div class='colright'>#html#</div></div><div class='hocus'>#html#</div>"
+    , "<!<div class='flex'><div class='about'>#html#</div>"
+     ."<div class='colright'>#html#</div></div><div class='hocus'>#html#</div>"
     ,<<<EOMD
-  
 
 ![floatleft-00-15-15]($imgPath/b128x150.png)
 ## Webmaster <abbr title="Benny Andersen">🤖's</abbr> profil
 
 
+Programmering i c og c++, java, php, sql, html, ccs og javascript. Linux som OS. 
+Leg med microcontroler boards og kontruktion af elektronik fra bunden. 
 
-Programmering og microprocessor udstyret gear er en interesse jeg, i tidens ånd, deler med mange.
-
-Med varierende intensitet, de sidste 40 år, har jeg kastet mig over emneområder som løste småopgaver.
-
-EOMD,">!>",<<<EOMD
-$fail  
-
-#### Sprog
-
-- c og c++
-- java
-- php
-- sql
-- html, sccs og javascript  
-
-EOMD,">!>",<<<EOMD
-#### OS
-
-- Linux
-- Avr (arduino)
-- Windows
+Mere end 40 lærerige år med projekter i privat regi.
 
 EOMD,">!>",<<<EOMD
 <abbr title="Benny Andersen">👨‍💻</abbr>
@@ -38,20 +20,8 @@ EOMD,">!>",<<<EOMD
 
 
 EOMD,">!>",<<<EOMD
-## [Eventyret HocusPocus](../docs/index)
+## [Den personlige computer](../docs/index)
 EOMD,">!>",<<<EOMD
 
-### Indledning
-Dette er beskrivelse af hvilke ting jeg har været rundt omkring med skabelsen af PHP frameworket HocusPocus.  
-For at komme rundt om flere ting uden for svært følgebare indskudte iagttagelser, anvendes sammenfaldne tidlinier.
-
-
-
-### TOC
-- [PHP Frameworket](framework)
-- [Fejlgreb i udviklingen af frameworket](fejlgreb)
-- [Editor kontra IDE](ide)
-- [Debugging](debug)
-- [Hosting](hosting)
-
+Betegnelsen rammer den rolle digitalteknik får på individuel plan - og dog - med rollens stigende betydning sker der det at bevistheden om hvad der ligger bag, minimeres. 
 EOMD];
